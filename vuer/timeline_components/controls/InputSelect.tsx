@@ -1,13 +1,13 @@
-
-import styles from './Controls.module.scss';
+import {HTMLInputTypeAttribute } from "react";
 import { Input } from './Input';
 import { Select, SelectProps } from './Select';
+import styles from './Controls.module.scss';
 
-export type InputSelectProps<T> = Omit<
- HTMLAttributes<HTMLInputElement>,
-  'value' | 'onChange'
-> &
-  SelectProps<T>;
+export type InputSelectProps<T> = {
+  options: SelectProps<T>['options'];
+  value: T;
+  onChange: (value: T) => void;
+} & SelectProps<T>;
 
 export function InputSelect<T extends string | number>({
   options,

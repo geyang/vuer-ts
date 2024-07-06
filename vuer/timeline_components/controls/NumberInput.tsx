@@ -1,15 +1,12 @@
+import { useCallback, useEffect, useRef, useState } from "react";
 import clsx from 'clsx';
 
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
-import { useDocumentEvent } from '../../hooks';
-import { MouseButton, clamp } from '../../utils';
 import styles from './Controls.module.scss';
-import { HTMLAttributes } from "react";
+import { useDocumentEvent } from "../hooks";
+import { MouseButton } from "../timeline/mouse_interfaces";
+import { clamp } from "../../layout_components/utils";
 
-type NumberInputProps = Omit<
-  HTMLAttributes<HTMLInputElement>,
-  'value' | 'onChange' | 'min' | 'max' | 'step' | 'label'
-> & {
+type NumberInputProps = {
   value: number;
   onChange: (value: number) => void;
   min?: number;

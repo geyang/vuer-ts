@@ -1,4 +1,7 @@
 import styles from './Controls.module.scss';
+import { useEffect, useState } from "react";
+import { MouseButton } from "../timeline/mouse_interfaces";
+import { clamp } from "../../layout_components/utils";
 
 export interface SliderProps {
   value?: number;
@@ -49,7 +52,7 @@ export function Slider({ value, onChange }: SliderProps) {
       <div className={styles.sliderTrack}>
         <div
           className={styles.sliderProgress}
-          style={`height: ${internalValue * 100}%`}
+          style={{ height: `${internalValue * 100}%` }}
         >
           <div className={styles.sliderThumb}/>
         </div>
