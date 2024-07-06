@@ -4,8 +4,7 @@ import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
 import { plugin as mdPlugin } from 'vite-plugin-markdown';
 import dts from 'vite-plugin-dts';
-
-console.log(mdPlugin);
+import * as sass from 'sass';
 
 export default defineConfig({
   plugins: [
@@ -15,6 +14,13 @@ export default defineConfig({
     }),
     mdPlugin(),
   ],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        implementation: sass,
+      },
+    },
+  },
   root: "vuer",
   build: {
     outDir: resolve(__dirname, './dist'),

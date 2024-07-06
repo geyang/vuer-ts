@@ -16,6 +16,11 @@
       "DOM.Iterable",
       "webworker"
     ],
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules"
+      }
+    ]
   },
   /* Bundler mode */
   "noEmit": true,

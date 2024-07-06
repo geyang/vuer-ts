@@ -1,5 +1,5 @@
-import { Component, ElementType, ReactNode, useContext } from 'react';
-import { comp_list } from '../registry';
+import { ElementType, ReactNode, useContext } from 'react';
+import * as comp_list from '../registry';
 import { AppContext, Node } from '../index';
 
 type HydrateProps = {
