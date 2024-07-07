@@ -2,10 +2,9 @@ import styles from './Controls.module.scss';
 
 import clsx from 'clsx';
 import { IconButton } from './IconButton';
-import { ReactElement } from "react";
+import { HTMLAttributes } from "react";
 
-interface IconCheckboxProps {
-  children: ReactElement[];
+interface IconCheckboxProps extends Omit<HTMLAttributes<HTMLButtonElement>, 'onChange'> {
   titleOn?: string;
   titleOff?: string;
   onChange?: (value: boolean) => void;

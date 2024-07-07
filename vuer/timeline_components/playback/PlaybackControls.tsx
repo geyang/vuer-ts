@@ -13,7 +13,7 @@ import {
   VolumeOff,
   VolumeOn,
 } from '../icons';
-import { Framerate } from './Framerate';
+import { usePlayback } from "../player";
 
 export function PlaybackControls() {
   // const { player, renderer, meta, project } = useApplication();
@@ -73,6 +73,7 @@ export function PlaybackControls() {
   //     [ player ],
   //   ),
   // );
+  const player = usePlayback();
 
   return (
     <div className={styles.controls}>
@@ -93,6 +94,7 @@ export function PlaybackControls() {
           titleOn="Mute audio [M]"
           titleOff="Unmute audio [M]"
           checked={!state.muted}
+          onChange={(value) => undefined}
           // onChange={value => player.toggleAudio(value)}
         >
           {state.muted ? <VolumeOff/> : <VolumeOn/>}
@@ -155,15 +157,15 @@ export function PlaybackControls() {
       >
         <Repeat/>
       </IconCheckbox>
-      <Framerate
-        render={(framerate, paused) => (
-          <Input
-            title="Current framerate"
-            readOnly
-            value={paused ? 'PAUSED' : `${framerate} FPS`}
-          />
-        )}
+      {/*<Framerate*/}
+      {/*  render={(framerate, paused) => (*/}
+      <Input
+        title="Current framerate"
+        readOnly
+        value={player.isPaused ? 'PAUSED' : `${player.fps} FPS`}
       />
+      {/*  )}*/}
+      {/*/>*/}
       <IconButton
         title="Save snapshot"
         // onClick={() =>

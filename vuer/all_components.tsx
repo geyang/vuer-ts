@@ -1,11 +1,10 @@
-/** Component Registar
+/** Component Registry
  *
  * - This file is used to register all the components that are available to the user.
  *
  * todo: need to change this into a factory function and a registry object.
  */
-import React, { Component, FC, } from 'react';
-
+import React from 'react';
 export { Scene } from './three_components/scene';
 export { Glb, Glb as Gltf, Obj, Pcd, Ply, Urdf, } from './three_components/data_loaders';
 
@@ -63,11 +62,13 @@ export { Arrow, CoordsMarker } from "./three_components/primitives/CoordsMarker"
 export { Button, Div, ImageUpload, Img, Input, Slider, Text } from "./html_components/input_components";
 export { default as GrabRender } from "./three_components/camera_view/GrabRender";
 export { PointerControls } from "./three_components/controls/pointer";
-export * from "./drei_components/drei_components";
+export * from "./drei_components";
 export { VuerGroup } from "./three_components/primitives/better_group";
+export { Grid } from "./three_components/grid";
 export { default as SceneContainer } from "./three_components";
 export { Resizable } from "./layout_components/Resizable";
 export { TimelineControls } from "./uxr_components/TimelineControls";
+
 // eslint-disable-next-line react-refresh/only-export-components
 export * from "./timeline_components";
 

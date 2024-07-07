@@ -1,4 +1,12 @@
-import React, { Suspense, useCallback, useContext, useEffect, useMemo, useRef, } from 'react';
+import React, {
+  MutableRefObject, ReactNode,
+  Suspense,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { Mesh, Object3D, Vector3 } from 'three';
 import { Canvas } from '@react-three/fiber';
 import { GizmoHelper, GizmoViewport } from '@react-three/drei';
@@ -28,21 +36,22 @@ Mesh.prototype.raycast = acceleratedRaycast;
 //   // TextGeometry,
 // });
 
-export type SceneProps = VuerProps<{
+export interface SceneProps extends VuerProps<{
   _key?: string;
-  canvasRef?;
+  canvasRef?: MutableRefObject<HTMLElement | HTMLCanvasElement>
   className?: string;
-  style?;
+  style?: object;
   frameloop?: "always" | "demand";
   xrMode?: "AR" | "VR" | "hidden";
   up?: [ number, number, number ];
-  bgChildren?: JSX.Element | JSX.Element[];
-  rawChildren?: JSX.Element | JSX.Element[];
-  htmlChildren?: JSX.Element | JSX.Element[];
+  bgChildren?: ReactNode | ReactNode[];
+  rawChildren?: ReactNode | ReactNode[];
+  htmlChildren?: ReactNode | ReactNode[];
   grid?: boolean;
   initCamPosition?: [ number, number, number ];
   initCamRotation?: [ number, number, number ];
-}>;
+}> {
+}
 
 /**
  * This is the root component for the 3D scene.
@@ -68,7 +77,7 @@ export function Scene({
   className,
   frameloop = 'demand',
   style,
-  xrMode,
+  xrMode = 'VR',
   children,
   bgChildren,
   // these are not transformed.
@@ -121,7 +130,7 @@ export function Scene({
   const camCtrlRef = useRef<tOrbitControls>();
 
   let button;
-  let mode = xrMode || queries.xrMode || "VR";
+  const mode = xrMode || queries.xrMode || "VR";
 
   if (mode === "AR") {
     button = <ARButton/>;
@@ -136,7 +145,7 @@ export function Scene({
       <div style={divStyle} className={className}>
         {button}
         <Canvas
-          ref={canvasRef}
+          ref={ref}
           shadows
           // preserve buffer needed for download and grab image data
           gl={{ antialias: true, preserveDrawingBuffer: true }}

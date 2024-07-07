@@ -1,6 +1,6 @@
 import { Splat } from "@react-three/drei";
 import { Matrix16T, VuerProps } from "../interfaces";
-import * as React from "react";
+import { ReactNode } from "react";
 import { VuerGroup } from "../three_components/primitives/better_group";
 
 // we repeat these definitions because drei/Splat does not export its props
@@ -29,7 +29,7 @@ export function VuerSplat({
   position,
   scale,
   ...rest
-}: VuerSplatsProps): React.JSX.Element {
+}: VuerSplatsProps): ReactNode {
   return <VuerGroup
     ref={_ref}
     rotation={rotation}

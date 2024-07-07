@@ -1,12 +1,11 @@
 import styles from './Controls.module.scss';
 
 import clsx from 'clsx';
-import { ReactElement } from "react";
+import { HTMLAttributes } from "react";
 
-interface IconButtonProps {
+interface IconButtonProps extends Omit<HTMLAttributes<HTMLButtonElement>, 'onChange'> {
   title?: string;
   onClick?: () => void;
-  children: ReactElement[];
   disabled?: boolean;
   className?: string;
 }
@@ -20,7 +19,7 @@ export function IconButton({
 }: IconButtonProps) {
   return (
     <button
-
+      disabled={disabled}
       title={title}
       className={clsx(
         styles.iconButton,

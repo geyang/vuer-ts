@@ -5,11 +5,13 @@ import clsx from 'clsx';
 import { DragIndicator } from '../icons';
 import { RefObject, useCallback, useEffect, useState } from "react";
 import { useTimelineContext } from "./timeline_context";
-import { useDuration, useKeyHold, usePreviewSettings } from "../hooks";
 import { MouseButton } from "./mouse_interfaces";
+import { useKeyHold } from "../hooks";
 
 export interface RangeSelectorProps {
   rangeRef: RefObject<HTMLDivElement>;
+  fps: number;
+  duration: number;
 }
 
 function framesToSeconds(step: number) {
@@ -20,13 +22,11 @@ function secondsToFrames(time: number) {
   return time * 30;
 }
 
-export function RangeSelector({ rangeRef }: RangeSelectorProps) {
+export function RangeSelector({ rangeRef, fps, duration}: RangeSelectorProps) {
   const { pixelsToFrames, framesToPercents, pointerToFrames } =
     useTimelineContext();
   // const { range } = useSharedSettings();
   const [ range, setRange ] = useState([ 0, 0, 0, 0 ]);
-  const { fps } = usePreviewSettings();
-  const duration = useDuration();
   const startFrame = secondsToFrames(range[0]);
   const endFrame = Math.min(secondsToFrames(range[1]), duration);
   const [ start, setStart ] = useState(startFrame);
@@ -155,7 +155,7 @@ function RangeHandle({ value, setValue, onDrop }: RangeHandleProps) {
         if (event.button === MouseButton.Left) {
           event.stopPropagation();
           event.currentTarget.releasePointerCapture(event.pointerId);
-          onDrop(event);
+          // onDrop(event);
         }
       }}
     />

@@ -1,11 +1,10 @@
 import styles from './Timeline.module.scss';
 
 import { KeyFrame, KeyFrameTrack } from './KeyFrameTrack';
-import { useScenes } from "../hooks";
 import { useState } from "react";
 
 export function SceneTrack() {
-  const scenes = useScenes();
+  const scenes = [];
 
   return (
     <div className={styles.sceneTrack}>

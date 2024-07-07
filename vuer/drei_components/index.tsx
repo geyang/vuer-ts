@@ -1,5 +1,3 @@
-import { Component, FC } from "react";
-
 export { VuerSplat } from "./VuerSplats";
 
 export {

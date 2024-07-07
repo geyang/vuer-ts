@@ -4,33 +4,29 @@
   "version": "0.0.32-rc8",
   "private": false,
   "files": [
-    "vuer",
-    "dist"
+    "dist",
+    "vuer"
   ],
-  "main": "dist/vuer.cjs.js",
-  "module": "dist/vuer.es.js",
-  "type": "module",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
+  "types": "vuer/index.tsx",
   "exports": {
     ".": {
-      "import": "./dist/vuer.es.js",
-      "require": "./dist/vuer.cjs.js"
-    },
-    "./registry": {
-      "import": "./dist/registry.es.js",
-      "require": "./dist/registry.cjs.js"
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs.js",
+      "types": "./dist/index.d.ts"
     },
     "./html_components/contexts/websocket": {
-      "import": "./dist/html_components/contexts/websocket.es.js",
-      "require": "./dist/html_components/contexts/websocket.cjs.js"
-    },
-    "./three_components/controls/hands/hands": {
-      "import": "./dist/three_components/controls/hands/hands.es.js",
-      "require": "./dist/three_components/controls/hands/hands.cjs.js"
+      "import": "./dist/websocket.es.js",
+      "require": "./dist/websocket.cjs.js",
+      "types": "./dist/vuer/html_components/contexts/websocket.d.ts"
     }
   },
   "scripts": {
     "dev": "vite",
+    "clean": "rm -rf dist",
     "build": "tsc && vite build",
+    "clean-build": "yarn clean && yarn build",
     "lint": "eslint . --ext ts,tsx",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "preview": "vite preview"

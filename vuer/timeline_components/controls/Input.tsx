@@ -1,13 +1,14 @@
-import { HTMLAttributes } from "react";
 import styles from './Controls.module.scss';
+import { InputHTMLAttributes } from "react";
 
-type InputProps = {
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value'> {
   value: unknown;
-} & HTMLAttributes<HTMLInputElement>;
+}
 
 export function Input({ value, onChange, onChangeCapture, ...props }: InputProps) {
   return (
     <input
+      readOnly={onChangeCapture !== undefined}
       value={String(value)}
       onChangeCapture={onChangeCapture ?? onChange}
       onChange={onChangeCapture ? onChange : undefined}
