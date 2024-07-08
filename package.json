@@ -33,6 +33,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "@lumaai/luma-web": "^0.1.14",
     "@petamoriken/float16": "^3.8.4",
     "@preact/signals": "^1.2.3",
@@ -86,6 +88,7 @@
     "react-dom": ">=18.2.0"
   },
   "devDependencies": {
+    "@emotion/babel-plugin": "^11.11.0",
     "@types/js-yaml": "^4.0.9",
     "@types/react-helmet": "^6.1.9",
     "@types/sass": "^1.45.0",

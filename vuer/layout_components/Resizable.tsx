@@ -1,49 +1,81 @@
-import styles from './Resizable.module.scss';
+import { css } from '@emotion/react';
 import { clamp } from './utils';
 import { ReactElement, useRef, useState } from "react";
-import clsx from 'clsx';
 
 interface ResizeableLayoutProps {
-  _key: string;
-  vertical?: boolean;
-  hidden: boolean;
+  _key?: string;
+  horizontal?: boolean;
+  hidden?: boolean;
   offset?: number;
   children: [ ReactElement, ReactElement ];
 }
 
+
 export function Resizable({
   _key,
-  children: [ primary, sizable ],
-  vertical = false,
+  children: [ primary, panel ],
+  horizontal = false,
   offset = 0,
   hidden = false,
 }: ResizeableLayoutProps) {
   const inverse = offset < 0;
   const containerRef = useRef<HTMLDivElement>();
   const [ conf, setConf ] = useState({ size: inverse ? 1 : 0, isHidden: hidden });
-  const dimension = vertical ? 'height' : 'width';
-  const axis = vertical ? 'y' : 'x';
+  const dimension = horizontal ? 'height' : 'width';
+  const axis = horizontal ? 'y' : 'x';
 
   return (
     <div
       ref={containerRef}
-      className={clsx(styles.root, {
-        [styles.vertical]: vertical,
-        [styles.hidden]: conf.isHidden,
-      })}
+      css={css`
+          display: flex;
+          position: relative;
+          width: 100vw;
+          height: 100vh;
+          overflow: hidden;
+          justify-content: stretch;
+          flex-direction: ${horizontal ? `column` : `row`};
+      `}
     >
-      <div
-        className={styles.primary}
-        style={{
-          [dimension]: conf.isHidden
-            ? undefined
-            : `calc(${offset}px + ${conf.size * 100}%)`,
-        }}
-      >
+      <div css={css`
+          flex-grow: 1;
+          flex-shrink: ${conf.isHidden ? 0 : 1};
+          overflow: hidden;
+          max-height: ${horizontal && `100%`};
+          max-width: ${!horizontal && `100%`};
+      `}>
         {primary}
       </div>
       <div
-        className={styles.separator}
+        css={css`
+            touch-action: none;
+            width: ${!horizontal ? `16px` : `auto`};
+            height: ${horizontal ? `16px` : `auto`};
+            cursor: ${horizontal ? `ns-resize` : `ew-resize`};
+            flex-shrink: 0;
+            padding: ${horizontal ? `7px 0` : `0 7px`};
+            margin: ${horizontal ? `-7px 0` : `0 -7px`};
+            ${conf.isHidden && horizontal && `margin-top: -9px;`}
+            ${conf.isHidden && !horizontal && `margin-right: -9px;`}
+            z-index: 10000;
+
+            :before {
+                content: '';
+                width: 100%;
+                height: 100%;
+                display: block;
+                background-color: ${conf.isHidden ? `rgba(35, 170, 255, 0.21)` : `rgba(35, 170, 255, 0.21)`};
+                z-index: 10000;
+            }
+
+            :hover:before {
+                background-color: #23aaff;
+            }
+
+            :active:before {
+                background-color: #23aaff !important;
+            }
+        `}
         onPointerDown={event => {
           event.currentTarget.setPointerCapture(event.pointerId);
         }}
@@ -63,7 +95,11 @@ export function Resizable({
           event.currentTarget.releasePointerCapture(event.pointerId);
         }}
       />
-      {conf.isHidden ? null : <div className={styles.resizable}>{sizable}</div>}
+      {conf.isHidden ? null : <div css={css`
+          flex-grow: 1;
+          flex-shrink: 1;
+          overflow: hidden;
+      `}>{panel}</div>}
     </div>
   );
 }

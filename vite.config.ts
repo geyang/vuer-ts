@@ -8,7 +8,14 @@ import * as sass from 'sass';
 
 export default defineConfig({
   plugins: [
-    react(),
+    react(
+      {
+        jsxImportSource: "@emotion/react",
+        babel: {
+          plugins: ["@emotion/babel-plugin"],
+        },
+      }
+    ),
     dts({
       insertTypesEntry: true,
     }),

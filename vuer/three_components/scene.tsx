@@ -118,8 +118,8 @@ export function Scene({
     () => ({
       overflow: 'hidden',
       ...(style || {
-        height: '100vh',
-        width: '100vw',
+        height: '100%',
+        width: '100%',
         margin: '0px',
         border: '0px',
       }),
