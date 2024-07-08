@@ -24,25 +24,29 @@ export function Resizable({
   const dimension = horizontal ? 'height' : 'width';
   const axis = horizontal ? 'y' : 'x';
 
+  const primaryDimension = conf.isHidden
+    ? `100%` :
+    `calc(${conf.size * 100}% + ${offset}px)`;
+
   return (
     <div
       ref={containerRef}
       css={css`
           display: flex;
           position: relative;
-          width: 100vw;
-          height: 100vh;
+          width: 100%;
+          height: 100%;
           overflow: hidden;
           justify-content: stretch;
           flex-direction: ${horizontal ? `column` : `row`};
       `}
     >
       <div css={css`
-          flex-grow: 1;
+          flex-grow: 0;
           flex-shrink: ${conf.isHidden ? 0 : 1};
           overflow: hidden;
-          max-height: ${horizontal && `100%`};
-          max-width: ${!horizontal && `100%`};
+          height: ${horizontal ? primaryDimension : `100%`};
+          width: ${!horizontal ? primaryDimension : `100%`};
       `}>
         {primary}
       </div>
