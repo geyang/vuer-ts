@@ -19,7 +19,7 @@ const preferredTheme = () => window?.matchMedia?.('(prefers-color-scheme:dark)')
 
 type CameraMoveEvent = ClientEvent<{ world: {world: string } }>
 
-export function BackgroundColor({ levaPrefix = 'Scene', color = '#151822' }: BackgroundColorProps) {
+export function BackgroundColor({ levaPrefix = 'Scene', color = '#181818' }: BackgroundColorProps) {
   const queries = useMemo(() => queryString.parse(document.location.search), [ document.location.search ]) as BackgroundQueries;
   const bgColor = useMemo<string>((): string | undefined => {
 

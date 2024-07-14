@@ -32,3 +32,4 @@ export * from './Videocam';
 export * from './VolumeOff';
 export * from './VolumeOn';
 export * from './Warning';
+export * from './Record';

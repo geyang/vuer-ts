@@ -1,17 +1,16 @@
-import styles from './Playback.module.scss';
+import { css } from '@emotion/react';
 
-import { IconButton, IconCheckbox, Input, Select, Slider } from '../controls';
+import { IconButton, IconCheckbox, Input, Select } from '../controls';
 import {
   FastForward,
   FastRewind,
   Pause,
   PhotoCamera,
   PlayArrow,
+  Recording,
   Repeat,
   SkipNext,
   SkipPrevious,
-  VolumeOff,
-  VolumeOn,
 } from '../icons';
 import { usePlayback } from "../player";
 
@@ -76,7 +75,12 @@ export function PlaybackControls() {
   const player = usePlayback();
 
   return (
-    <div className={styles.controls}>
+    <div
+      css={css`
+          display: flex;
+          justify-content: center;
+          gap: 16px;
+      `}>
       <Select
         title="Playback speed"
         options={[
@@ -89,71 +93,43 @@ export function PlaybackControls() {
         value={state.speed}
         // onChange={speed => player.setSpeed(speed)}
       />
-      <div className={styles.volumeTrigger}>
-        <IconCheckbox
-          titleOn="Mute audio [M]"
-          titleOff="Unmute audio [M]"
-          checked={!state.muted}
-          onChange={(value) => undefined}
-          // onChange={value => player.toggleAudio(value)}
-        >
-          {state.muted ? <VolumeOff/> : <VolumeOn/>}
-        </IconCheckbox>
-
-        {!state.muted && (
-          <div className={styles.volumeMargin}>
-            <div className={styles.volume}>
-              <Slider
-                value={state.volume}
-                onChange={volume => {
-                  if (isNaN(volume)) {
-                    volume = 0;
-                  }
-                  // player.setAudioVolume(volume);
-                }}
-              />
-            </div>
-          </div>
-        )}
-      </div>
       <IconButton
         title="Start [Shift + Left arrow]"
-        // onClick={() => player.requestReset()}
+        onClick={() => player.requestReset()}
       >
         <SkipPrevious/>
       </IconButton>
       <IconButton
         title="Previous frame [Left arrow]"
-        // onClick={() => player.requestPreviousFrame()}
+        onClick={() => player.requestPreviousFrame()}
       >
         <FastRewind/>
       </IconButton>
       <IconCheckbox
-        main
         titleOn="Pause [Space]"
         titleOff="Play [Space]"
-        checked={!state.paused}
-        // onChange={value => player.togglePlayback(value)}
+        checked={!player.isPaused}
+        onChange={player.togglePlayback}
       >
-        {state.paused ? <PlayArrow/> : <Pause/>}
+        {player.isPaused ? <PlayArrow/> : <Pause/>}
       </IconCheckbox>
       <IconButton
         title="Next frame [Right arrow]"
-        // onClick={() => player.requestNextFrame()}
+        onClick={() => player.requestNextFrame()}
       >
         <FastForward/>
       </IconButton>
       <IconButton
         title="End [Shift + Right arrow]"
-        // onClick={() => player.requestSeek(Infinity)}
+        onClick={() => player.requestSeek(Infinity)}
       >
         <SkipNext/>
       </IconButton>
       <IconCheckbox
         titleOn="Disable looping [L]"
         titleOff="Enable looping [L]"
-        checked={state.loop}
-        // onChange={() => player.toggleLoop()}
+        checked={player.loop}
+        onChange={player.toggleLoop}
       >
         <Repeat/>
       </IconCheckbox>
@@ -161,7 +137,7 @@ export function PlaybackControls() {
       {/*  render={(framerate, paused) => (*/}
       <Input
         title="Current framerate"
-        readOnly
+        style={{ width: '100px' }}
         value={player.isPaused ? 'PAUSED' : `${player.fps} FPS`}
       />
       {/*  )}*/}
@@ -179,6 +155,12 @@ export function PlaybackControls() {
         // }
       >
         <PhotoCamera/>
+      </IconButton>
+      <IconButton
+        title={player.isRecording ? 'Stop Recording' : 'Record'}
+        onClick={() => player.toggleRecording()}
+      >
+        <Recording isRecording={player.isRecording}/>
       </IconButton>
     </div>
   );

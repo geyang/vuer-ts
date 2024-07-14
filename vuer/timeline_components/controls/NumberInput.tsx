@@ -43,7 +43,7 @@ export function NumberInput({
           return value;
         }
 
-        return clamp(min, max, value + event.movementX * step);
+        return clamp(value + event.movementX * step, min, max);
       });
     },
     [ min, max, step ],

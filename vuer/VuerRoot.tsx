@@ -1,9 +1,10 @@
-import { createContext, PropsWithRef, useMemo, } from 'react';
+import React, { createContext, PropsWithRef, useMemo, } from 'react';
 import queryString from 'query-string';
 import { Leva } from 'leva';
 import { document } from './third_party/browser-monads';
 import { WebSocketProvider } from './html_components/contexts/websocket';
 import SceneContainer, { SceneContainerP } from "./three_components";
+import { PlaybackProvider } from "./timeline_components/player";
 
 export interface Node {
   key?: string;
@@ -53,6 +54,7 @@ export function VuerRoot({ style = {}, ...rest }: VuerRootProps) {
       width: '100%',
       height: '100%',
       zIndex: 10,
+      overscrollBehaviorX: 'none',
       ...style,
     }),
     [ style ],
@@ -62,7 +64,9 @@ export function VuerRoot({ style = {}, ...rest }: VuerRootProps) {
   // note: finding a way to handle the leva menu will be tricky.
   return (
     <WebSocketProvider>
-      <SceneContainer style={sceneStyle} {...rest}/>
+      <PlaybackProvider>
+        <SceneContainer style={sceneStyle} {...rest}/>
+      </PlaybackProvider>
       <Leva
         theme={{
           sizes: {

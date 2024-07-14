@@ -1,5 +1,6 @@
 import React, {
-  MutableRefObject, ReactNode,
+  CSSProperties,
+  MutableRefObject, ReactNode, StyleHTMLAttributes,
   Suspense,
   useCallback,
   useContext,
@@ -114,8 +115,9 @@ export function Scene({
     [ sendMsg, uplink ],
   );
 
-  const divStyle = useMemo(
+  const divStyle = useMemo<CSSProperties>(
     () => ({
+      position: 'relative',
       overflow: 'hidden',
       ...(style || {
         height: '100%',
@@ -159,7 +161,7 @@ export function Scene({
               <Perf position="top-left"/>
             ) : null}
             {/* <FileDrop/> */}
-            {/*<DreiHands/>*/}
+            {/* <DreiHands/> */}
             <Controllers/>
             <Gamepad/>
             <SceneGroup/>

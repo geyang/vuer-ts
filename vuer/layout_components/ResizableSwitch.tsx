@@ -7,15 +7,17 @@ interface ResizeableLayoutProps {
   vertical?: boolean;
   hidden?: boolean;
   offset?: number;
-  children: [ ReactElement, ReactElement ];
+  minOffset?: number;
+  children: [ ReactElement, ReactElement, ReactElement ];
 }
 
 
-export function Resizable({
+export function ResizableSwitch({
   _key,
-  children: [ primary, panel ],
+  children: [ primary, panel, shrunkPanel ],
   vertical = false,
   offset = 0,
+  minOffset = 0,
   hidden = false,
 }: ResizeableLayoutProps) {
   const inverse = offset < 0;
@@ -25,7 +27,8 @@ export function Resizable({
   const axis = vertical ? 'y' : 'x';
 
   const primaryDimension = conf.isHidden
-    ? `100%` : `calc(${conf.size * 100}% + ${offset}px)`;
+    ? `calc(100% - ${minOffset}px)` :
+    `calc(${conf.size * 100}% + ${offset}px)`;
 
   return (
     <div
@@ -100,11 +103,24 @@ export function Resizable({
           event.currentTarget.releasePointerCapture(event.pointerId);
         }}
       />
-      {conf.isHidden ? null : <div css={css`
-          flex-grow: 1;
-          flex-shrink: 1;
-          overflow: hidden;
-      `}>{panel}</div>}
+      {conf.isHidden
+        ? <div css={css`
+                  flex-grow: 1;
+                  flex-shrink: 1;
+                  overflow: hidden;
+                  user-select: none;
+        `}>
+          {shrunkPanel}
+        </div>
+        : <div css={css`
+                  flex-grow: 1;
+                  flex-shrink: 1;
+                  overflow: hidden;
+                  user-select: none;
+        `}>
+          {panel}
+        </div>
+      }
     </div>
   );
 }

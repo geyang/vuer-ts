@@ -1,3 +1,3 @@
-export function clamp(min: number, max: number, value: number) {
+export function clamp(value: number, min: number, max: number) {
   return value < min ? min : value > max ? max : value;
 }

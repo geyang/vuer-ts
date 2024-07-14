@@ -25,9 +25,9 @@ export function Slider({ value, onChange }: SliderProps) {
           event.currentTarget.setPointerCapture(event.pointerId);
 
           const rect = event.currentTarget.getBoundingClientRect();
-          const y = clamp(0, rect.height, event.clientY - rect.y);
+          const y = clamp(event.clientY - rect.y, 0, rect.height);
           const newInternalValue = 1 - y / rect.height;
-          setInternalValue(clamp(0, 1, newInternalValue));
+          setInternalValue(clamp(newInternalValue, 0, 1));
         }
       }}
       onPointerMove={event => {
@@ -35,9 +35,9 @@ export function Slider({ value, onChange }: SliderProps) {
           event.stopPropagation();
 
           const rect = event.currentTarget.getBoundingClientRect();
-          const y = clamp(0, rect.height, event.clientY - rect.y);
+          const y = clamp(event.clientY - rect.y, 0, rect.height);
           const newInternalValue = 1 - y / rect.height;
-          setInternalValue(clamp(0, 1, newInternalValue));
+          setInternalValue(clamp(newInternalValue, 0, 1));
         }
       }}
       onPointerUp={event => {

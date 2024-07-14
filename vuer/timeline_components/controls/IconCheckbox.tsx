@@ -1,36 +1,55 @@
-import styles from './Controls.module.scss';
-
-import clsx from 'clsx';
+import { css } from '@emotion/react';
 import { IconButton } from './IconButton';
 import { HTMLAttributes } from "react";
 
 interface IconCheckboxProps extends Omit<HTMLAttributes<HTMLButtonElement>, 'onChange'> {
   titleOn?: string;
   titleOff?: string;
-  onChange?: (value: boolean) => void;
+  onChange?: () => void;
   checked?: boolean;
-  main?: boolean;
+  disabled?: boolean;
+
 }
+
+const buttonStyle = css`
+    display: block;
+    cursor: pointer;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.54);
+
+    :hover {
+        color: #fff;
+    }
+
+`;
+const disabledStyle = css`
+    cursor: default;
+    pointer-events: none;
+    color: rgba(255, 255, 255, 0.16);
+`;
+
 
 export function IconCheckbox({
   children,
   titleOn,
   titleOff,
   onChange,
-  checked = false,
-  main = false,
+  checked,
+  disabled,
 }: IconCheckboxProps) {
   return (
-    <IconButton
-      className={clsx(
-        styles.iconCheckbox,
-        main && styles.main,
-        checked && styles.checked,
-      )}
-      title={titleOff && !checked ? titleOff : titleOn}
-      onClick={() => onChange?.(!checked)}
+    <button
+      title={checked ? titleOn : titleOff}
+      onClick={onChange}
+      css={[
+        buttonStyle,
+        disabled && disabledStyle,
+      ]}
+      style={{
+        color: checked ? `var(--theme) !important` : `rgba(255, 255, 255, 0.54)`,
+      }}
     >
       {children}
-    </IconButton>
+    </button>
   );
 }

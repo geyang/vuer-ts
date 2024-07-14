@@ -48,35 +48,6 @@
 }
 
 .timestamp {
-  user-select: none;
-  pointer-events: none;
-  position: absolute;
-  top: 32px;
-  bottom: 0;
-  border-left: 1px solid #0003;
-  border-right: 1px solid #0003;
-  width: 0;
-  display: flex;
-  justify-content: center;
-
-  &.odd {
-    opacity: 0.5;
-
-    &::after {
-      display: none;
-    }
-  }
-
-  &::after {
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-small);
-    line-height: 32px;
-    margin-top: -32px;
-    text-align: center;
-    display: block;
-    content: attr(data-frame);
-    color: rgba(255, 255, 255, 0.54);
-  }
 }
 
 .sceneTrack {
