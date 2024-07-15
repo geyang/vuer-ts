@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { VuerProps } from '../../interfaces';
+import { VuerProps } from '../../vuer/interfaces';
 
 export function AutoScroll({ _key: key, children, ...props }: VuerProps) {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);

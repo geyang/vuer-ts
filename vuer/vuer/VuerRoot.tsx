@@ -4,16 +4,7 @@ import { Leva } from 'leva';
 import { document } from '../third_party/browser-monads';
 import { SocketContext } from './websocket';
 import { PlaybackProvider } from "../timeline_components/player";
-import SceneContainer, { SceneContainerP } from "./SceneContainer";
-
-// export interface Node {
-//   key?: string;
-//   tag: string;
-//   children?: Node[] | string[] | null;
-//
-//   [key: string]: unknown;
-// }
-
+import { SceneContainer, SceneContainerP } from "./SceneContainer";
 
 interface QueryParams {
   collapseMenu?: string;

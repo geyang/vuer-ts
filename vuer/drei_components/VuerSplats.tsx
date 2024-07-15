@@ -1,5 +1,5 @@
 import { Splat } from "@react-three/drei";
-import { Matrix16T, VuerProps } from "../interfaces";
+import { Matrix16T, VuerProps } from "../vuer/interfaces";
 import { ReactNode } from "react";
 import { VuerGroup } from "../three_components/primitives/better_group";
 

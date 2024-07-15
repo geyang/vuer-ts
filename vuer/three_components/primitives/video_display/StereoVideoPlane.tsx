@@ -3,7 +3,7 @@ import { HUDPlane, HUDPlaneProps } from "../../video_plane";
 import { useVideo } from "./useVuerVideo";
 import { useVuerVideoTexture } from "./useVuerVideoTexture";
 import { useWebRTC } from "./useWebRTC";
-import { VuerProps } from "../../../interfaces";
+import { VuerProps } from "../../../vuer/interfaces";
 
 
 export type WebRTCStereoPlaneProps = VuerProps<{

@@ -1,10 +1,11 @@
 import { DragIndicator } from '../icons';
-import { RefObject, useEffect, useState } from "react";
+import { RefObject, useCallback, useEffect, useState } from "react";
 import { MouseButton } from "./mouse_interfaces";
 import { useKeyHold } from "../hooks";
 import { css } from "@emotion/react";
-import { RangeOption, stateSetter } from "../player";
+import { RangeOption, stateSetter, usePlayback } from "../player";
 import { clamp } from "../../layout_components/utils";
+import { start } from "node:repl";
 
 const rangeStyle = css`
     border-radius: var(--radius);
@@ -29,34 +30,44 @@ const rangeStyle = css`
 export interface RangeSelectorProps {
   rangeRef: RefObject<HTMLDivElement>;
   // duration is different from end - start. It mismatches by 1.
-  duration: number;
-  start: number;
-  end: number;
   rangeStart: number;
   rangeEnd: number;
-
-  selectRange: stateSetter<RangeOption>;
   viewWidth: number;
 }
 
+const style = css`
+    flex-grow: 1;
+    flex-shrink: 1;
+`
+
 export function RangeSelector({
   rangeRef,
-  duration,
-  start, end,
-  rangeStart,
-  rangeEnd,
-  selectRange,
   viewWidth,
 }: RangeSelectorProps) {
-  const [ rStart, setStart ] = useState(rangeStart);
-  const [ rEnd, setEnd ] = useState(rangeEnd);
+  const player = usePlayback();
 
-  useEffect(() => setStart(rangeStart), [ rangeStart ])
-  useEffect(() => setEnd(rangeEnd), [ rangeEnd ])
+  const [ rStart, setLocalStart ] = useState(player.range.start);
+  const [ rEnd, setLocalEnd ] = useState(player.range.end);
 
   useEffect(() => {
-    selectRange({ start: rStart, end: rEnd })
-  }, [ rStart, rEnd ]);
+    setLocalStart(player.range.start)
+  }, [ player.range.start ])
+
+  useEffect(() => {
+    setLocalEnd(player.range.end)
+  }, [ player.range.end ])
+
+  const setStart = useCallback((start: number) => {
+    player.setRange({ start })
+    setLocalStart(start)
+  }, [ player ])
+
+  const setEnd = useCallback((end: number) => {
+    player.setRange({ end })
+    setLocalEnd(end)
+  }, [ player ])
+
+  console.log(player)
 
   return (
     <div
@@ -70,14 +81,27 @@ export function RangeSelector({
         ref={rangeRef}
         css={rangeStyle}
         style={{
-          left: `${(rStart - start) / (end - start) * 100}%`,
-          right: `${(duration + end - rEnd) % duration / (end - start) * 100}%`
+          left: `${(rStart - player.start) / (player.end - player.start) * 100}%`,
+          right: `${(player.duration + player.end - rEnd) % player.duration / (player.end - player.start) * 100}%`
         }}
       >
-        <RangeHandle onChange={setStart} roundUp start={start} end={end} viewWidth={viewWidth}/>
-        <div css={css`flex-grow: 1;
-            flex-shrink: 1;`}/>
-        <RangeHandle onChange={setEnd} roundUp start={start} end={end} viewWidth={viewWidth}/>
+        {/*(start: number) => selectRange({ start, end: rangeEnd } as RangeOption)}*/}
+        {/*onChange={(end: number) => selectRange({ start: rangeStart, end } as RangeOption)}*/}
+        <RangeHandle
+          onChange={setStart}
+          roundUp
+          start={player.start}
+          end={player.end}
+          viewWidth={viewWidth}
+        />
+        <div css={style}/>
+        <RangeHandle
+          onChange={setEnd}
+          roundUp
+          start={player.start}
+          end={player.end}
+          viewWidth={viewWidth}
+        />
       </div>
     </div>
   );
@@ -93,10 +117,6 @@ interface RangeHandleProps {
 }
 
 function RangeHandle({ onChange, start, end, viewWidth, roundUp = false }: RangeHandleProps) {
-  const shiftHeld = useKeyHold('Shift');
-  // opacity: ${shiftHeld ? 0.24 : 0};
-  // z-index: ${shiftHeld ? 1 : 'auto'};
-  // min-width: ${shiftHeld ? 24 : 0}px;
 
   return (
     <DragIndicator
@@ -104,7 +124,7 @@ function RangeHandle({ onChange, start, end, viewWidth, roundUp = false }: Range
           cursor: pointer;
           margin-top: 2px;
           color: white;
-          
+
           opacity: 0.5;
           z-index: auto;
           min-width: 0;

@@ -13,15 +13,15 @@ import useFetch from 'use-http';
 import yaml from 'js-yaml';
 import useStateRef from 'react-usestateref';
 import { document } from '../third_party/browser-monads';
-import { Scene } from '../three_components/scene';
-import { Hydrate } from '../html_components';
+import { Hydrate } from './Hydrate';
+import { Scene } from '../three_components';
 import { list2menu } from '../three_components/leva_helper';
 import { addNode, findByKey, removeByKey, upsert } from './util';
-import { ServerEvent } from './interfaces';
+import { ClientEvent, ServerEvent } from './interfaces';
 import { pack, unpack } from "msgpackr";
 import { Buffer } from "buffer";
-import { AppContext } from "../index";
 import { Store } from "./store";
+import { AppContext } from "./VuerRoot";
 
 export interface Node {
   key?: string;
@@ -63,7 +63,7 @@ interface SceneType {
 export type SceneContainerP = PropsWithChildren<{
   up?: [ number, number, number ];
   xrMode?: "AR" | "VR" | "hidden";
-  stream?: Store<ServerEvent>;
+  stream?: Store<ServerEvent | ClientEvent>;
   children?: ReactNode | ReactNode[];
   rawChildren?: ReactNode | ReactNode[];
   htmlChildren?: ReactNode | ReactNode[];
@@ -82,7 +82,7 @@ export type UpdateEvent = ServerEvent & { data: { nodes: Node[] } };
 export type UpsertEvent = ServerEvent & { data: { nodes: Node[], to: string } };
 export type RemoveEvent = ServerEvent & { data: { keys: string[] } };
 
-export default function SceneContainer({
+export function SceneContainer({
   stream,
   children,
   rawChildren,
@@ -106,7 +106,6 @@ export default function SceneContainer({
     bgChildren: [],
     ...rest,
   });
-
 
   const [ menu, setMenu ] = useState({});
   const { showError } = useContext(AppContext)

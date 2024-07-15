@@ -11,18 +11,6 @@
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
   "types": "vuer/index.tsx",
-  "exports": {
-    ".": {
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.cjs.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./html_components/contexts/websocket": {
-      "import": "./dist/websocket.es.js",
-      "require": "./dist/websocket.cjs.js",
-      "types": "./dist/vuer/html_components/contexts/websocket.d.ts"
-    }
-  },
   "scripts": {
     "dev": "vite",
     "clean": "rm -rf dist",

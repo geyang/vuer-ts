@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect, useLayoutEffect, useRef, } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Euler, Mesh, OrthographicCamera, PerspectiveCamera, PlaneGeometry, Vector3, } from 'three';
-import { Matrix16T, QuaternionT, VuerProps } from "../interfaces";
+import { Matrix16T, QuaternionT, VuerProps } from "../vuer/interfaces";
 import { useXR } from "@react-three/xr";
 import {
   VideoMaterial,

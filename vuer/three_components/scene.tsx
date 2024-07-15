@@ -1,6 +1,7 @@
 import React, {
   CSSProperties,
-  MutableRefObject, ReactNode, StyleHTMLAttributes,
+  MutableRefObject,
+  ReactNode,
   Suspense,
   useCallback,
   useContext,
@@ -21,8 +22,8 @@ import { Download } from './download';
 import { GroupSlave, SceneGroup } from './group';
 import { BackgroundColor } from './color';
 import { document } from '../third_party/browser-monads';
-import { ClientEvent, VuerProps } from "../interfaces";
-import { SocketContext, SocketContextType } from "../html_components/contexts/websocket";
+import { ClientEvent, VuerProps } from "../vuer/interfaces";
+import { SocketContext, SocketContextType } from "../vuer/websocket";
 // @ts-ignore: no type definition for three-stdlib
 import { OrbitControls as tOrbitControls } from "three-stdlib/controls/OrbitControls";
 

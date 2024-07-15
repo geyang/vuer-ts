@@ -3,6 +3,8 @@ import { PlaybackControls } from "./PlaybackControls";
 import { Timestamp } from "./CurrentTime";
 import { useControls } from "leva";
 import { Playback, usePlayback } from "../player";
+import { useContext, useEffect } from "react";
+import { SocketContext } from "../../vuer/websocket";
 
 const PlaybackBarStyle = css`
     background: var(--surface-color);
@@ -31,6 +33,22 @@ export interface PlaybackBarProps {
 
 export const PlaybackBar = ({ progress }: PlaybackBarProps) => {
   const player = usePlayback();
+  const { downlink } = useContext(SocketContext);
+
+  useEffect(() => {
+    const cancel = [
+      downlink.subscribe("SET", player.addKeyFrame),
+      downlink.subscribe("ADD", player.addKeyFrame),
+      downlink.subscribe("UPDATE", player.addKeyFrame),
+      downlink.subscribe("UPSERT", player.addKeyFrame),
+    ]
+
+    return () => {
+      cancel.forEach(f => f());
+    }
+  }, [ player, downlink ])
+
+
 
   return (
     <div css={

@@ -1,8 +1,8 @@
 import { useContext, useEffect, useMemo } from 'react';
 import { useControls } from 'leva';
 import queryString from 'query-string';
-import { SocketContext } from "../html_components/contexts/websocket";
-import { ClientEvent } from "../interfaces";
+import { SocketContext } from "../vuer/websocket";
+import { ClientEvent } from "../vuer/interfaces";
 
 interface BackgroundColorProps {
   levaPrefix?: string;

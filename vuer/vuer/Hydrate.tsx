@@ -1,6 +1,6 @@
 import { ElementType, ReactNode, useContext } from 'react';
-import { Node } from '../SceneContainer';
-import { AppContext } from "../VuerRoot";
+import { Node } from './SceneContainer';
+import { AppContext } from "./VuerRoot";
 import * as comp_list from '../all_components';
 
 export interface HydrateProps {

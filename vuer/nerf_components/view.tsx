@@ -14,8 +14,8 @@ import { ImageBackground } from '../three_components/image_background';
 import { BBox } from '../three_components/primitives/bbox';
 import { GroupSlave, rot2array, scale2array, v3array, } from '../three_components/group';
 import { V3 } from '../three_components/number_types';
-import { ClientEvent, ServerEvent, VuerProps } from "../interfaces";
-import { SocketContext, SocketContextType } from "../html_components/contexts/websocket";
+import { ClientEvent, ServerEvent, VuerProps } from "../vuer/interfaces";
+import { SocketContext, SocketContextType } from "../vuer/websocket";
 
 export const RenderContext = createContext({});
 

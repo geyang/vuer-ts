@@ -14,7 +14,7 @@ import URDFLoader, { URDFRobot } from 'urdf-loader';
 import { BufferGeometry, Group, LoadingManager, Mesh, MeshStandardMaterial, Object3D, Points } from 'three'; // todo: pass reference
 import { GltfView, ObjView, PcdView, PlyView, UrdfView, UrdfViewProps, } from './components';
 import { AppContext } from "../index";
-import { SocketContext } from "../html_components/contexts/websocket";
+import { SocketContext } from "../vuer/websocket";
 
 // todo: pass reference
 type Props = PropsWithChildren<{

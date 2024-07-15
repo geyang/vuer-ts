@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, WheelEvent, PointerEvent } from "react";
+import { useLayoutEffect, useRef, WheelEvent, PointerEvent, useState } from "react";
 import { css } from "@emotion/react";
 import { Timestamps } from "./Timestamps";
 import { RangeSelector } from "./RangeSelector";
@@ -13,13 +13,63 @@ const ZOOM_MIN = 0.05;
 const MAX_SCALE = 0.5;
 const MIN_SCALE = 50;
 
+const TimelineContainerStyle = css`
+    background-color: var(--surface-color);
+    width: 100%;
+    height: 100%;
+    transition: opacity var(--duration-normal);
+    display: flex;
+    align-items: stretch;
+    position: relative;
+`
+
+const TimelineStyle = css`
+    overflow-x: scroll;
+    // note: this is to prevent Chrome from going back to the previous page.
+    overscroll-behavior-x: none;
+    overflow-y: hidden;
+    flex-grow: 1;
+    position: relative;
+    background-color: var(--background-color);
+    --scrollbar-background: var(--background-color);
+    height: 100%;
+    width: 100%;
+`
+
+const VisibleContainer = css`
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+`
+
+const ScrollContainer = css`
+    position: relative;
+    overflow: visible;
+    height: calc(100% - 19px);
+`
+
+const PlayheadCursorStyle = css`
+    position: absolute;
+    width: 2px;
+    top: 32px;
+    bottom: 0;
+    background-color: white;
+    pointer-events: none;
+    box-sizing: border-box;
+    border: 1px solid #444;
+    margin-left: -1.5px;
+`
+
+const TrackContainerStyle = css`
+    width: 100%;
+    height: 100%;
+    background-color: var(--surface-color);
+`
+
 export interface TimelineProps extends PlaybackOption {
-  fps?: number;
-  record?: boolean;
-  maxlen?: number;
 }
 
-export function Timeline({ fps, speed, maxlen }: TimelineProps) {
+export function Timeline({}: TimelineProps) {
   const containerRef = useRef<HTMLDivElement>();
   const playheadRef = useRef<HTMLDivElement>();
   const rangeRef = useRef<HTMLDivElement>();
@@ -31,7 +81,7 @@ export function Timeline({ fps, speed, maxlen }: TimelineProps) {
 
   const viewWidth = scale * rect.width;
 
-  const player = usePlayback({ fps, speed, maxlen });
+  const player = usePlayback();
 
   const isReady = player.duration > 0;
 
@@ -39,35 +89,15 @@ export function Timeline({ fps, speed, maxlen }: TimelineProps) {
     containerRef.current.scrollLeft = offset;
   }, [ offset, rect.width > 0 ]);
 
-
   const currOffset = containerRef.current?.scrollLeft;
   return (
     <div
-      css={css`
-          background-color: var(--surface-color);
-          width: 100%;
-          height: 100%;
-          opacity: ${isReady ? 1 : 0};
-          transition: opacity var(--duration-normal);
-          display: flex;
-          align-items: stretch;
-          position: relative;
-      `}
+      css={TimelineContainerStyle}
+      style={{ opacity: isReady ? 1 : 0 }}
     >
       <div
         ref={containerRef}
-        css={css`
-            overflow-x: scroll;
-            // note: this is to prevent Chrome from going back to the previous page.
-            overscroll-behavior-x: none;
-            overflow-y: hidden;
-            flex-grow: 1;
-            position: relative;
-            background-color: var(--background-color);
-            --scrollbar-background: var(--background-color);
-            height: 100%;
-            width: 100%;
-        `}
+        css={TimelineStyle}
         onWheel={(event: WheelEvent<HTMLElement>) => {
           event.stopPropagation()
           const currOffset = containerRef.current?.scrollLeft;
@@ -135,21 +165,12 @@ export function Timeline({ fps, speed, maxlen }: TimelineProps) {
         }}
       >
         <div
-          css={css`
-              position: relative;
-              overflow: hidden;
-              height: 100%;
-              width: calc(100% + ${viewWidth}px);
-          `}
+          css={VisibleContainer}
+          style={{ width: `calc(100% + ${viewWidth}px)` }}
         >
           <div
-            css={css`
-                position: relative;
-                overflow: visible;
-                height: calc(100% - 19px);
-                width: ${viewWidth}px;
-                left: calc((100% - ${viewWidth}px) * 0.5);
-            `}
+            css={ScrollContainer}
+            style={{ width: `${viewWidth}px`, left: `calc((100% - ${viewWidth}px) * 0.5)` }}
           >
             <Timestamps
               start={player.start}
@@ -160,36 +181,18 @@ export function Timeline({ fps, speed, maxlen }: TimelineProps) {
             />
             <div
               ref={playheadRef}
-              css={css`
-                  position: absolute;
-                  width: 2px;
-                  top: 32px;
-                  bottom: 0;
-                  background-color: white;
-                  pointer-events: none;
-                  box-sizing: border-box;
-                  border: 1px solid #444;
-                  margin-left: -1.5px;
-              `}/>
+              css={PlayheadCursorStyle}/>
             <Playhead
               seeking={player.curr}
               leftPos={(player.curr - player.start) / Math.max(player.end - player.start, 1) * viewWidth}/>
             <RangeSelector
               rangeRef={rangeRef}
-              duration={player.duration}
-              start={player.start}
-              end={player.end}
               rangeStart={player.range.start}
               rangeEnd={player.range.end}
               viewWidth={viewWidth}
-              selectRange={player.setRange as stateSetter<RangeOption>}
             />
             <div
-              css={css`
-                  width: 100%;
-                  height: 100%;
-                  background-color: var(--surface-color);
-              `}
+              css={TrackContainerStyle}
             >
               {/*<SceneTrack/>*/}
               {/*<LabelTrack/>*/}

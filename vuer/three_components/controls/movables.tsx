@@ -15,8 +15,8 @@ import { MeshProps, Vector3 as rVector3 } from '@react-three/fiber';
 import { PivotControls } from '@react-three/drei';
 import { useXR } from '@react-three/xr';
 import { SqueezeRayGrab } from './utils';
-import { SocketContext, SocketContextType } from "../../html_components/contexts/websocket";
-import { VuerProps } from "../../interfaces";
+import { SocketContext, SocketContextType } from "../../vuer/websocket";
+import { VuerProps } from "../../vuer/interfaces";
 
 export const HandleBox = forwardRef((
   {

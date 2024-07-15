@@ -15,8 +15,8 @@ import {
 import { Frustum } from '../frustum';
 import { Movable } from "../controls/movables";
 import { useControls } from "leva";
-import { VuerProps } from "../../interfaces";
-import { SocketContext, SocketContextType } from "../../html_components/contexts/websocket";
+import { VuerProps } from "../../vuer/interfaces";
+import { SocketContext, SocketContextType } from "../../vuer/websocket";
 import { GrabRenderEvent } from "./GrabRender";
 import { useDepthRender } from "./depthHelper";
 import { useRender } from "./renderHelper";

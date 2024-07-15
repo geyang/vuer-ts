@@ -1,7 +1,7 @@
 import { MutableRefObject, PropsWithChildren, Ref, useLayoutEffect, useMemo, useRef } from 'react';
 import { Points } from 'three';
 import { half2float } from './half2float';
-import { Matrix16T } from "../../interfaces";
+import { Matrix16T } from "../../vuer/interfaces";
 
 type PointCloudProps = PropsWithChildren<{
   _key?: string;

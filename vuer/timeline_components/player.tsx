@@ -1,9 +1,9 @@
-import { createContext, PropsWithChildren, useContext, useEffect, useMemo } from "react";
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Deque } from "./collections";
-import { Store } from "../html_components/store";
-import { EventType } from "../interfaces";
+import { Store } from "../vuer/store";
+import { ClientEvent, EventType } from "../vuer/interfaces";
 import { useAnimationFrame } from "./hooks/useAnimationFrame";
-import { useStorage } from "./hooks";
+import { throttle } from "./timeline/throttle";
 
 export type stateSetter<T> = (value: T | ((T) => T)) => void;
 
@@ -20,8 +20,12 @@ export interface Range {
 
 
 export interface RangeOption {
-  start?: number;
-  end?: number;
+  start?: number | ((start: number) => number);
+  end?: number | ((end: number) => number);
+}
+
+export interface PlaybackUpdateType extends ClientEvent {
+  // etype = 'PLAYER_UPDATE';
 }
 
 export class Playback {
@@ -31,7 +35,7 @@ export class Playback {
   end: number;
   range: Range;
   private _keyFrames: Deque<Frame>;
-  store: Store<Frame>
+  store: Store<Frame | PlaybackUpdateType>
   curr: number;
 
   // status
@@ -150,6 +154,7 @@ export class Playback {
     // todo: only remove 1/ fps from ia book about two brothers who build subwayt
     this.deltaTime -= 1000 / this.fps;
     if (!!frame) this.store.publish(frame);
+    this.store.publish({ etype: 'PLAYER_UPDATE', ts: Date.now(), data: {} } as PlaybackUpdateType)
   }
 
   addKeyFrame = (frame: Frame) => {
@@ -164,7 +169,10 @@ export class Playback {
       if (this.range.start === this.start) this.range.start += 1;
       this.start += 1;
     }
-    if (this.isPaused) this.store.publish(frame)
+    if (this.isPaused) {
+      this.store.publish(frame)
+      this.store.publish({ etype: 'PLAYER_UPDATE', ts: Date.now(), data: {} } as PlaybackUpdateType)
+    }
   }
 
   clear = () => {
@@ -174,21 +182,32 @@ export class Playback {
     this.range.end = this.end
   }
 
-  seekNext = () => this.step()
-  seekPrevious = () => this.step(-1)
+  seekNext = () => {
+    this.step()
+    this.store.publish(this.currentFrame)
+    this.store.publish({ etype: 'PLAYER_UPDATE', ts: Date.now(), data: {} } as PlaybackUpdateType)
+  }
+  seekPrevious = () => {
+    this.step(-1)
+    this.store.publish(this.currentFrame)
+    this.store.publish({ etype: 'PLAYER_UPDATE', ts: Date.now(), data: {} } as PlaybackUpdateType)
+  }
 
   reset = () => {
     this.curr = this.range.start;
     this.store.publish(this.currentFrame)
+    this.store.publish({ etype: 'PLAYER_UPDATE', ts: Date.now(), data: {} } as PlaybackUpdateType)
   }
   seekEnd = () => {
     this.curr = this.range.end;
     this.store.publish(this.currentFrame)
+    this.store.publish({ etype: 'PLAYER_UPDATE', ts: Date.now(), data: {} } as PlaybackUpdateType)
   }
 
   emitSeek = (frame) => {
     this.curr = frame;
     this.store.publish(this.currentFrame)
+    this.store.publish({ etype: 'PLAYER_UPDATE', ts: Date.now(), data: {} } as PlaybackUpdateType)
   }
 
   get currentFrame(): Frame {
@@ -203,23 +222,30 @@ export class Playback {
     return this.keyFrames.get(this.keyFrames.size - 1);
   }
 
+  // all of these affects the player's state.
   setRange = ({ start, end }: RangeOption) => {
     if (typeof start === 'number') this.range.start = start;
+    if (typeof start === 'function') this.range.start = start(this.range.start);
     if (typeof end === 'number') this.range.end = end;
+    if (typeof end === 'function') this.range.end = end(this.range.end);
+    this.store.publish({ etype: 'PLAYER_UPDATE', ts: Date.now(), data: {} } as PlaybackUpdateType)
   }
 
   toggleRecording = () => {
     this.isRecording = !this.isRecording;
+    this.store.publish({ etype: 'PLAYER_UPDATE', ts: Date.now(), data: {} } as PlaybackUpdateType)
   }
 
   togglePlayback = () => {
     if (this.duration) this.isPaused = !this.isPaused;
     else this.isPaused = true;
     if (this.curr === this.range.end) this.curr = this.range.start;
+    this.store.publish({ etype: 'PLAYER_UPDATE', ts: Date.now(), data: {} } as PlaybackUpdateType)
   }
 
   toggleLoop = () => {
     this.loop = !this.loop;
+    this.store.publish({ etype: 'PLAYER_UPDATE', ts: Date.now(), data: {} } as PlaybackUpdateType)
   }
 
 }
@@ -264,5 +290,20 @@ export const usePlayback = ({ fps, speed, maxlen }: PlaybackOption = {}) => {
   if (!playback) {
     throw new Error('usePlayback must be used within a PlaybackProvider');
   }
+
+  const [ curr, setCurr ] = useState<number>(0)
+
+  useEffect(() => {
+
+    const onUpdate = throttle((event: PlaybackUpdateType) => {
+      setCurr(playback.curr)
+      console.log("is this working?")
+    }, 1000 / 10)
+
+    playback.store.subscribe("PLAYER_UPDATE", onUpdate)
+
+  }, [ playback, setCurr, ])
+
+
   return playback;
 }

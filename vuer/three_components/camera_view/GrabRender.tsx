@@ -1,7 +1,7 @@
 import { useContext, useEffect, useMemo } from "react";
 import { useThree } from "@react-three/fiber";
-import { ServerRPC } from "../../interfaces";
-import { SocketContext, SocketContextType } from "../../html_components/contexts/websocket";
+import { ServerRPC } from "../../vuer/interfaces";
+import { SocketContext, SocketContextType } from "../../vuer/websocket";
 import { CameraLike } from "../camera";
 
 export type GrabRenderEvent = ServerRPC & {

@@ -3,7 +3,7 @@ import { Interactive, XRController, XRInteractionEvent } from '@react-three/xr';
 import { useFrame } from '@react-three/fiber';
 
 import { Group, Matrix4 } from 'three';
-import { VuerProps } from "../../interfaces";
+import { VuerProps } from "../../vuer/interfaces";
 
 type SqueezeRayGrabProps = VuerProps<{
   onSqueezeStart?: (e?: XRInteractionEvent) => void;

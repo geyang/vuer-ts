@@ -96,11 +96,9 @@ export function PlaybackControls() {
         type='number'
         width="25px"
       />
-
       <IconButton title="Save snapshot">
         <PhotoCamera/>
       </IconButton>
-
       <Input
         title="Current framerate"
         value={player.keyFrames.maxlen}

@@ -26,8 +26,8 @@ import { CubeCamera, Html, OrbitControls, OrthographicCamera, PerspectiveCamera,
 import { useControls } from 'leva';
 import queryString from 'query-string';
 import { document } from '../third_party/browser-monads';
-import { VuerProps } from "../interfaces";
-import { SocketContext, SocketContextType } from "../html_components/contexts/websocket";
+import { VuerProps } from "../vuer/interfaces";
+import { SocketContext, SocketContextType } from "../vuer/websocket";
 import { parseArray } from "./utils";
 
 const CAMERA_TYPES = {

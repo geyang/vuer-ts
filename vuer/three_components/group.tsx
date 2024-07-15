@@ -4,9 +4,9 @@ import queryString, { ParsedQuery } from 'query-string';
 import { Euler, Vector3 } from '@react-three/fiber';
 import { document } from '../third_party/browser-monads';
 import { Sim3, SO3, V3 } from './number_types';
-import { SocketContext } from "../html_components/contexts/websocket";
-import { SceneStoreType, useSceneStore } from "../store";
-import { ClientEvent } from "../interfaces";
+import { SocketContext } from "../vuer/websocket";
+import { ClientEvent } from "../vuer/interfaces";
+import { SceneStoreType, useSceneStore } from "../vuer";
 
 export function deg2rad(rotation: SO3): SO3 {
   return {
@@ -121,7 +121,7 @@ export function SceneGroup({
   // a camera update event in the _camera.js component.
   useEffect(() => {
     // emit the event in a timeout, so it happens after the addReducer synchronous call.
-    setTimeout(() => uplink?.publish({ etype: 'CAMERA_UPDATE' }), 0);
+    setTimeout(() => uplink?.publish({ etype: 'CAMERA_UPDATE' } as ClientEvent), 0);
 
     // update the scene store.
     sceneStore.update({ position, rotation, scale } as SceneStoreType);

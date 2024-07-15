@@ -1,7 +1,7 @@
 import { MutableRefObject, useLayoutEffect, useMemo, useRef, } from 'react';
 import { ColorRepresentation, Euler, Group, Matrix4, Object3D, Quaternion, Vector3, } from 'three';
 import { Line, Sphere } from '@react-three/drei';
-import { VuerProps } from "../interfaces";
+import { VuerProps } from "../vuer/interfaces";
 
 function equals(aArr: number[], bArr: number[]) {
   for (let i = 0; i < aArr.length; i++) {

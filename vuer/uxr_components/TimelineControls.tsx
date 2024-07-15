@@ -1,7 +1,7 @@
 import { button, useControls } from "leva";
 import { useCallback, useContext, useEffect } from "react";
-import { SocketContext, SocketContextType } from "../html_components/contexts/websocket";
-import { VuerProps } from "../interfaces";
+import { SocketContext, SocketContextType } from "../vuer/websocket";
+import { ClientEvent, VuerProps } from "../vuer/interfaces";
 import { useThree } from "@react-three/fiber";
 
 export type PlayBarProps = VuerProps<{
@@ -27,7 +27,7 @@ export function TimelineControls({ _key: key, start = 0, end, stepSize = 1, play
         elapsedTime: clock.getElapsedTime(),
         delta: clock.getDelta()
       }
-    }
+    } as ClientEvent
     // this would raise an error and kill the counter.
     try {
       sendMsg(event)
@@ -37,7 +37,7 @@ export function TimelineControls({ _key: key, start = 0, end, stepSize = 1, play
 
   }, []);
 
-  const c  = useControls("Timeline", {
+  const c = useControls("Timeline", {
     // @ts-ignore: there seems to be something wrong with the schema type.
     stepSize: { value: stepSize, min: -5, max: 10, step: 0.5 },
   }, []) as { stepSize: number }

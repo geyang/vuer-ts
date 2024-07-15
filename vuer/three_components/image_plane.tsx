@@ -14,7 +14,7 @@ import {
   Texture,
   Vector3,
 } from 'three';
-import { Matrix16T, QuaternionT } from "../interfaces";
+import { Matrix16T, QuaternionT } from "../vuer/interfaces";
 import { useXR } from "@react-three/xr";
 
 function interpolateTexture(texture: Texture, interpolate: boolean) {

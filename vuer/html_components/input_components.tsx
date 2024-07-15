@@ -9,16 +9,16 @@ import React, {
   useMemo,
   useState
 } from "react";
-import { SocketContext } from "./contexts/websocket";
-import { VuerProps } from "../interfaces";
-import { imageToBase64 } from "../util";
+import { SocketContext } from "../vuer/websocket";
+import { ClientEvent, VuerProps } from "../vuer/interfaces";
+import { imageToBase64 } from "../vuer/util";
 
 type VuerControlProps<T = unknown> = VuerProps<{ value: never } & T>;
 
 export function Button({ _key: key, value, ...props }: VuerControlProps) {
   const { sendMsg } = useContext(SocketContext);
   return (
-    <button onClick={() => sendMsg({ etype: 'CLICK', key })} {...props}>
+    <button onClick={() => sendMsg({ etype: 'CLICK', key } as ClientEvent)} {...props}>
       {value}
     </button>
   );
@@ -45,7 +45,7 @@ export function Slider({
         value={value}
         onMouseUp={({ target }: MouseEvent<HTMLInputElement>) => {
           const { value } = target as HTMLInputElement;
-          sendMsg({ etype: 'SET', key, value });
+          sendMsg({ etype: 'SET', key, value } as ClientEvent);
         }}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) => {
           setValue(Number(target.value) as number);
@@ -79,7 +79,7 @@ export function Img({ _key: key, children, alt, ...props }: ImgProps) {
           value: {
             x, y, w: rect.width, h: rect.height,
           },
-        });
+        } as ClientEvent);
       }}
       {...props}
     />
@@ -131,7 +131,7 @@ export function Input(
     if (e.keyCode == 13 && !e.shiftKey) {
       // on enter:
       e.preventDefault();
-      sendMsg({ etype: 'INPUT', key, value });
+      sendMsg({ etype: 'INPUT', key, value } as ClientEvent);
       if (clearOnSubmit) setValue('');
     }
   }, [ value ]);
@@ -188,7 +188,7 @@ export function ImageUpload({ _key: key, label }: ImageUploadProps) {
           imageToBase64(file).then((base64) => {
             // chop off the data:image/png;base64, part
             const value = base64.slice(22);
-            sendMsg({ etype: 'UPLOAD', key, value });
+            sendMsg({ etype: 'UPLOAD', key, value } as ClientEvent);
           });
         }
       }}

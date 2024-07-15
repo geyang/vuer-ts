@@ -1,7 +1,7 @@
 import { CSSProperties, PropsWithChildren, ReactElement, useMemo, } from 'react';
 import rehypeRaw from 'rehype-raw';
 import { Remark } from 'react-remark';
-import { VuerProps } from '../../interfaces';
+import { VuerProps } from '../../vuer/interfaces';
 
 type MarkdownProps = VuerProps<{
   children: string | string[];
