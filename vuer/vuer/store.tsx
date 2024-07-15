@@ -1,5 +1,5 @@
 import uuid4 from 'uuid4';
-import { EventType } from '../interfaces';
+import { EventType } from './interfaces';
 
 export type ReducerType<E extends EventType> = (event: E) => E;
 export type HandlerType<E extends EventType> = (event: E) => void;

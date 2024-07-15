@@ -4,10 +4,10 @@ import { button, useControls } from 'leva';
 import useStateRef from 'react-usestateref';
 import queryString from 'query-string';
 import { pack, unpack } from 'msgpackr';
-import { Store } from '../store';
-import { document } from '../../third_party/browser-monads';
+import { Store } from './store';
+import { document } from '../third_party/browser-monads';
 
-import { ClientEvent, ServerEvent } from '../../interfaces';
+import { ClientEvent, ServerEvent } from './interfaces';
 
 export type msgFn = (event: ClientEvent) => void;
 export type SocketContextType = {
@@ -83,7 +83,7 @@ export function WebSocketProvider({ onMessage: paramsOnMessage, children }: WebS
   );
 
   function onOpen() {
-    sendMsg({ etype: 'INIT' });
+    sendMsg({ etype: 'INIT' } as ClientEvent);
     setIsConnected(true);
     allowReconnect(true);
   }

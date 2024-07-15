@@ -1,18 +1,18 @@
-import React, { createContext, PropsWithRef, useMemo, } from 'react';
+import React, { createContext, PropsWithRef, useContext, useMemo, } from 'react';
 import queryString from 'query-string';
 import { Leva } from 'leva';
-import { document } from './third_party/browser-monads';
-import { WebSocketProvider } from './html_components/contexts/websocket';
-import SceneContainer, { SceneContainerP } from "./three_components";
-import { PlaybackProvider } from "./timeline_components/player";
+import { document } from '../third_party/browser-monads';
+import { SocketContext } from './websocket';
+import { PlaybackProvider } from "../timeline_components/player";
+import SceneContainer, { SceneContainerP } from "./SceneContainer";
 
-export interface Node {
-  key?: string;
-  tag: string;
-  children?: Node[] | string[] | null;
-
-  [key: string]: unknown;
-}
+// export interface Node {
+//   key?: string;
+//   tag: string;
+//   children?: Node[] | string[] | null;
+//
+//   [key: string]: unknown;
+// }
 
 
 interface QueryParams {
@@ -60,12 +60,14 @@ export function VuerRoot({ style = {}, ...rest }: VuerRootProps) {
     [ style ],
   );
 
+  const { downlink } = useContext(SocketContext);
+
   // todo: might want to treat scene as one of the children.
   // note: finding a way to handle the leva menu will be tricky.
   return (
-    <WebSocketProvider>
+    <>
       <PlaybackProvider>
-        <SceneContainer style={sceneStyle} {...rest}/>
+        <SceneContainer style={sceneStyle} stream={downlink} {...rest}/>
       </PlaybackProvider>
       <Leva
         theme={{
@@ -77,6 +79,6 @@ export function VuerRoot({ style = {}, ...rest }: VuerRootProps) {
         }}
         collapsed={collapseMenu}
       />
-    </WebSocketProvider>
+    </>
   );
 }
