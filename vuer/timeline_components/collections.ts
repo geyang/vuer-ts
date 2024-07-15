@@ -21,15 +21,20 @@ class Deque<T> {
 
   constructor(array?: T[], maxlen?: number) {
     this.buffer = new Array(maxlen);
-    if (array?.length) {
-      for (let i = 0; i < array.length; i++) {
-        this.buffer[i] = array[i]
-      }
-    }
     this.maxlen = maxlen;
     this.head = 0;
     this.tail = 0;
     this.size = 0;
+
+    if (array?.length) array.forEach((item) => this.push(item))
+
+  }
+
+  get(index: number, d?: T): T | undefined {
+    if (index < 0 || index >= this.size) {
+      return d;
+    }
+    return this.buffer[(this.head + index) % this.maxlen];
   }
 
   push(item: T): void {
@@ -58,6 +63,13 @@ class Deque<T> {
       result.push(this.buffer[(this.head + i) % this.maxlen] as T);
     }
     return result;
+  }
+
+  clear(): void {
+    this.buffer = new Array(this.maxlen);
+    this.size = 0
+    this.head = 0
+    this.tail = 0
   }
 }
 

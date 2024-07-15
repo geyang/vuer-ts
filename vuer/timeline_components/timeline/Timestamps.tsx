@@ -1,6 +1,5 @@
 import { css } from "@emotion/react";
 import { useMemo } from "react";
-import { color } from "three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements";
 
 
 const tsStyle = css`
@@ -43,12 +42,12 @@ export function Timestamps(
 
     for (let i = firstVisibleIndex; i < lastVisibleFrame; i += clamped) {
 
-      const visibleDuration = end - start;
+      const visibleDuration = Math.max(end - start, 1);
       const isOdd = segmentDensity > 0 && ((i - start) / segmentDensity) % 2 !== 0;
       timestamps.push(
         <div
           key={i}
-          data-label={isOdd? '': i}
+          data-label={isOdd ? '' : i}
           data-left={(i - start) / visibleDuration * 100}
           css={tsStyle}
           style={{

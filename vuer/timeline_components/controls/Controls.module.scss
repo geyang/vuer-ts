@@ -168,7 +168,6 @@
 
 .input[type='number'] {
   text-align: right;
-
   &::-webkit-inner-spin-button,
   &::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -228,7 +227,7 @@
     height: 200px;
     border-radius: var(--radius);
     background-image: linear-gradient(transparent, black),
-    linear-gradient(to right, white, transparent);
+      linear-gradient(to right, white, transparent);
     cursor: pointer;
 
     .slider {
@@ -243,14 +242,14 @@
     margin-top: 8px;
     border-radius: var(--radius);
     background-image: linear-gradient(
-                    to right,
-                    #ff0000,
-                    #ffff00,
-                    #00ff00,
-                    #00ffff,
-                    #0000ff,
-                    #ff00ff,
-                    #ff0000
+      to right,
+      #ff0000,
+      #ffff00,
+      #00ff00,
+      #00ffff,
+      #0000ff,
+      #ff00ff,
+      #ff0000
     );
     cursor: pointer;
 

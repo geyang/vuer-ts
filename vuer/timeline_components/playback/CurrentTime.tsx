@@ -1,11 +1,7 @@
-// import { VNode } from 'preact';
-// import { usePlayerTime } from '../../hooks';
-
 import { usePlayback } from "../player";
 import { css } from "@emotion/react";
 
 interface CurrentTimeProps {
-  // render: (time: number) => VNode<unknown>;
   title: string;
   time?: number
   frame?: number;
@@ -15,7 +11,6 @@ interface CurrentTimeProps {
 }
 
 export function Timestamp({ title = "Current Time", frame, right = false, ...rest }: CurrentTimeProps) {
-  // const time = usePlayerTime();
   const player = usePlayback();
 
   let precision = 0;
@@ -27,15 +22,17 @@ export function Timestamp({ title = "Current Time", frame, right = false, ...res
   const time = frame / player.fps
 
   return (
-    <code title={`${title} ${frame} ${time}`}
-          css={css`
-              height: 24px;
-              padding: 0;
-              background: transparent;
-              text-align: right;
-              text-align: ${right ? 'right' : 'left'};
-          `}
-          {...rest}>
+    <code
+      title={`${title} ${frame} ${time}`}
+      css={css`
+          height: 24px;
+          padding: 0;
+          background: transparent;
+          text-align: right;
+          text-align: ${right ? 'right' : 'left'};
+      `}
+      {...rest}
+    >
       {
         !right && (
           <span css={css`
@@ -49,8 +46,6 @@ export function Timestamp({ title = "Current Time", frame, right = false, ...res
           margin: 0 8px;
           color: rgba(255, 255, 255, 0.32);
       `}>
-        {/*{formatDuration(player.status.framesToSeconds(frame))}:*/}
-        {/*{(frame % player.status.fps).toFixed(precision).padStart(padding, '0')}*/}
         {time}
       </span>
       {

@@ -1,5 +1,5 @@
 import { css } from "@emotion/react";
-import { CSSProperties, HTMLAttributes } from "react";
+import { HTMLAttributes } from "react";
 
 interface IconButtonProps extends Omit<HTMLAttributes<HTMLButtonElement>, 'onChange'> {
   title?: string;
@@ -13,8 +13,13 @@ const buttonStyle = css`
     margin: 0;
     color: rgba(255, 255, 255, 0.54);
 
-    :hover {
-        color: #fff;
+    &:hover {
+        color: #fff !important;
+        accent-color: #fff !important;
+    }
+    &:active {
+        color: #23aaff !important;
+        accent-color: #23aaff !important;
     }
 
 `;

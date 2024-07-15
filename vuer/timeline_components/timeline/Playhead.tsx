@@ -1,18 +1,8 @@
-import styles from './Timeline.module.scss';
-
-import { Signal } from '@preact/signals';
-import { useTimelineContext } from "./timeline_context";
 import { css } from "@emotion/react";
-import { start } from "node:repl";
 
 interface PlayheadProps {
-  // seeking: Signal<number | null>;
   seeking: number;
   leftPos: number;
-  // start: number;
-  // duration?: number;
-  // offset: number;
-  // fullWidth: number;
 }
 
 const PlayheadStyle = css`
@@ -48,12 +38,9 @@ const PlayheadStyle = css`
 
 export function Playhead({ seeking, leftPos }: PlayheadProps) {
 
-  // const leftPos = (seeking - start) / duration * fullWidth;
-
   return (
     <div
       data-seeking={seeking}
-      data-left={leftPos}
       css={PlayheadStyle}
       style={{
         left: `calc(50% + ${leftPos}px)`,

@@ -1,5 +1,4 @@
 import { css } from '@emotion/react';
-import { IconButton } from './IconButton';
 import { HTMLAttributes } from "react";
 
 interface IconCheckboxProps extends Omit<HTMLAttributes<HTMLButtonElement>, 'onChange'> {
@@ -19,6 +18,9 @@ const buttonStyle = css`
 
     :hover {
         color: #fff;
+    }
+    :active {
+        color: var(--theme);
     }
 
 `;
@@ -45,9 +47,7 @@ export function IconCheckbox({
         buttonStyle,
         disabled && disabledStyle,
       ]}
-      style={{
-        color: checked ? `var(--theme) !important` : `rgba(255, 255, 255, 0.54)`,
-      }}
+      style={{ color: checked && `var(--theme) !important` }}
     >
       {children}
     </button>

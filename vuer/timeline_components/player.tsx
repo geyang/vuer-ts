@@ -1,9 +1,13 @@
-import { createContext, PropsWithChildren, useContext, useMemo } from "react";
+import { createContext, PropsWithChildren, useContext, useEffect, useMemo } from "react";
 import { Deque } from "./collections";
+import { Store } from "../html_components/store";
+import { EventType } from "../interfaces";
+import { useAnimationFrame } from "./hooks/useAnimationFrame";
+import { useStorage } from "./hooks";
 
 export type stateSetter<T> = (value: T | ((T) => T)) => void;
 
-export interface Frame {
+export interface Frame extends EventType {
   ts: number;
   etype: string;
   data: unknown;
@@ -26,7 +30,8 @@ export class Playback {
   start: number;
   end: number;
   range: Range;
-  keyFrames: Deque<Frame>;
+  private _keyFrames: Deque<Frame>;
+  store: Store<Frame>
   curr: number;
 
   // status
@@ -58,7 +63,8 @@ export class Playback {
   ) {
     this.fps = fps;
     this.speed = speed
-    this.keyFrames = new Deque(keyFrames, maxlen);
+    this._keyFrames = new Deque(keyFrames, maxlen);
+    this.store = new Store()
     this.start = start;
     this.end = end;
     this.curr = end;
@@ -70,65 +76,136 @@ export class Playback {
     this.range = { start: rangeStart, end: rangeEnd } as Range
   }
 
+  get keyFrames(): Deque<Frame> {
+    return this._keyFrames;
+  }
+
+  setMaxlen = (maxlen: number) => {
+    this._keyFrames = new Deque(this.keyFrames.toArray(), maxlen);
+    if (this.keyFrames.size === 0) {
+      this.start = this.end;
+      this.curr = this.end;
+      this.range.start = this.end;
+      this.range.end = this.end;
+    } else {
+      this.start = this.end + 1 - this.keyFrames.size;
+      this.range.start = Math.max(this.start, this.range.start);
+      this.range.end = Math.min(this.end, this.range.end);
+    }
+  }
+
   get duration(): number {
     return this.keyFrames.size;
   }
 
+  get progress(): number {
+    // the progress is computed from the current selection.
+    return 100 * (this.curr - this.range.start) / (this.range.end - this.range.start);
+  }
+
   step(delta: number = 1): Frame {
-    /**
-     * Simple query by step
-     */
     this.curr += delta;
-    // looping logic later.
-    // if (this.curr > this.end) {
-    //   this.curr = this.end;
-    // }
-    return this.keyFrames[this.curr];
+
+    if (delta > 0) {
+      // looping logic later.
+      if (this.curr > this.range.end) {
+        if (this.loop) this.curr = this.range.start;
+        else {
+          this.curr = this.range.end;
+          if (this.keyFrames.size) this.isPaused = true;
+        }
+      }
+      if (this.curr < this.range.start) {
+        this.curr = this.range.start;
+      }
+    } else if (delta < 0) {
+      if (this.curr < this.range.start) {
+        if (this.loop) this.curr = this.range.end;
+        else {
+          this.curr = this.range.start;
+          if (this.keyFrames.size) this.isPaused = true;
+        }
+      }
+      if (this.curr > this.range.end) {
+        this.curr = this.range.end;
+      }
+    }
+    return this.currentFrame;
+  }
+
+  private deltaTime: number = 0;
+
+  /**
+   * onFrame callback, should be called inside useFrame
+   * @param deltaTime
+   */
+  render = (deltaTime): void => {
+    if (this.isPaused) return;
+
+    this.deltaTime += deltaTime
+
+    if (this.deltaTime < 1000 / this.fps) return;
+
+    const frame = this.step(this.speed);
+    // todo: only remove 1/ fps from ia book about two brothers who build subwayt
+    this.deltaTime -= 1000 / this.fps;
+    if (!!frame) this.store.publish(frame);
   }
 
   addKeyFrame = (frame: Frame) => {
-    if (!this.isRecording) {
-      return;
-    }
+    if (!this.isRecording) return;
+
+    if (this.curr === this.end && this.keyFrames.size) this.curr += 1;
+    if (this.range.end === this.end && this.keyFrames.size) this.range.end += 1;
+    if (this.keyFrames.size) this.end += 1;
 
     this.keyFrames.push(frame);
-    if (this.curr === this.end) this.curr += 1;
-    if (this.range.end === this.end) this.range.end += 1;
-    this.end += 1;
-    // console.log(this.end, this.keyFrames)
-    if (this.end >= this.keyFrames.maxlen) {
+    if ((this.end - this.start) >= this.keyFrames.maxlen) {
       if (this.range.start === this.start) this.range.start += 1;
       this.start += 1;
     }
+    if (this.isPaused) this.store.publish(frame)
   }
 
-  requestNextFrame = () => {
-    this.curr += 1;
+  clear = () => {
+    this.keyFrames.clear()
+    this.start = this.end
+    this.range.start = this.end
+    this.range.end = this.end
   }
 
-  requestPreviousFrame = () => {
-    this.curr -= 1;
-  }
-  requestReset = () => {
+  seekNext = () => this.step()
+  seekPrevious = () => this.step(-1)
+
+  reset = () => {
     this.curr = this.range.start;
+    this.store.publish(this.currentFrame)
   }
-  requestSeek = (time) => {
-    // todo: not implemented
+  seekEnd = () => {
     this.curr = this.range.end;
+    this.store.publish(this.currentFrame)
   }
 
   emitSeek = (frame) => {
     this.curr = frame;
+    this.store.publish(this.currentFrame)
+  }
+
+  get currentFrame(): Frame {
+    return this.keyFrames.get(Math.round(this.curr) - this.start);
+  }
+
+  get firstFrame(): Frame {
+    return this.keyFrames.get(0);
   }
 
   get lastFrame(): Frame {
-    return this.keyFrames[this.keyFrames.size - 1];
+    return this.keyFrames.get(this.keyFrames.size - 1);
   }
 
   setRange = ({ start, end }: RangeOption) => {
     if (typeof start === 'number') this.range.start = start;
     if (typeof end === 'number') this.range.end = end;
-    console.log(this.range)
   }
 
   toggleRecording = () => {
@@ -136,7 +213,9 @@ export class Playback {
   }
 
   togglePlayback = () => {
-    this.isPaused = !this.isPaused;
+    if (this.duration) this.isPaused = !this.isPaused;
+    else this.isPaused = true;
+    if (this.curr === this.range.end) this.curr = this.range.start;
   }
 
   toggleLoop = () => {
@@ -153,9 +232,13 @@ interface Props extends PropsWithChildren {
 
 export const PlaybackProvider = ({ children }: Props) => {
 
-  const playback = useMemo(() => {
-    return new Playback();
-  }, [])
+  const playback = useMemo(() => new Playback(), [])
+
+  useEffect(() => {
+    // playback.isPaused = false;
+  }, []);
+
+  useAnimationFrame(playback.render);
 
   return (
     <PlaybackContext.Provider value={playback}>
@@ -164,9 +247,20 @@ export const PlaybackProvider = ({ children }: Props) => {
   );
 };
 
+export interface PlaybackOption {
+  fps?: number;
+  speed?: number;
+  maxlen?: number;
+}
+
 // eslint-disable-next-line react-refresh/only-export-components
-export const usePlayback = () => {
+export const usePlayback = ({ fps, speed, maxlen }: PlaybackOption = {}) => {
   const playback = useContext<Playback>(PlaybackContext);
+
+  if (typeof fps === 'number') playback.fps = fps;
+  if (typeof speed === 'number') playback.speed = speed;
+  if (typeof maxlen === 'number') playback.setMaxlen(maxlen);
+
   if (!playback) {
     throw new Error('usePlayback must be used within a PlaybackProvider');
   }

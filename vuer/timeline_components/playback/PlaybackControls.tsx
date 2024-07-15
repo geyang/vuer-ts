@@ -13,66 +13,23 @@ import {
   SkipPrevious,
 } from '../icons';
 import { usePlayback } from "../player";
+import { Trash } from "../icons/Trash";
+import { useStorage } from "../hooks";
+import { useEffect } from "react";
 
 export function PlaybackControls() {
-  // const { player, renderer, meta, project } = useApplication();
-  // const state = usePlayerState();
-  const state = {
-    speed: 1,
-    muted: false,
-    volume: 1,
-    paused: false,
-    loop: false,
-  }
-
-  // useDocumentEvent(
-  //   'keydown',
-  //   useCallback(
-  //     event => {
-  //       if (document.activeElement.tagName === 'INPUT') {
-  //         return;
-  //       }
-  //       switch (event.key) {
-  //       case ' ':
-  //         event.preventDefault();
-  //         player.togglePlayback();
-  //         break;
-  //       case 'ArrowLeft':
-  //         event.preventDefault();
-  //         if (event.shiftKey) {
-  //           player.requestReset();
-  //           return;
-  //         }
-  //
-  //         player.requestPreviousFrame();
-  //         break;
-  //       case 'ArrowRight':
-  //         event.preventDefault();
-  //         if (event.shiftKey) {
-  //           player.requestSeek(Infinity);
-  //           return;
-  //         }
-  //
-  //         player.requestNextFrame();
-  //         break;
-  //       case 'm':
-  //         player.toggleAudio();
-  //         break;
-  //       case 'ArrowUp':
-  //         player.addAudioVolume(0.1);
-  //         break;
-  //       case 'ArrowDown':
-  //         player.addAudioVolume(-0.1);
-  //         break;
-  //       case 'l':
-  //         player.toggleLoop();
-  //         break;
-  //       }
-  //     },
-  //     [ player ],
-  //   ),
-  // );
   const player = usePlayback();
+
+  const [ fps, setFps ] = useStorage('vuer-fps', 60)
+  const [ speed, setSpeed ] = useStorage('vuer-speed', 1)
+  const [ maxlen, setMaxlen ] = useStorage('vuer-maxlen', 100)
+
+  useEffect(() => {
+    player.fps = fps
+    player.speed = speed
+    player.setMaxlen(maxlen)
+  }, [ fps, speed, maxlen ])
+
 
   return (
     <div
@@ -90,38 +47,36 @@ export function PlaybackControls() {
           { value: 1.5, text: 'x1.5' },
           { value: 2, text: 'x2' },
         ]}
-        value={state.speed}
-        // onChange={speed => player.setSpeed(speed)}
+        value={player.speed}
+        onChange={setSpeed}
       />
       <IconButton
         title="Start [Shift + Left arrow]"
-        onClick={() => player.requestReset()}
+        onClick={() => player.reset()}
       >
         <SkipPrevious/>
       </IconButton>
       <IconButton
         title="Previous frame [Left arrow]"
-        onClick={() => player.requestPreviousFrame()}
+        onClick={() => player.seekPrevious()}
       >
         <FastRewind/>
       </IconButton>
-      <IconCheckbox
-        titleOn="Pause [Space]"
-        titleOff="Play [Space]"
-        checked={!player.isPaused}
-        onChange={player.togglePlayback}
+      <IconButton
+        title={player.isPaused ? "Pause [Space]" : "Play [Space]"}
+        onClick={player.togglePlayback}
       >
         {player.isPaused ? <PlayArrow/> : <Pause/>}
-      </IconCheckbox>
+      </IconButton>
       <IconButton
         title="Next frame [Right arrow]"
-        onClick={() => player.requestNextFrame()}
+        onClick={player.seekNext}
       >
         <FastForward/>
       </IconButton>
       <IconButton
         title="End [Shift + Right arrow]"
-        onClick={() => player.requestSeek(Infinity)}
+        onClick={player.seekEnd}
       >
         <SkipNext/>
       </IconButton>
@@ -133,34 +88,38 @@ export function PlaybackControls() {
       >
         <Repeat/>
       </IconCheckbox>
-      {/*<Framerate*/}
-      {/*  render={(framerate, paused) => (*/}
       <Input
         title="Current framerate"
-        style={{ width: '100px' }}
-        value={player.isPaused ? 'PAUSED' : `${player.fps} FPS`}
+        value={player.fps}
+        postfix="FPS"
+        onChange={setFps}
+        type='number'
+        width="25px"
       />
-      {/*  )}*/}
-      {/*/>*/}
-      <IconButton
-        title="Save snapshot"
-        // onClick={() =>
-        //   renderer.renderFrame(
-        //     {
-        //       ...meta.getFullRenderingSettings(),
-        //       name: project.name,
-        //     },
-        //     player.status.time,
-        //   )
-        // }
-      >
+
+      <IconButton title="Save snapshot">
         <PhotoCamera/>
       </IconButton>
+
+      <Input
+        title="Current framerate"
+        value={player.keyFrames.maxlen}
+        prefix="Maxlen "
+        onChange={setMaxlen}
+        type='number'
+        width="50px"
+      />
       <IconButton
         title={player.isRecording ? 'Stop Recording' : 'Record'}
         onClick={() => player.toggleRecording()}
       >
         <Recording isRecording={player.isRecording}/>
+      </IconButton>
+      <IconButton
+        title="clear the key frames buffer"
+        onClick={player.clear}
+      >
+        <Trash/>
       </IconButton>
     </div>
   );

@@ -24,6 +24,7 @@ import { SocketContext } from "../html_components/contexts/websocket";
 import { AppContext, PlaybackBar, Timeline } from "../index";
 import { usePlayback } from "../timeline_components/player";
 import { ResizableSwitch } from "../layout_components/ResizableSwitch";
+import { useStorage } from "../timeline_components/hooks";
 
 export interface Node {
   key?: string;
@@ -194,19 +195,20 @@ export default function SceneContainer({
       downlink.subscribe("UPDATE", player.addKeyFrame),
       downlink.subscribe("UPSERT", player.addKeyFrame),
     ]
+
     return () => {
       cancel.forEach(f => f());
     }
   }, [ player, downlink ])
 
   useEffect(() => {
-    const removeSet = downlink.subscribe("SET", ({ ts, etype, data }: SetEvent) => {
+    const removeSet = player.store.subscribe("SET", ({ ts, etype, data }: SetEvent) => {
       // the top level is a dummy node
       if (data.tag !== "Scene") showError(`The top level node of the SET operation must be a <Scene/> object, got <${data.tag}/> instead.`)
       setScene(data as SceneType);
     })
 
-    const removeAdd = downlink.subscribe("ADD", ({ ts, etype, data }: AddEvent) => {
+    const removeAdd = player.store.subscribe("ADD", ({ ts, etype, data }: AddEvent) => {
       // the API need to be updated, so are the rest of the API.
       const { nodes, to: parentKey } = data;
       let dirty;
@@ -220,7 +222,7 @@ export default function SceneContainer({
       }
       if (dirty) setScene({ ...sceneRef.current });
     })
-    const removeUpdate = downlink.subscribe("UPDATE", ({ ts, etype, data }: UpdateEvent) => {
+    const removeUpdate = player.store.subscribe("UPDATE", ({ ts, etype, data }: UpdateEvent) => {
       /* this is the find and update. */
       let dirty = false;
       const { nodes } = data;
@@ -238,7 +240,7 @@ export default function SceneContainer({
         setScene({ ...sceneRef.current });
       }
     })
-    const removeUpsert = downlink.subscribe("UPSERT", ({ ts, etype, data }: UpsertEvent) => {
+    const removeUpsert = player.store.subscribe("UPSERT", ({ ts, etype, data }: UpsertEvent) => {
       /* this is the find and update, or add if not found.. */
       const { nodes, to } = data;
       const parentKey = to || 'children';
@@ -253,7 +255,7 @@ export default function SceneContainer({
       // note: use the spread to create a new instance to trigger update.
       setScene({ ...sceneRef.current });
     })
-    const removeRemove = downlink.subscribe("REMOVE", ({ ts, etype, data }: RemoveEvent) => {
+    const removeRemove = player.store.subscribe("REMOVE", ({ ts, etype, data }: RemoveEvent) => {
       const { keys } = data;
       let dirty;
       for (const key of keys) {
@@ -298,10 +300,10 @@ export default function SceneContainer({
         {sceneChildren.length ? toProps(sceneChildren) : (children || [])}
       </Scene>
       <>
-        <PlaybackBar/>
+        <PlaybackBar progress={player.progress}/>
         <Timeline/>
       </>
-      <PlaybackBar/>
+      <PlaybackBar progress={player.progress}/>
     </ResizableSwitch>
   );
 }
