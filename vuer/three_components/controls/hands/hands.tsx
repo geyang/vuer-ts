@@ -1,4 +1,4 @@
-import { MutableRefObject, useCallback, useContext, useRef } from "react";
+import { MutableRefObject, ReactNode, useCallback, useContext, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import throttle from "lodash.throttle";
 import { useController, useXR } from '@react-three/xr';
@@ -70,7 +70,7 @@ function Hands({
   showRight = true,
   stream = false,
   ..._
-}: HandsProps): JSX.Element {
+}: HandsProps): ReactNode {
 
   const { sendMsg } = useContext(SocketContext) as SocketContextType;
   const { isPresenting } = useXR();

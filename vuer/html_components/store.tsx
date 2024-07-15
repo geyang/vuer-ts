@@ -40,6 +40,7 @@ export class Store<E extends EventType> {
   }
 
   publish(event: E): E {
+    if (!event) return;
     const eventType = event.etype;
 
     const reducers = this.reducers[eventType] || {};

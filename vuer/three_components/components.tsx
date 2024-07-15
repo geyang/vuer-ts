@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useLayoutEffect, useRef } from 'react';
+import { MutableRefObject, ReactNode, useEffect, useLayoutEffect, useRef } from 'react';
 import {
   BufferGeometry,
   Color,
@@ -29,7 +29,7 @@ export function PcdView(
   }: PcdProps & {
     size?: number;
   },
-): JSX.Element | null {
+): ReactNode | null {
 
   const __ref = useRef();
   const ref = (_ref || __ref) as MutableRefObject<Points>;

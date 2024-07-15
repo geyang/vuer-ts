@@ -1,6 +1,6 @@
 import {
   MutableRefObject,
-  ReactElement,
+  ReactElement, ReactNode, RefObject,
   useCallback,
   useContext,
   useEffect,
@@ -402,7 +402,7 @@ export function rad2deg(deg: number): number {
 export type CameraLike = OrthographicCamLike | PerspectiveCamLike;
 
 type OrbitCameraType = {
-  parent: MutableRefObject<HTMLDivElement>;
+  parent: RefObject<HTMLElement>;
   ctrlRef?: MutableRefObject<tOrbitControls>;
   onChange?: (camera: CameraLike) => void;
   panSpeed?: number;
@@ -431,7 +431,7 @@ export function OrbitCamera(
     initPosition = [ -0.5, 0.75, 0.8 ],
     initRotation = [ -0.5 * Math.PI, 0, 0 ],
   }: OrbitCameraType,
-): JSX.Element {
+): ReactNode {
   let controlsRef = useRef() as MutableRefObject<tOrbitControls>;
   controlsRef = ctrlRef || controlsRef;
   // camRef.current is undefined at the beginning.

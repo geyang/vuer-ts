@@ -1,4 +1,12 @@
-import React, { PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState, } from 'react';
+import React, {
+  PropsWithChildren,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import queryString from 'query-string';
 import { button, folder, useControls } from 'leva';
 import useFetch from 'use-http';
@@ -13,7 +21,10 @@ import { ServerEvent } from '../interfaces';
 import { pack, unpack } from "msgpackr";
 import { Buffer } from "buffer";
 import { SocketContext } from "../html_components/contexts/websocket";
-import { AppContext } from "../index";
+import { AppContext, PlaybackBar, Timeline } from "../index";
+import { usePlayback } from "../timeline_components/player";
+import { ResizableSwitch } from "../layout_components/ResizableSwitch";
+import { useStorage } from "../timeline_components/hooks";
 
 export interface Node {
   key?: string;
@@ -23,7 +34,12 @@ export interface Node {
   [key: string]: unknown;
 }
 
-function makeProps(props?) {
+// type interface for a function that returns ReactNodes
+export interface PropsFn {
+  (data: Node[]): ReactNode | ReactNode[];
+}
+
+function makeProps(props?): PropsFn {
   return (data: Node[]) => {
     return (data || [])
       .map(({ key, ...child }: Node) => <Hydrate key={key} _key={key} {...props} {...child} />);
@@ -48,12 +64,12 @@ interface SceneType {
 
 
 export type SceneContainerP = PropsWithChildren<{
-  up: [ number, number, number ];
-  xrMode: "AR" | "VR" | "hidden";
-  children?: JSX.Element | JSX.Element[];
-  rawChildren?: JSX.Element | JSX.Element[];
-  htmlChildren?: JSX.Element | JSX.Element[];
-  bgChildren?: JSX.Element | JSX.Element[];
+  up?: [ number, number, number ];
+  xrMode?: "AR" | "VR" | "hidden";
+  children?: ReactNode | ReactNode[];
+  rawChildren?: ReactNode | ReactNode[];
+  htmlChildren?: ReactNode | ReactNode[];
+  bgChildren?: ReactNode | ReactNode[];
   [key: string]: unknown;
 }>;
 
@@ -84,7 +100,7 @@ export default function SceneContainer({
   const [ scene, setScene, sceneRef ] = useStateRef<SceneType>({
     up: null,
     xrMode: queries.xrMode || "VR",
-    frameloop: queries.frameloop || "demand" ,
+    frameloop: queries.frameloop || "demand",
     children: [],
     htmlChildren: [],
     rawChildren: [],
@@ -92,10 +108,11 @@ export default function SceneContainer({
     ...rest,
   });
 
-  const [ menu, setMenu ] = useState({});
 
+  const [ menu, setMenu ] = useState({});
   const { showError } = useContext(AppContext)
   const { downlink } = useContext(SocketContext);
+  const player = usePlayback();
 
   useEffect(() => {
     // do not change the scene using Fetch unless queries.scene is set.
@@ -130,20 +147,22 @@ export default function SceneContainer({
         },
         { collapsed: true },
       ),
-      "Share": button(() => {
-        const sceneStr = pack(scene);
-        if (sceneStr.length > 10_000) {
-          return showError(`The scene likely contains a large amount of data. To share, please replace 
-        geometry data with an URI. Length is ${sceneStr.length} bytes.`)
-        }
-        const chars = String.fromCharCode.apply(null, sceneStr)
-        const scene64b = btoa(chars);
-        const url = new URL(document.location);
-        url.searchParams.set('scene', scene64b);
-        document.location.href = url.toString();
-      },
-      // @ts-ignore: leva is broken
-      { label: "Share Scene" }),
+      "Share": button(
+        () => {
+          const sceneStr = pack(scene);
+          if (sceneStr.length > 10_000) {
+            return showError(`The scene likely contains a large amount of data. To share, please replace 
+      geometry data with an URI. Length is ${sceneStr.length} bytes.`)
+          }
+          const chars = String.fromCharCode.apply(null, sceneStr)
+          const scene64b = btoa(chars);
+          const url = new URL(document.location);
+          url.searchParams.set('scene', scene64b);
+          document.location.href = url.toString();
+        },
+        // @ts-ignore: leva is broken
+        { label: "Share Scene" }
+      ),
       Scene: folder({}),
       Render: folder(
         {
@@ -161,15 +180,35 @@ export default function SceneContainer({
     [ menu, scene ],
   );
 
+  /**
+   * player.addKeyFrame(frame: Frame) {
+   *   if (!this.isRecording) {
+   *    return;
+   *   }
+   * }
+   */
 
   useEffect(() => {
-    const removeSet = downlink.subscribe("SET", ({ etype, data }: SetEvent) => {
+    const cancel = [
+      downlink.subscribe("SET", player.addKeyFrame),
+      downlink.subscribe("ADD", player.addKeyFrame),
+      downlink.subscribe("UPDATE", player.addKeyFrame),
+      downlink.subscribe("UPSERT", player.addKeyFrame),
+    ]
+
+    return () => {
+      cancel.forEach(f => f());
+    }
+  }, [ player, downlink ])
+
+  useEffect(() => {
+    const removeSet = player.store.subscribe("SET", ({ ts, etype, data }: SetEvent) => {
       // the top level is a dummy node
       if (data.tag !== "Scene") showError(`The top level node of the SET operation must be a <Scene/> object, got <${data.tag}/> instead.`)
       setScene(data as SceneType);
     })
 
-    const removeAdd = downlink.subscribe("ADD", ({ etype, data }: AddEvent) => {
+    const removeAdd = player.store.subscribe("ADD", ({ ts, etype, data }: AddEvent) => {
       // the API need to be updated, so are the rest of the API.
       const { nodes, to: parentKey } = data;
       let dirty;
@@ -183,7 +222,7 @@ export default function SceneContainer({
       }
       if (dirty) setScene({ ...sceneRef.current });
     })
-    const removeUpdate = downlink.subscribe("UPDATE", ({ etype, data }: UpdateEvent) => {
+    const removeUpdate = player.store.subscribe("UPDATE", ({ ts, etype, data }: UpdateEvent) => {
       /* this is the find and update. */
       let dirty = false;
       const { nodes } = data;
@@ -201,7 +240,7 @@ export default function SceneContainer({
         setScene({ ...sceneRef.current });
       }
     })
-    const removeUpsert = downlink.subscribe("UPSERT", ({ etype, data }: UpsertEvent) => {
+    const removeUpsert = player.store.subscribe("UPSERT", ({ ts, etype, data }: UpsertEvent) => {
       /* this is the find and update, or add if not found.. */
       const { nodes, to } = data;
       const parentKey = to || 'children';
@@ -216,7 +255,7 @@ export default function SceneContainer({
       // note: use the spread to create a new instance to trigger update.
       setScene({ ...sceneRef.current });
     })
-    const removeRemove = downlink.subscribe("REMOVE", ({ etype, data }: RemoveEvent) => {
+    const removeRemove = player.store.subscribe("REMOVE", ({ ts, etype, data }: RemoveEvent) => {
       const { keys } = data;
       let dirty;
       for (const key of keys) {
@@ -248,18 +287,23 @@ export default function SceneContainer({
   // todo: might want to treat scene as one of the children.
   // note: finding a way to handle the leva menu will be tricky.
   return (
-    <Scene
-      rawChildren={sceneRawChildren.length
-        ? toProps(sceneRawChildren)
-        : (rawChildren || [])}
-      htmlChildren={sceneHtmlChildren.length
-        ? toProps(sceneHtmlChildren)
-        : (htmlChildren || [])}
-      bgChildren={sceneBackgroundChildren.length
-        ? toProps(sceneBackgroundChildren)
-        : (bgChildren || [])}
-      {..._scene}
-    >
-      {sceneChildren.length ? toProps(sceneChildren) : (children || [])}
-    </Scene>);
+    <ResizableSwitch offset={-300} minOffset={48} vertical>
+      <Scene
+        rawChildren={sceneRawChildren.length
+          ? toProps(sceneRawChildren)
+          : (rawChildren || [])}
+        bgChildren={sceneBackgroundChildren.length
+          ? toProps(sceneBackgroundChildren)
+          : (bgChildren || [])}
+        {..._scene}
+      >
+        {sceneChildren.length ? toProps(sceneChildren) : (children || [])}
+      </Scene>
+      <>
+        <PlaybackBar progress={player.progress}/>
+        <Timeline/>
+      </>
+      <PlaybackBar progress={player.progress}/>
+    </ResizableSwitch>
+  );
 }

@@ -13,6 +13,8 @@ export type Matrix16T = [ number, number, number, number, number, number, number
 export type QuaternionT = [ number, number, number, number ];
 
 export interface EventType {
+  /** This is the timestamp of the event object. */
+  ts: number;
   etype: string;
 }
 

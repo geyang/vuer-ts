@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { ReactFragment, ReactNode, useMemo } from 'react';
 import queryString from 'query-string';
 import { Grid as DreiGrid } from '@react-three/drei';
 import { useControls } from 'leva';
@@ -24,7 +24,7 @@ interface GridProps {
  * @param levaPrefix - The prefix for the leva controls
  * @param show - Whether to show the grid
  * */
-export function Grid({ _key, far, levaPrefix = 'Scene.', hide }: GridProps): JSX.Element {
+export function Grid({ _key, far, levaPrefix = 'Scene.', hide }: GridProps): ReactNode | Iterable<ReactNode> {
   const q = useMemo<GridQueries>(
     () => queryString.parse(document.location.search),
     [],

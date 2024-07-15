@@ -1,0 +1,52 @@
+import { css } from "@emotion/react";
+import { HTMLAttributes } from "react";
+
+interface IconButtonProps extends Omit<HTMLAttributes<HTMLButtonElement>, 'onChange'> {
+  title?: string;
+  onClick?: () => void;
+  disabled?: boolean;
+}
+
+const buttonStyle = css`
+    display: block;
+    cursor: pointer;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.54);
+
+    &:hover {
+        color: #fff !important;
+        accent-color: #fff !important;
+    }
+    &:active {
+        color: #23aaff !important;
+        accent-color: #23aaff !important;
+    }
+
+`;
+const disabledStyle = css`
+    cursor: default;
+    pointer-events: none;
+    color: rgba(255, 255, 255, 0.16);
+`;
+
+export function IconButton({
+  children,
+  onClick,
+  title,
+  disabled,
+}: IconButtonProps) {
+  return (
+    <button
+      disabled={disabled}
+      title={title}
+      css={[
+        buttonStyle,
+        disabled && disabledStyle,
+      ]}
+      type="button"
+      onClick={disabled ? null : onClick}
+    >
+      {children}
+    </button>
+  );
+}
