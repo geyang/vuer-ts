@@ -297,10 +297,9 @@ export const usePlayback = ({ fps, speed, maxlen }: PlaybackOption = {}) => {
 
     const onUpdate = throttle((event: PlaybackUpdateType) => {
       setCurr(playback.curr)
-      console.log("is this working?")
     }, 1000 / 10)
 
-    playback.store.subscribe("PLAYER_UPDATE", onUpdate)
+    return playback.store.subscribe("PLAYER_UPDATE", onUpdate)
 
   }, [ playback, setCurr, ])
 

@@ -49,7 +49,6 @@ export const PlaybackBar = ({ progress }: PlaybackBarProps) => {
   }, [ player, downlink ])
 
 
-
   return (
     <div css={
       [
@@ -62,17 +61,15 @@ export const PlaybackBar = ({ progress }: PlaybackBarProps) => {
       ]
     }>
       <Timestamp
-        // className={styles.time}
         title="Current time"
-        // frameTitle="Current frame"
-        frame={0}
+        frame={player.range.start}
+        frameTime={(player.range.start - player.start) / player.fps}
       />
       <PlaybackControls/>
       <Timestamp
-        // className={styles.time}
         title="Duration"
-        // frameTitle="Current frame"
-        frame={0}
+        frame={player.range.end}
+        frameTime={(player.range.end - player.start) / player.fps}
         right
       />
     </div>

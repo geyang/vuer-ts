@@ -5,19 +5,26 @@ interface CurrentTimeProps {
   title: string;
   time?: number
   frame?: number;
+  frameTime?: number;
   right?: boolean;
 
   [key: string]: unknown;
 }
 
-export function Timestamp({ title = "Current Time", frame, right = false, ...rest }: CurrentTimeProps) {
+export function Timestamp({
+  title = "Current Time",
+  frame,
+  frameTime,
+  right = false,
+  ...rest
+}: CurrentTimeProps) {
   const player = usePlayback();
 
   let precision = 0;
-  let padding = player.fps.toString().length;
+  // let padding = player.fps.toString().length;
   if (player.speed % 1 !== 0) {
     precision = 2;
-    padding += 3;
+    // padding += 3;
   }
   const time = frame / player.fps
 
@@ -46,7 +53,7 @@ export function Timestamp({ title = "Current Time", frame, right = false, ...res
           margin: 0 8px;
           color: rgba(255, 255, 255, 0.32);
       `}>
-        {time}
+        {frameTime.toFixed(3)}
       </span>
       {
         right && (
