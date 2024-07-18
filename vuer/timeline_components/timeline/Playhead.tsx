@@ -1,4 +1,5 @@
 import { css } from "@emotion/react";
+import { useEffect, useState } from "react";
 
 interface PlayheadProps {
   seeking: number;
@@ -19,6 +20,8 @@ const PlayheadStyle = css`
     align-items: flex-start;
     justify-content: center;
     margin-left: -50%;
+
+    //transition-duration: 1s;
 
     :before {
         display: block;

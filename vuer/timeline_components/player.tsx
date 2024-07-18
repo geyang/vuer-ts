@@ -292,16 +292,20 @@ export const usePlayback = ({ fps, speed, maxlen }: PlaybackOption = {}) => {
   }
 
   const [ curr, setCurr ] = useState<number>(0)
+  const [ end, setEnd ] = useState<number>(0)
+  const [ start, setStart ] = useState<number>(0)
 
   useEffect(() => {
 
     const onUpdate = throttle((event: PlaybackUpdateType) => {
       setCurr(playback.curr)
-    }, 1000 / 10)
+      setStart(playback.start)
+      setEnd(playback.end)
+    }, 1000 / 30)
 
     return playback.store.subscribe("PLAYER_UPDATE", onUpdate)
 
-  }, [ playback, setCurr, ])
+  }, [ playback, ])
 
 
   return playback;
