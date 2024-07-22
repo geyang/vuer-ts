@@ -2,10 +2,10 @@ import { useCallback, useContext } from 'react';
 import { useThree } from '@react-three/fiber';
 import { button, useControls } from 'leva';
 import { ClientEvent, VuerProps } from "../vuer/interfaces";
-import { SocketContext, SocketContextType } from "../vuer/websocket";
+import { useSocket, SocketContextType } from "../vuer/websocket";
 
 export function Download({ _key: key }: VuerProps) {
-  const { sendMsg }: SocketContextType = useContext(SocketContext);
+  const { sendMsg }: SocketContextType = useSocket();
   const { gl } = useThree();
   const callback = useCallback(() => {
     const uri = gl.domElement.toDataURL('image/png');

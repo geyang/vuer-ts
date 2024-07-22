@@ -1,6 +1,6 @@
 import { button, useControls } from "leva";
 import { useCallback, useContext, useEffect } from "react";
-import { SocketContext, SocketContextType } from "../vuer/websocket";
+import { useSocket, SocketContextType } from "../vuer/websocket";
 import { ClientEvent, VuerProps } from "../vuer/interfaces";
 import { useThree } from "@react-three/fiber";
 
@@ -12,7 +12,7 @@ export type PlayBarProps = VuerProps<{
 
 export function TimelineControls({ _key: key, start = 0, end, stepSize = 1, play = false }: PlayBarProps) {
 
-  const { sendMsg } = useContext(SocketContext) as SocketContextType;
+  const { sendMsg } = useSocket() as SocketContextType;
   /** note: we should probably use a different clock, because this would affect animations
    *    globally. */
   const { clock } = useThree();

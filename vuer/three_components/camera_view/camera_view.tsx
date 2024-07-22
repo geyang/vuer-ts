@@ -15,8 +15,8 @@ import {
 import { Frustum } from '../frustum';
 import { Movable } from "../controls/movables";
 import { useControls } from "leva";
-import { VuerProps } from "../../vuer/interfaces";
-import { SocketContext, SocketContextType } from "../../vuer/websocket";
+import { ClientEvent, VuerProps } from "../../vuer/interfaces";
+import { useSocket, SocketContextType } from "../../vuer/websocket";
 import { GrabRenderEvent } from "./GrabRender";
 import { useDepthRender } from "./depthHelper";
 import { useRender } from "./renderHelper";
@@ -83,6 +83,20 @@ async function grabFrame({ renderer, quality }) {
   return frame
 }
 
+
+export interface GrabRenderValueT {
+  dpr: number,
+  width: number,
+  height: number,
+  frame?: Uint8Array,
+  depthFrame?: Uint8Array,
+}
+
+export interface GrabRenderResponse extends ClientEvent {
+  key,
+  value: GrabRenderValueT,
+}
+
 export function CameraView(
   {
     _ref,
@@ -138,7 +152,7 @@ export function CameraView(
   const fbo = useFBO(width * dpr, height * dpr, { depth: renderDepth });
 
   const offset = useMemo(() => new Vector3(), []);
-  const { sendMsg, downlink, uplink } = useContext(SocketContext) as SocketContextType;
+  const { sendMsg, downlink, uplink } = useSocket() as SocketContextType;
 
   const ctrl = useControls(_key ? `Scene.Camera-${_key}` : "Scene.Camera", {
     showCamera: { value: showCamera, label: "Show" },
@@ -222,10 +236,11 @@ export function CameraView(
     cam.rotation.setFromQuaternion(cam.quaternion);
 
     sendMsg({
+      ts: Date.now(),
       etype: "CAMERA_MOVE", key: _key, value: {
         matrix: cam.matrix.toArray()
       }
-    })
+    } as ClientEvent)
 
   }, [ frustumHandle.current, cameraRef.current, sendMsg ])
 
@@ -261,7 +276,8 @@ export function CameraView(
       const canvas = renderer.domElement as OffscreenCanvas;
       canvas.convertToBlob({ quality, type: "image/jpeg" }).then((blob) => {
         blob.arrayBuffer().then((array: ArrayBuffer) => {
-          const payload = {
+          const payload: ClientEvent = {
+            ts: Date.now(),
             etype: 'CAMERA_VIEW',
             key: _key,
             value: {
@@ -362,10 +378,11 @@ export function CameraView(
       renderer.setRenderTarget(fbo);
       renderer.render(scene, cameraRef.current);
 
-      const payload = {
+      const payload: GrabRenderResponse = {
+        ts: Date.now(),
         etype: rtype || `GRAB_RENDER_RESPONSE`,
         key,
-        value: { dpr, width, height, frame: null, depthFrame: null },
+        value: { dpr, width, height }
       };
 
       renderFn({ renderer, texture: fbo.texture });

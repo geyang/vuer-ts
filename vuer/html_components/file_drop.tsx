@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 // @ts-nocheck: todo fix this file
 import { useEffect, useState } from 'react';
 import { useControls } from 'leva';

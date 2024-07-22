@@ -27,7 +27,7 @@ import { useControls } from 'leva';
 import queryString from 'query-string';
 import { document } from '../third_party/browser-monads';
 import { VuerProps } from "../vuer/interfaces";
-import { SocketContext, SocketContextType } from "../vuer/websocket";
+import { useSocket, SocketContextType } from "../vuer/websocket";
 import { parseArray } from "./utils";
 
 const CAMERA_TYPES = {
@@ -641,7 +641,7 @@ export function OrbitCamera(
     }
   }
 
-  const { uplink } = useContext(SocketContext) as SocketContextType;
+  const { uplink } = useSocket() as SocketContextType;
   // register camera update event
   useEffect(
     () => uplink.subscribe('CAMERA_UPDATE', () => triggerRender()),

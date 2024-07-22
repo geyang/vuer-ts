@@ -9,14 +9,14 @@ import React, {
   useMemo,
   useState
 } from "react";
-import { SocketContext } from "../vuer/websocket";
+import { useSocket } from "../vuer/websocket";
 import { ClientEvent, VuerProps } from "../vuer/interfaces";
 import { imageToBase64 } from "../vuer/util";
 
 type VuerControlProps<T = unknown> = VuerProps<{ value: never } & T>;
 
 export function Button({ _key: key, value, ...props }: VuerControlProps) {
-  const { sendMsg } = useContext(SocketContext);
+  const { sendMsg } = useSocket();
   return (
     <button onClick={() => sendMsg({ etype: 'CLICK', key } as ClientEvent)} {...props}>
       {value}
@@ -32,11 +32,11 @@ export function Button({ _key: key, value, ...props }: VuerControlProps) {
  * @param props - the rest of the props of this input component
  * @constructor
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 export function Slider({
   _key: key, value: defaultValue, children, ...props
 }: VuerControlProps) {
-  const { sendMsg } = useContext(SocketContext);
+  const { sendMsg } = useSocket();
   const [ value, setValue ] = useState<number>(defaultValue || 0);
   return (
     <>
@@ -60,7 +60,7 @@ export function Slider({
 export type ImgProps = VuerProps<{ alt: string }>;
 
 export function Img({ _key: key, children, alt, ...props }: ImgProps) {
-  const { sendMsg } = useContext(SocketContext);
+  const { sendMsg } = useSocket();
   return (
     <img
       alt={alt || key}
@@ -114,7 +114,7 @@ export function Input(
   }: InputProps,
 ) {
   const [ value, setValue ] = useState(_value);
-  const { sendMsg } = useContext(SocketContext);
+  const { sendMsg } = useSocket();
   const onChange = useMemo<ChangeEventHandler<HTMLTextAreaElement>>(() => ({ target }) => {
     setValue(target.value);
   }, []);
@@ -174,7 +174,7 @@ export function Input(
 type ImageUploadProps = VuerProps<{ label: string }>;
 
 export function ImageUpload({ _key: key, label }: ImageUploadProps) {
-  const { sendMsg } = useContext(SocketContext);
+  const { sendMsg } = useSocket();
   const [ file, setFile ] = useState<Blob | null>(null);
   const onChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     (e: ChangeEvent<HTMLInputElement>) => {

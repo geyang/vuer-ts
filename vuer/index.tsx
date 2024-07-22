@@ -1,4 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
+ 
 /** Component Registar
  *
  * - This file is used to register all the components that are available to the user.

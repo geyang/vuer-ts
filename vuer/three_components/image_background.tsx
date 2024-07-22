@@ -138,18 +138,18 @@ export function ImageBackground(
 
   if (geometry === 'plane') {
     return <ImagePlane matRef={meshRef} rgb={rgbTexture} alpha={alphaTexture}
-                       depth={depthTexture} {...ctrl} {...rest}/>;
+      depth={depthTexture} {...ctrl} {...rest}/>;
   } else if (geometry === 'sphere') {
     return <ImageSphere matRef={meshRef} rgb={rgbTexture} alpha={alphaTexture} {...ctrl}
-                        depth={depthTexture} {...rest}/>;
+      depth={depthTexture} {...rest}/>;
   } else if (!depthTexture) {
     return <ImagePlane matRef={meshRef} rgb={rgbTexture} alpha={alphaTexture} {...ctrl} {...rest}/>;
   } else if (camera.type === 'OrthographicCamera') {
     return <ImagePlane matRef={meshRef} rgb={rgbTexture} alpha={alphaTexture}
-                       depth={depthTexture} {...ctrl} {...rest}/>;
+      depth={depthTexture} {...ctrl} {...rest}/>;
   } else if (camera.type === 'PerspectiveCamera') {
     return <ImageSphere matRef={meshRef} rgb={rgbTexture} alpha={alphaTexture} {...ctrl}
-                        depth={depthTexture} {...rest}/>;
+      depth={depthTexture} {...rest}/>;
   }
   return null;
 }

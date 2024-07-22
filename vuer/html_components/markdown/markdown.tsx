@@ -13,7 +13,7 @@ export function Markdown(
     _key: key, children, style, ...props
   }: MarkdownProps,
 ) {
-  const { markdown} = useMemo(
+  const { markdown } = useMemo(
     () => ({
       markdown: typeof children === 'string' ? children : children.join(' '),
       // components: {

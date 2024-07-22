@@ -1,7 +1,7 @@
 import { useContext, useEffect, useMemo } from 'react';
 import { useControls } from 'leva';
 import queryString from 'query-string';
-import { SocketContext } from "../vuer/websocket";
+import { useSocket } from "../vuer/websocket";
 import { ClientEvent } from "../vuer/interfaces";
 
 interface BackgroundColorProps {
@@ -52,7 +52,7 @@ export function BackgroundColor({ levaPrefix = 'Scene', color = '#181818' }: Bac
     { collapsed: true },
     [ color ],
   );
-  const { uplink } = useContext(SocketContext);
+  const { uplink } = useSocket();
   useEffect(
     () => uplink.addReducer('CAMERA_MOVE', ({
       value: { world, ..._value }, ..._event

@@ -13,8 +13,8 @@ import {
 import URDFLoader, { URDFRobot } from 'urdf-loader';
 import { BufferGeometry, Group, LoadingManager, Mesh, MeshStandardMaterial, Object3D, Points } from 'three'; // todo: pass reference
 import { GltfView, ObjView, PcdView, PlyView, UrdfView, UrdfViewProps, } from './components';
-import { AppContext } from "../index";
-import { SocketContext } from "../vuer/websocket";
+import { AppContext, ClientEvent } from "../index";
+import { useSocket } from "../vuer/websocket";
 
 // todo: pass reference
 type Props = PropsWithChildren<{
@@ -66,15 +66,16 @@ export function Obj({
       else if (src) loader.load(src, setData);
     }
   }, [ src, hide ]);
-  const { sendMsg } = useContext(SocketContext);
+  const { sendMsg } = useSocket();
   useEffect(() => {
     if (!data) return;
     if (typeof onLoad === 'function') onLoad();
     if (typeof onLoad === 'string') sendMsg({
+      ts: Date.now(),
       etype: 'LOAD',
       key: _key,
       value: onLoad
-    });
+    } as ClientEvent);
   }, [ data ])
   if (!data) return null;
   return <ObjView data={data} hide={hide} {...rest} />;
@@ -91,15 +92,16 @@ export function Pcd({
     if (text) setData(loader.parse(text, '') as Points);
     else if (src) loader.load(src as string, setData);
   }, [ src, hide ]);
-  const { sendMsg } = useContext(SocketContext);
+  const { sendMsg } = useSocket();
   useEffect(() => {
     if (!data) return;
     if (typeof onLoad === 'function') onLoad();
     if (typeof onLoad === 'string') sendMsg({
+      ts: Date.now(),
       etype: 'LOAD',
       key: _key,
       value: onLoad
-    });
+    } as ClientEvent);
   }, [ data ])
   if (!data) return null;
   return <PcdView data={data} hide={hide} {...rest} />;
@@ -121,15 +123,16 @@ export function Ply({
       setData(parsed);
     } else if (src) loader.load(src, setData);
   }, [ src, hide ]);
-  const { sendMsg } = useContext(SocketContext);
+  const { sendMsg } = useSocket();
   useEffect(() => {
     if (!data) return;
     if (typeof onLoad === 'function') onLoad();
     if (typeof onLoad === 'string') sendMsg({
+      ts: Date.now(),
       etype: 'LOAD',
       key: _key,
       value: onLoad
-    });
+    } as ClientEvent);
   }, [ data ])
   if (!data) return null;
   return <PlyView data={data} hide={hide} {...rest} />;
@@ -146,15 +149,16 @@ export function Glb({
     if (text) loader.parse(text, '', setData);
     else if (src) loader.load(src, setData);
   }, [ src, hide ]);
-  const { sendMsg } = useContext(SocketContext);
+  const { sendMsg } = useSocket();
   useEffect(() => {
     if (!data) return;
     if (typeof onLoad === 'function') onLoad();
     if (typeof onLoad === 'string') sendMsg({
+      ts: Date.now(),
       etype: 'LOAD',
       key: _key,
       value: onLoad
-    });
+    } as ClientEvent);
   }, [ data ])
   if (!data) return null;
   return <GltfView data={data} hide={hide} {...rest} />;
@@ -225,15 +229,16 @@ export function Urdf({
     if (text) setData(loader.parse(text));
     else if (src) loader.load(src, setData);
   }, [ loader, src, hide ]);
-  const { sendMsg } = useContext(SocketContext);
+  const { sendMsg } = useSocket();
   useEffect(() => {
     if (!data) return;
     if (typeof onLoad === 'function') onLoad();
     if (typeof onLoad === 'string') sendMsg({
+      ts: Date.now(),
       etype: 'LOAD',
       key: _key,
       value: onLoad
-    });
+    } as ClientEvent);
   }, [ data ])
   if (!data) return null;
   return (

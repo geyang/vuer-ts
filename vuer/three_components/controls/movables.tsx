@@ -15,8 +15,8 @@ import { MeshProps, Vector3 as rVector3 } from '@react-three/fiber';
 import { PivotControls } from '@react-three/drei';
 import { useXR } from '@react-three/xr';
 import { SqueezeRayGrab } from './utils';
-import { SocketContext, SocketContextType } from "../../vuer/websocket";
-import { VuerProps } from "../../vuer/interfaces";
+import { useSocket, SocketContextType } from "../../vuer/websocket";
+import { ClientEvent, VuerProps } from "../../vuer/interfaces";
 
 export const HandleBox = forwardRef((
   {
@@ -80,7 +80,7 @@ export function Pivot(
   const [ state, setState ] = useState({});
   const ref = useRef();
   const localRef = (_ref || ref) as MutableRefObject<Group | Mesh>;
-  const { sendMsg } = useContext(SocketContext) as SocketContextType;
+  const { sendMsg } = useSocket() as SocketContextType;
 
   const cache = useMemo<Sim3Type>(() => ({
     position: new Vector3(...(position || [ 0, 0, 0 ]) as [ number, number, number ]),
@@ -117,11 +117,11 @@ export function Pivot(
   function onDrag(
     local: Matrix4,
     // @ts-ignore: not used
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     dLocal: Matrix4,
     world: Matrix4,
     // @ts-ignore: not used
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     dWorld: Matrix4,
   ): void {
     local.decompose(cache.position, cache.quaternion, cache.scale);
@@ -136,20 +136,22 @@ export function Pivot(
     } as MoveHandleInputType;
 
     sendMsg({
+      ts: Date.now(),
       etype: 'OBJECT_MOVE',
       key: _key,
       value: newState,
-    });
+    } as ClientEvent);
     onMove && onMove(newState);
     setState(newState);
   }
 
   function onDragEnd() {
     sendMsg({
+      ts: Date.now(),
       etype: 'OBJECT_MOVE_END',
       key: _key,
       value: state,
-    });
+    } as ClientEvent);
   }
 
   return (
@@ -208,7 +210,7 @@ export function PivotXR(
   const ref = useRef();
   const localRef = (_ref || ref) as MutableRefObject<Mesh>;
 
-  const { sendMsg } = useContext(SocketContext) as SocketContextType;
+  const { sendMsg } = useSocket() as SocketContextType;
 
   // make memo for position and rotation
   const cache = useMemo<Sim3Type>(() => ({
@@ -234,10 +236,11 @@ export function PivotXR(
     } as MoveHandleInputType
     onMoveEnd && onMoveEnd(state)
     sendMsg({
+      ts: Date.now(),
       etype: 'OBJECT_MOVE_END',
       key: _key,
       value: state,
-    });
+    } as ClientEvent);
   }, []);
 
   const onMoveHandle = useCallback(({ local, world }) => {
@@ -253,10 +256,11 @@ export function PivotXR(
     } as MoveHandleInputType
     onMove && onMove(state)
     sendMsg({
+      ts: Date.now(),
       etype: 'OBJECT_MOVE',
       key: _key,
       value: state,
-    });
+    } as ClientEvent);
   }, []);
 
   const render = () => (

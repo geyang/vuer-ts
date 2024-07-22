@@ -1,7 +1,7 @@
 import { useContext, useEffect, useMemo } from "react";
 import { useThree } from "@react-three/fiber";
-import { ServerRPC } from "../../vuer/interfaces";
-import { SocketContext, SocketContextType } from "../../vuer/websocket";
+import { ClientEvent, ServerRPC } from "../../vuer/interfaces";
+import { useSocket, SocketContextType } from "../../vuer/websocket";
 import { CameraLike } from "../camera";
 
 export type GrabRenderEvent = ServerRPC & {
@@ -23,7 +23,7 @@ type GrabeRenderProps = {
 
 const GrabRender = ({ _key = "DEFAULT" }: GrabeRenderProps) => {
   const dpr = window.devicePixelRatio || 1;
-  const { sendMsg, downlink, uplink } = useContext(SocketContext) as SocketContextType;
+  const { sendMsg, downlink, uplink } = useSocket() as SocketContextType;
   const { gl } = useThree();
   const cache = useMemo(() => ({
     lastFrame: Date.now(),
@@ -60,7 +60,8 @@ const GrabRender = ({ _key = "DEFAULT" }: GrabeRenderProps) => {
       targetCanvas.convertToBlob({ type: "image/jpeg", quality })
         .then((blob) => blob.arrayBuffer())
         .then((array) => {
-          const payload = {
+          const payload: ClientEvent = {
+            ts: Date.now(),
             etype: rtype || `GRAB_RENDER_RESPONSE`,
             key,
             value: {

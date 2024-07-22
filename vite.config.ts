@@ -12,7 +12,7 @@ export default defineConfig({
       {
         jsxImportSource: "@emotion/react",
         babel: {
-          plugins: ["@emotion/babel-plugin"],
+          plugins: [ "@emotion/babel-plugin" ],
         },
       }
     ),
@@ -38,21 +38,26 @@ export default defineConfig({
       name: 'vuer',
       entry: {
         "index": resolve(__dirname, './vuer/index.tsx'),
-        "websocket": resolve(__dirname, './vuer/html_components/contexts/websocket.tsx')
       },
       formats: [ 'es', 'cjs' ],
-      fileName: (format, name) => `${name}.${format}.js`,
+      fileName: (format, name) => {
+        if (format == 'es') return `${name}.esm.js`;
+        else return `${name}.${format}`;
+      }
     },
     rollupOptions: {
       // These are the libraries that we do not want to include in our bundle.
       external: [
-        'react', 'react-dom', 'styled-components',
+        'react',
+        'react-dom',
+        'styled-components',
+        'three',
+        '@react-three/fiber',
       ],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
-          'styled-components': 'styled'
         },
       },
     },

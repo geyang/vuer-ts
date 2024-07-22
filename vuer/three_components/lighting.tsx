@@ -31,7 +31,7 @@ type LightProps<TLP> = VuerProps<{
 export function RectAreaLight(
   {
     _key,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     children,
     hide = false,
     intensity = 1.0,
@@ -68,7 +68,7 @@ export function RectAreaLight(
 export function HemisphereLight(
   {
     _key,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     children,
     hide = false,
     intensity = 1.0,
@@ -104,7 +104,7 @@ export function HemisphereLight(
 export function DirectionalLight(
   {
     _key,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     children,
     hide = false,
     intensity = 0.5,
@@ -140,7 +140,7 @@ export function DirectionalLight(
 export function AmbientLight(
   {
     _key,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     children,
     hide = false,
     intensity = 0.5,
@@ -176,7 +176,7 @@ export function AmbientLight(
 export function SpotLight(
   {
     _key,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     children,
     hide = false,
     intensity = 0.5,
@@ -215,7 +215,7 @@ type PointLightProps = LightProps<{
 export function PointLight(
   {
     _key,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     children,
     hide = false,
     intensity = 20,

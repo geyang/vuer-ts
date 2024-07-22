@@ -29,7 +29,7 @@ export function useWebRTC(src: string, {
       if (evt.track.kind == 'video') setSrc(evt.streams[0]);
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     const offer = negotiate_webrtc(peer, src);
 
     // close the connection on destroy.

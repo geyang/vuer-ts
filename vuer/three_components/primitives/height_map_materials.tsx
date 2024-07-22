@@ -2,7 +2,7 @@ import { MaterialProps, MeshStandardMaterialProps, useLoader } from '@react-thre
 import { DataTexture, NoColorSpace, TangentSpaceNormalMap, Texture, TextureLoader, } from 'three';
 import { useLayoutEffect, useMemo } from 'react';
 import { useControls } from 'leva';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 // @ts-expect-error
 import { TextureImageData } from 'three/src/textures/types';
 import { height2normal } from './normal_map_utils';

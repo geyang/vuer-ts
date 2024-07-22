@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useState, } from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState, } from 'react';
 import useWebSocket from 'react-use-websocket';
 import { button, useControls } from 'leva';
 import useStateRef from 'react-usestateref';
@@ -17,6 +17,13 @@ export type SocketContextType = {
 };
 export const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
+export const useSocket = (): SocketContextType => {
+  const context = useContext(SocketContext);
+  if (context === undefined) {
+    throw new Error('useSocket must be used within a SocketProvider');
+  }
+  return context;
+}
 
 const DEFAULT_PORT = 8012;
 

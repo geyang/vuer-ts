@@ -23,7 +23,7 @@ import { GroupSlave, SceneGroup } from './group';
 import { BackgroundColor } from './color';
 import { document } from '../third_party/browser-monads';
 import { ClientEvent, VuerProps } from "../vuer/interfaces";
-import { SocketContext, SocketContextType } from "../vuer/websocket";
+import { useSocket, SocketContextType } from "../vuer/websocket";
 // @ts-ignore: no type definition for three-stdlib
 import { OrbitControls as tOrbitControls } from "three-stdlib/controls/OrbitControls";
 
@@ -91,7 +91,7 @@ export function Scene({
 }: SceneProps,) {
   const ref = useRef<HTMLCanvasElement>();
   const canvasRef = _canvasRef || ref;
-  const { sendMsg, uplink } = useContext(SocketContext) as SocketContextType;
+  const { sendMsg, uplink } = useSocket() as SocketContextType;
   const queries = useMemo<ParsedQuery>(() => queryString.parse(document.location.search), []);
 
   useEffect(() => {
@@ -151,7 +151,7 @@ export function Scene({
           ref={ref}
           shadows
           // preserve buffer needed for download and grab image data
-          gl={{ antialias: true, preserveDrawingBuffer: true }}
+          gl={{ preserveDrawingBuffer: true }}
           frameloop={frameloop}
           // frameloop="demand"
           // why set it to 1: https://stackoverflow.com/a/32936969/1560241

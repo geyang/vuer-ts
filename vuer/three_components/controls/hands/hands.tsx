@@ -3,8 +3,8 @@ import { useFrame } from "@react-three/fiber";
 import throttle from "lodash.throttle";
 import { useController, useXR } from '@react-three/xr';
 
-import { VuerProps } from "../../../vuer/interfaces";
-import { SocketContext, SocketContextType } from "../../../vuer/websocket";
+import { ClientEvent, VuerProps } from "../../../vuer/interfaces";
+import { useSocket, SocketContextType } from "../../../vuer/websocket";
 import { Group } from "three";
 
 const HAND_MODEL_JOINT_KEYS = [
@@ -72,7 +72,7 @@ function Hands({
   ..._
 }: HandsProps): ReactNode {
 
-  const { sendMsg } = useContext(SocketContext) as SocketContextType;
+  const { sendMsg } = useSocket() as SocketContextType;
   const { isPresenting } = useXR();
 
   const leftHandRef = useRef() as MutableRefObject<Group>;
@@ -103,10 +103,11 @@ function Hands({
     }
 
     setTimeout(() => sendMsg({
+      ts: Date.now(),
       etype: "HAND_MOVE",
       key: _key,
       value: poseData,
-    }), 0);
+    } as ClientEvent), 0);
   }, 1000 / fps, { leading: true, trailing: true }), [
     fps, sendMsg, isPresenting, left, right, gaze, useLeft, useRight, stream ]);
 

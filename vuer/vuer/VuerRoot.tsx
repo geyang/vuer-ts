@@ -1,18 +1,17 @@
-import React, { createContext, PropsWithRef, useContext, useMemo, } from 'react';
+import React, { createContext, PropsWithRef, useContext, useMemo } from 'react';
 import queryString from 'query-string';
 import { Leva } from 'leva';
 import { document } from '../third_party/browser-monads';
-import { SocketContext } from './websocket';
-import { PlaybackProvider } from "../timeline_components/player";
-import { SceneContainer, SceneContainerP } from "./SceneContainer";
+import { useSocket } from './websocket';
+import { SceneContainer, SceneContainerP } from './SceneContainer';
 
 interface QueryParams {
   collapseMenu?: string;
-  xrMode?: "inline" | "AR" | "VR" | "hidden";
+  xrMode?: 'inline' | 'AR' | 'VR' | 'hidden';
 }
 
 interface VuerRootProps extends PropsWithRef<SceneContainerP> {
-  style?: object
+  style?: object;
 }
 
 export const AppContext = createContext({
@@ -22,16 +21,16 @@ export const AppContext = createContext({
   showWarning: (msg: string) => console.warn(msg),
   showModal: (msg: string) => {
     console.log(msg);
-  }
+  },
 });
 
 export const AppProvider = AppContext.Provider;
 
 export function VuerRoot({ style = {}, ...rest }: VuerRootProps) {
-
   const queries = useMemo<QueryParams>(() => {
     const parsed = queryString.parse(document.location.search) as QueryParams;
-    if (typeof parsed.collapseMenu === 'string') parsed.collapseMenu = parsed.collapseMenu.toLowerCase();
+    if (typeof parsed.collapseMenu === 'string')
+      parsed.collapseMenu = parsed.collapseMenu.toLowerCase();
     return parsed;
   }, []);
   const collapseMenu = useMemo<boolean>(
@@ -51,15 +50,13 @@ export function VuerRoot({ style = {}, ...rest }: VuerRootProps) {
     [ style ],
   );
 
-  const { downlink } = useContext(SocketContext);
+  const { downlink } = useSocket();
 
   // todo: might want to treat scene as one of the children.
   // note: finding a way to handle the leva menu will be tricky.
   return (
     <>
-      <PlaybackProvider>
-        <SceneContainer style={sceneStyle} stream={downlink} {...rest}/>
-      </PlaybackProvider>
+      <SceneContainer style={sceneStyle} stream={downlink} {...rest} />
       <Leva
         theme={{
           sizes: {

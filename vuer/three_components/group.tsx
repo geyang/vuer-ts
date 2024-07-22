@@ -4,7 +4,7 @@ import queryString, { ParsedQuery } from 'query-string';
 import { Euler, Vector3 } from '@react-three/fiber';
 import { document } from '../third_party/browser-monads';
 import { Sim3, SO3, V3 } from './number_types';
-import { SocketContext } from "../vuer/websocket";
+import { useSocket } from "../vuer/websocket";
 import { ClientEvent } from "../vuer/interfaces";
 import { SceneStoreType, useSceneStore } from "../vuer";
 
@@ -68,7 +68,7 @@ export function SceneGroup({
   scale: paramScale,
   children,
 }: SceneGroupProps) {
-  const { uplink } = useContext(SocketContext);
+  const { uplink } = useSocket();
   const sceneStore = useSceneStore();
   const queries = useMemo<Sim3>((): Sim3 => {
     const q: ParsedQuery & Sim3Queries = queryString.parse(document.location.search);

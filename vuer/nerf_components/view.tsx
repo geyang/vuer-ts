@@ -15,7 +15,7 @@ import { BBox } from '../three_components/primitives/bbox';
 import { GroupSlave, rot2array, scale2array, v3array, } from '../three_components/group';
 import { V3 } from '../three_components/number_types';
 import { ClientEvent, ServerEvent, VuerProps } from "../vuer/interfaces";
-import { SocketContext, SocketContextType } from "../vuer/websocket";
+import { useSocket, SocketContextType } from "../vuer/websocket";
 
 export const RenderContext = createContext({});
 
@@ -71,9 +71,9 @@ export function Render(
     () => ({ layers: new Set() }),
     [],
   );
-  const { uplink } = useContext(SocketContext) as SocketContextType;
+  const { uplink } = useSocket() as SocketContextType;
 
-  // eslint-disable-next-line prefer-const
+   
   [ controls, setLeva ] = useControls(
     // _key ? `Render-${_key}` : "Render",
     'Render',
@@ -141,7 +141,7 @@ export function Render(
   }) as BaseRenderSettingsType;
   // the world position and rotations are added on the top.
   useEffect(() => {
-    setTimeout(() => uplink?.publish({ etype: 'CAMERA_UPDATE' }), 0);
+    setTimeout(() => uplink?.publish({ etype: 'CAMERA_UPDATE', ts: Date.now() } as ClientEvent), 0);
     return uplink.addReducer(
       'CAMERA_MOVE',
       ({
@@ -220,7 +220,7 @@ export function RenderLayer(
 ) {
   const [ rgbURI, setRGB ] = useState<Blob | string>();
   const [ alphaURI, setAlphaMap ] = useState<Blob | string>();
-  const { uplink, downlink } = useContext(SocketContext) as SocketContextType;
+  const { uplink, downlink } = useSocket() as SocketContextType;
   const setting_cache: { [key: string]: unknown } = useMemo(
     () => Object.entries(settings || {}).reduce(
       (acc, [ key, value ]) => ({
@@ -237,7 +237,7 @@ export function RenderLayer(
   ]) as BaseRenderParamsType;
   // the world position and rotations are added on the top.
   useLayoutEffect(() => {
-    setTimeout(() => uplink?.publish({ etype: 'CAMERA_UPDATE' }), 0);
+    setTimeout(() => uplink?.publish({ etype: 'CAMERA_UPDATE', ts: Date.now() }), 0);
     return uplink.addReducer(
       'CAMERA_MOVE',
       ({ value: { render = {}, ..._value }, ..._event }: CameraMoveEvent) =>
