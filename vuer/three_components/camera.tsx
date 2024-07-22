@@ -261,7 +261,7 @@ export function MyKeyboardControls(
         // const ctrl = control.current;
         const camera = controls.object;
         const adjusted: number = panSpeed * viewHeight;
-        console.log('view height', viewHeight, 'panSpeed', panSpeed, 'adjusted', adjusted);
+        // console.log('view height', viewHeight, 'panSpeed', panSpeed, 'adjusted', adjusted);
         const clipped = Math.max(adjusted, 0.001);
         const speed = e.shiftKey ? clipped * 10 : clipped;
         console.log('speed:', speed, 'panSpeed', panSpeed);
@@ -686,7 +686,7 @@ export function OrbitCamera(
     <OrbitControls
       ref={controlsRef as MutableRefObject<tOrbitControls>}
       makeDefault
-      enableDamping={false}
+      enableDamping={true}
       enablePan
       screenSpacePanning
       onChange={handler}
