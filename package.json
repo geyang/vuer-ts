@@ -26,8 +26,7 @@
     "@emotion/styled": "^11.11.5",
     "@lumaai/luma-web": "^0.1.14",
     "@petamoriken/float16": "^3.8.4",
-    "@preact/signals": "^1.2.3",
-    "@preact/signals-react": "^2.0.1",
+    "@preact/signals-react": "^2.1.0",
     "@react-spring/three": "^9.7.3",
     "@react-spring/web": "^9.7.3",
     "@react-three/drei": "^9.106.0",
@@ -80,6 +79,7 @@
   "devDependencies": {
     "@emotion/babel-plugin": "^11.11.0",
     "@eslint-recommended/eslint-config": "^26.1.1",
+    "@preact/signals-react-transform": "^0.4.0",
     "@types/js-yaml": "^4.0.9",
     "@types/react-helmet": "^6.1.9",
     "@types/sass": "^1.45.0",

@@ -12,23 +12,12 @@ import {
   SkipNext,
   SkipPrevious,
 } from '../icons';
-import { usePlayback } from '../player';
+import { usePlayback } from '../playback';
 import { Trash } from '../icons/Trash';
-import { useStorage } from '../hooks';
-import { useEffect } from 'react';
+import { computed } from '@preact/signals-react';
 
 export function PlaybackControls() {
-  const player = usePlayback();
-
-  const [fps, setFps] = useStorage('vuer-fps', 60);
-  const [speed, setSpeed] = useStorage('vuer-speed', 1);
-  const [maxlen, setMaxlen] = useStorage('vuer-maxlen', 100);
-
-  useEffect(() => {
-    player.fps = fps;
-    player.speed = speed;
-    player.setMaxlen(maxlen);
-  }, [fps, speed, maxlen]);
+  const { playback, paused, loop, fps, recording } = usePlayback();
 
   return (
     <div
@@ -38,55 +27,63 @@ export function PlaybackControls() {
         gap: 16px;
       `}
     >
-      <Select
+      <Select<number>
         title='Playback speed'
         options={[
+          { value: 0.125, text: '12.5%' },
           { value: 0.25, text: '25%' },
           { value: 0.5, text: '50%' },
           { value: 1, text: '✕1' },
           { value: 1.5, text: '✕1.5' },
           { value: 2, text: '✕2' },
+          { value: 4, text: '✕4' },
         ]}
-        value={player.speed}
-        onChange={setSpeed}
+        value={playback.speed}
+        onChange={(value) => {
+          playback.speed.value = value;
+        }}
       />
       <IconButton
         title='Start [Shift + Left arrow]'
-        onClick={() => player.reset()}
+        onClick={() => playback.reset()}
       >
         <SkipPrevious />
       </IconButton>
       <IconButton
         title='Previous frame [Left arrow]'
-        onClick={() => player.seekPrevious()}
+        onClick={() => playback.seekPrevious()}
       >
         <FastRewind />
       </IconButton>
       <IconButton
-        title={player.isPaused ? 'Pause [Space]' : 'Play [Space]'}
-        onClick={player.togglePlayback}
+        title={computed(() =>
+          playback.isPaused.value ? 'Pause [Space]' : 'Play [Space]',
+        )}
+        onClick={playback.togglePlayback}
       >
-        {player.isPaused ? <PlayArrow /> : <Pause />}
+        {paused ? <PlayArrow /> : <Pause />}
       </IconButton>
-      <IconButton title='Next frame [Right arrow]' onClick={player.seekNext}>
+      <IconButton title='Next frame [Right arrow]' onClick={playback.seekNext}>
         <FastForward />
       </IconButton>
-      <IconButton title='End [Shift + Right arrow]' onClick={player.seekEnd}>
+      <IconButton title='End [Shift + Right arrow]' onClick={playback.seekEnd}>
         <SkipNext />
       </IconButton>
       <IconCheckbox
-        titleOn='Disable looping [L]'
+        title='Disable looping [L]'
         titleOff='Enable looping [L]'
-        checked={player.loop}
-        onChange={player.toggleLoop}
+        active={loop}
+        onChange={playback.toggleLoop}
       >
         <Repeat />
       </IconCheckbox>
       <Input
         title='Current framerate'
-        value={player.fps}
+        value={playback.fps}
         postfix='FPS'
-        onChange={setFps}
+        onChange={(value) => {
+          playback.fps.value = value;
+        }}
         type='number'
         width='25px'
       />
@@ -95,19 +92,19 @@ export function PlaybackControls() {
       </IconButton>
       <Input
         title='Current framerate'
-        value={player.keyFrames.maxlen}
+        value={playback.maxlen}
         prefix='Maxlen '
-        onChange={setMaxlen}
+        onChange={playback.setMaxlen}
         type='number'
         width='50px'
       />
       <IconButton
-        title={player.isRecording ? 'Stop Recording' : 'Record'}
-        onClick={() => player.toggleRecording()}
+        title={recording ? 'Stop Recording' : 'Record'}
+        onClick={() => playback.toggleRecording()}
       >
-        <Recording isRecording={player.isRecording} />
+        <Recording active={recording} />
       </IconButton>
-      <IconButton title='clear the key frames buffer' onClick={player.clear}>
+      <IconButton title='clear the key frames buffer' onClick={playback.clear}>
         <Trash />
       </IconButton>
     </div>

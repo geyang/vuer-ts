@@ -135,7 +135,7 @@
   dependencies:
     "@babel/types" "^7.24.7"
 
-"@babel/helper-module-imports@^7.16.7":
+"@babel/helper-module-imports@^7.16.7", "@babel/helper-module-imports@^7.22.5":
   version "7.24.7"
   resolved "https://registry.yarnpkg.com/@babel/helper-module-imports/-/helper-module-imports-7.24.7.tgz#f2f980392de5b84c3328fc71d38bd81bbb83042b"
   integrity sha512-8AyH3C+74cgCVVXow/myrynrAGv+nTVg5vKu2nZph9x7RcRwzmh0VFallJuFTZ9mx6u4eSdXZfcOzSqTUm0HCA==
@@ -1013,12 +1013,36 @@
   resolved "https://registry.yarnpkg.com/@preact/signals-core/-/signals-core-1.6.0.tgz#f3e47b7cddab60e61a087c9b422a28f52e58ce20"
   integrity sha512-O/XGxwP85h1F7+ouqTMOIZ3+V1whfaV9ToIVcuyGriD4JkSD00cQo54BKdqjvBJxbenvp7ynfqRHEwI6e+NIhw==
 
+"@preact/signals-core@^1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@preact/signals-core/-/signals-core-1.7.0.tgz#3ffb886bfac80ff14dac365dd09184a289a2e64c"
+  integrity sha512-bEZLgmJGSBVP5PUPDowhPW3bVdMmp9Tr5OEl+SQK+8Tv9T7UsIfyN905cfkmmeqw8z4xp8T6zrl4M1uj9+HAfg==
+
+"@preact/signals-react-transform@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@preact/signals-react-transform/-/signals-react-transform-0.4.0.tgz#cd81a76c41b9ade9d3a3b0db77ee48eb3e80377e"
+  integrity sha512-ZH8u5VrFPMmxggjAr7Rl9OLi3yvyDGi4lGQulftkszuiJB15jVy/MMraIfNvWKf2RfjtHLvp3K6Jk19xO/j7Tw==
+  dependencies:
+    "@babel/helper-module-imports" "^7.22.5"
+    "@babel/helper-plugin-utils" "^7.22.5"
+    "@preact/signals-react" "^2.1.0"
+    debug "^4.3.4"
+    use-sync-external-store "^1.2.0"
+
 "@preact/signals-react@^2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@preact/signals-react/-/signals-react-2.0.1.tgz#c42db9fc8efed599a836ddf5a026c0681fda07cb"
   integrity sha512-QQoxAPiliH6oeZPF5OZHmyala5zyFya0ZCp/A0lR4y6R9wO4lT7GdtYg5UFlmKNWMcFN6PiAjNPMTiNFMmnCpw==
   dependencies:
     "@preact/signals-core" "^1.6.0"
+    use-sync-external-store "^1.2.0"
+
+"@preact/signals-react@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@preact/signals-react/-/signals-react-2.1.0.tgz#4555eb9d02aad2802eaa733619ebd481e086b940"
+  integrity sha512-jWq2ldDWXdbKpg+aMGuOZfj9tS5JkVlGJ5hGNzNe1Zfe7RLFfvldBEfNe6ZT7KZddecAxKhyoxSsEypgbfx/Gw==
+  dependencies:
+    "@preact/signals-core" "^1.7.0"
     use-sync-external-store "^1.2.0"
 
 "@preact/signals@^1.2.3":

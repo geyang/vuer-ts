@@ -1,13 +1,12 @@
- 
 /** Component Registar
  *
  * - This file is used to register all the components that are available to the user.
  *
  * todo: need to change this into a factory function and a registry object.
  */
-export * from "./timeline_components/player";
-export * from "./layout_components";
-export * from "./all_components";
-export * from "./vuer/VuerRoot";
-export * from "./vuer/SceneContainer"
-export * from "./vuer"
+export * from './timeline_components/playback';
+export * from './layout_components';
+export * from './all_components';
+export * from './vuer/VuerRoot';
+export * from './vuer/SceneContainer';
+export * from './vuer';

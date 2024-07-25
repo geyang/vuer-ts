@@ -1,17 +1,22 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from 'react';
 
 export function useStorage<T>(
   id: string,
   initialState: T = null,
-  collection = "vuer-default",
-): [ T, (newState: T) => void, boolean ] {
+  collection = 'vuer-default',
+): [T, (newState: T) => void, boolean] {
   // const name = useApplication().project.name;
   const key = `${collection}-${id}`;
-  const [ savedState, wasLoaded ] = useMemo(() => {
+  const [savedState, wasLoaded] = useMemo(() => {
     const savedState = localStorage.getItem(key);
-    return savedState ? [ JSON.parse(savedState), true ] : [ initialState, false ];
-  }, [ key ]);
-  const [ state, setState ] = useState<T>(savedState);
+    try {
+      const parsed = JSON.parse(savedState);
+      return savedState ? [parsed, true] : [initialState, false];
+    } catch (e) {
+      return [initialState, false];
+    }
+  }, [key]);
+  const [state, setState] = useState<T>(savedState);
 
   const updateState = useCallback(
     (newState: T) => {
@@ -20,8 +25,8 @@ export function useStorage<T>(
       }
       setState(newState);
     },
-    [ setState, key ],
+    [setState, key],
   );
 
-  return [ state, updateState, wasLoaded ];
+  return [state, updateState, wasLoaded];
 }

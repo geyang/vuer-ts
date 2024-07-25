@@ -1,61 +1,71 @@
-import { css, keyframes } from '@emotion/react';
+import {
+  css,
+  keyframes,
+  Theme,
+  CSSObject,
+  SerializedStyles,
+} from '@emotion/react';
+import {
+  computed,
+  Signal,
+  useComputed,
+  useSignalEffect,
+} from '@preact/signals-react';
+import { is } from '@react-three/fiber/dist/declarations/src/core/utils';
+import { useState } from 'react';
 
 const breathAnimation = keyframes`
-    0% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.2;
-    }
-    100% {
-        opacity: 1;
-    }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+  }
 `;
 
 const circleStyle = css`
-    fill: red;
-    stroke: transparent;
-    stroke-width: 0;
-    animation: ${breathAnimation} 5s infinite;
+  fill: red;
+  stroke: transparent;
+  stroke-width: 0;
+  animation: ${breathAnimation} 5s infinite;
 
-    :hover {
-        animation: none;
-        fill: transparent;
-        stroke: white;
-        stroke-width: 10;
-    }
+  :hover {
+    animation: none;
+    fill: transparent;
+    stroke: white;
+    stroke-width: 10;
+  }
 `;
 
 const disabledStyle = css`
-    fill: transparent;
-    stroke: rgba(255, 255, 255, 0.54);
-    stroke-width: 10;
+  fill: transparent;
+  stroke: rgba(255, 255, 255, 0.54);
+  stroke-width: 10;
 
-    :hover {
-        fill: red;
-        stroke: white;
-        opacity: 1 !important;
-    }
+  :hover {
+    fill: red;
+    stroke: white;
+    opacity: 1 !important;
+  }
 `;
 
-
 interface RecordingProps {
-  isRecording: boolean;
+  active: boolean;
 }
 
-export const Recording = ({ isRecording }: RecordingProps) => {
+export const Recording = ({ active }: RecordingProps) => {
+  // const [style, setStyle] = useState<SerializedStyles | null>();
+  // useSignalEffect(() => {
+  //   if (isRecording.value) setStyle(circleStyle);
+  //   else setStyle(disabledStyle);
+  // });
+  const style = active ? circleStyle : disabledStyle;
   return (
-    <svg
-      width="100"
-      height="100"
-      viewBox="0 0 100 100"
-    >
-      <circle
-        css={isRecording ? circleStyle : disabledStyle}
-        cx="50"
-        cy="50"
-        r="30"
-      />
+    <svg width='100' height='100' viewBox='0 0 100 100'>
+      <circle css={style} cx='50' cy='50' r='30' />
     </svg>
   );
 };

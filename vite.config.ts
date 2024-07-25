@@ -8,14 +8,15 @@ import * as sass from 'sass';
 
 export default defineConfig({
   plugins: [
-    react(
-      {
-        jsxImportSource: "@emotion/react",
-        babel: {
-          plugins: [ "@emotion/babel-plugin" ],
-        },
-      }
-    ),
+    react({
+      jsxImportSource: '@emotion/react',
+      babel: {
+        plugins: [
+          '@emotion/babel-plugin',
+          ['module:@preact/signals-react-transform', {mode: 'all'}],
+        ],
+      },
+    }),
     dts({
       insertTypesEntry: true,
     }),
@@ -28,7 +29,7 @@ export default defineConfig({
       },
     },
   },
-  root: "vuer",
+  root: 'vuer',
   build: {
     outDir: resolve(__dirname, './dist'),
     emptyOutDir: true,
@@ -37,21 +38,24 @@ export default defineConfig({
     lib: {
       name: 'vuer',
       entry: {
-        "index": resolve(__dirname, './vuer/index.tsx'),
+        index: resolve(__dirname, './vuer/index.tsx'),
       },
-      formats: [ 'es', 'cjs' ],
+      formats: ['es', 'cjs'],
       fileName: (format, name) => {
         if (format == 'es') return `${name}.esm.js`;
         else return `${name}.${format}`;
-      }
+      },
     },
     rollupOptions: {
       // These are the libraries that we do not want to include in our bundle.
+      // plus anything that requires a provider for globals.
       external: [
         'react',
         'react-dom',
         'styled-components',
         'three',
+        '@preact/signals-react',
+        '@preact/signals-core',
         '@react-three/fiber',
       ],
       output: {

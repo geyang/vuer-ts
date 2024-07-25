@@ -3,7 +3,7 @@ import { RefObject, useCallback, useEffect, useState } from 'react';
 import { MouseButton } from './mouse_interfaces';
 import { useKeyHold } from '../hooks';
 import { css } from '@emotion/react';
-import { RangeOption, stateSetter, usePlayback } from '../player';
+import { RangeOption, stateSetter, usePlayback } from '../playback';
 import { clamp } from '../../layout_components/utils';
 import { start } from 'node:repl';
 
@@ -41,33 +41,33 @@ const style = css`
 `;
 
 export function RangeSelector({ rangeRef, viewWidth }: RangeSelectorProps) {
-  const player = usePlayback();
+  const { playback } = usePlayback();
 
-  const [rStart, setLocalStart] = useState(player.range.start);
-  const [rEnd, setLocalEnd] = useState(player.range.end);
-
-  useEffect(() => {
-    setLocalStart(player.range.start);
-  }, [player.range.start]);
+  const [rStart, setLocalStart] = useState(playback.range.start.value);
+  const [rEnd, setLocalEnd] = useState(playback.range.end.value);
 
   useEffect(() => {
-    setLocalEnd(player.range.end);
-  }, [player.range.end]);
+    setLocalStart(playback.range.start.value);
+  }, [playback.range.start.value]);
+
+  useEffect(() => {
+    setLocalEnd(playback.range.end.value);
+  }, [playback.range.end.value]);
 
   const setStart = useCallback(
     (start: number) => {
-      player.setRange({ start });
+      playback.setRange({ start });
       setLocalStart(start);
     },
-    [player],
+    [playback],
   );
 
   const setEnd = useCallback(
     (end: number) => {
-      player.setRange({ end });
+      playback.setRange({ end });
       setLocalEnd(end);
     },
-    [player],
+    [playback],
   );
 
   return (
@@ -82,8 +82,8 @@ export function RangeSelector({ rangeRef, viewWidth }: RangeSelectorProps) {
         ref={rangeRef}
         css={rangeStyle}
         style={{
-          left: `${((rStart - player.start) / (player.end - player.start)) * 100}%`,
-          right: `${(((player.duration + player.end - rEnd) % player.duration) / (player.end - player.start)) * 100}%`,
+          left: `${((rStart - playback.start.value) / (playback.end.value - playback.start.value)) * 100}%`,
+          right: `${(((playback.duration + playback.end.value - rEnd) % playback.duration) / (playback.end.value - playback.start.value)) * 100}%`,
         }}
       >
         {/*(start: number) => selectRange({ start, end: rangeEnd } as RangeOption)}*/}
@@ -91,16 +91,16 @@ export function RangeSelector({ rangeRef, viewWidth }: RangeSelectorProps) {
         <RangeHandle
           onChange={setStart}
           roundUp
-          start={player.start}
-          end={player.end}
+          start={playback.start.value}
+          end={playback.end.value}
           viewWidth={viewWidth}
         />
         <div css={style} />
         <RangeHandle
           onChange={setEnd}
           roundUp
-          start={player.start}
-          end={player.end}
+          start={playback.start.value}
+          end={playback.end.value}
           viewWidth={viewWidth}
         />
       </div>

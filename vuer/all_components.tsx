@@ -14,9 +14,7 @@ export * from "./drei_components";
 export * from "./three_components";
 export { TimelineControls } from "./uxr_components/TimelineControls";
 
-export * from "@vuer-ai/mujoco-ts";
-
- 
+export * from "./physics_components";
 export * from "./timeline_components";
 
 export const Splats = React.lazy(() => import( './third_party/luma_splats' ))

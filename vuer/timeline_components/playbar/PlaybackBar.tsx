@@ -1,9 +1,10 @@
 import { css } from '@emotion/react';
 import { PlaybackControls } from './PlaybackControls';
 import { Timestamp } from './CurrentTime';
-import { Playback, usePlayback } from '../player';
+import { Playback, usePlayback } from '../playback';
 import { is } from '@react-three/fiber/dist/declarations/src/core/utils';
 import { useSocket } from '../../vuer';
+import { computed } from '@preact/signals-react';
 
 const PlaybackBarStyle = css`
   background: var(--surface-color);
@@ -37,20 +38,20 @@ export interface PlaybackBarProps {
  * ```typescript
  * useEffect(() => {
  *   const cancel = [
- *     downlink.subscribe("SET", player.addKeyFrame),
- *     downlink.subscribe("ADD", player.addKeyFrame),
- *     downlink.subscribe("UPDATE", player.addKeyFrame),
- *     downlink.subscribe("UPSERT", player.addKeyFrame),
+ *     downlink.subscribe("SET", playback.addKeyFrame),
+ *     downlink.subscribe("ADD", playback.addKeyFrame),
+ *     downlink.subscribe("UPDATE", playback.addKeyFrame),
+ *     downlink.subscribe("UPSERT", playback.addKeyFrame),
  *   ]
  *
  *   return () => {
  *     cancel.forEach(f => f());
  *   }
- * }, [ player, downlink ])
+ * }, [ playback, downlink ])
  * ```
  */
 export const PlaybackBar = ({ progress }: PlaybackBarProps) => {
-  const player = usePlayback();
+  const { playback } = usePlayback();
 
   return (
     <div
@@ -65,14 +66,22 @@ export const PlaybackBar = ({ progress }: PlaybackBarProps) => {
     >
       <Timestamp
         title='Current time'
-        frame={player.range.start}
-        frameTime={(player.range.start - player.start) / player.fps}
+        frame={playback.range.start}
+        frameTime={computed(
+          () =>
+            (playback.range.start.value - playback.start.value) /
+            playback.fps.value,
+        )}
       />
       <PlaybackControls />
       <Timestamp
         title='Duration'
-        frame={player.range.end}
-        frameTime={(player.range.end - player.start) / player.fps}
+        frame={playback.range.end}
+        frameTime={computed(
+          () =>
+            (playback.range.end.value - playback.start.value) /
+            playback.fps.value,
+        )}
         right
       />
     </div>
