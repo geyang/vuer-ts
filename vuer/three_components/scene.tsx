@@ -11,7 +11,7 @@ import React, {
 } from 'react';
 import { Mesh, Object3D, Vector3 } from 'three';
 import { Canvas } from '@react-three/fiber';
-import { GizmoHelper, GizmoViewport } from '@react-three/drei';
+import { GizmoHelper, GizmoViewport, Sphere } from '@react-three/drei';
 import { ARButton, Controllers, VRButton, XR } from '@react-three/xr';
 import { acceleratedRaycast } from 'three-mesh-bvh';
 import { Perf } from 'r3f-perf';
@@ -192,6 +192,22 @@ export function Scene({
                 labelColor="white"
               />
             </GizmoHelper>
+            {/*<ambientLight intensity={0.1}/>*/}
+            {/*<directionalLight castShadow intensity={1}/>*/}
+            {/*/!*make it point to the origin*!/*/}
+            {/*<directionalLight*/}
+            {/*  castShadow*/}
+            {/*  intensity={2}*/}
+            {/*  position={[ 2, 2, 2 ]}*/}
+            {/*  rotation={[*/}
+            {/*    -0.5773502691896258, -0.5773502691896258, -0.5773502691896258,*/}
+            {/*  ]}*/}
+            {/*/>*/}
+            {/*<pointLight position={[ 10, 10, 10 ]} intensity={10}/>*/}
+            {/*<pointLight position={[ 20, 10, 10 ]}/>*/}
+            {/*<pointLight position={[ -10, 10, 20 ]}/>*/}
+            {/*<fog attach='fog' args={[ '#2c3f57', 1, 10 ]}/>*/}
+            <Sphere args={[100]} position={[0, 0, 0]} material-color={'#2c3f57'} material-side={2}/>
           </XR>
         </Canvas>
       </div>

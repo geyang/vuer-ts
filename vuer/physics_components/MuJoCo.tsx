@@ -1,12 +1,9 @@
 import { MuJoCoModel, MuJoCoModelProps, KeyFrame } from '@vuer-ai/mujoco-ts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ClientEvent, useSocket, VuerProps } from '../vuer';
-import { throttle } from '../timeline_components/timeline/throttle';
 import { usePlayback } from '../timeline_components/playback';
 import { UpdateOp } from '../vuer/eventHelpers';
 import { Node } from '../vuer/interfaces';
-import { useComputed, useSignalEffect } from '@preact/signals-react';
-import playback from '../../../mujoco-ts/example/src/routes/Playback';
 
 export interface ON_MUJOCO_FRAME extends ClientEvent {
   value: { dt: number; keyFrame: KeyFrame };
@@ -20,6 +17,10 @@ export interface MuJoCoProps
        * is controlled by the speed property in the MuJoCoModelProps.
        */
       fps?: number;
+      /**
+       * Staging the environment with fogs, lights and so on.
+       */
+      stage?: boolean;
     } & MuJoCoModelProps
   > {}
 
@@ -50,6 +51,7 @@ export const MuJoCo = ({
   keyFrame,
   pause,
   speed,
+  stage = true,
   ...props
 }: MuJoCoProps) => {
   const { uplink, downlink, sendMsg } = useSocket();
@@ -57,15 +59,14 @@ export const MuJoCo = ({
 
   const {
     playback,
-    fps: simFps,
-    speed: simSpeed,
-    paused: simPaused,
-    recording ,
+    fps: pbFps,
+    speed: pbSpeed,
+    paused: pbPaused,
+    recording,
   } = usePlayback();
 
   const onFrame = useCallback(
     (frame: KeyFrame, delta: number) => {
-      console.log('onFrame');
       uplink?.publish({
         ts: Date.now(),
         etype: 'ON_MUJOCO_FRAME',
@@ -75,10 +76,11 @@ export const MuJoCo = ({
     [uplink],
   );
 
-  useSignalEffect(() => {
-    const cancel = [
-      // we apply mutation to the update events, to record it into our playback timeline.
-      uplink.subscribe('ON_MUJOCO_FRAME', ({ ts, value }: ON_MUJOCO_FRAME) => {
+  useEffect(() => {
+    // we apply mutation to the update events, to record it into our playback timeline.
+    const cancel = uplink.subscribe(
+      'ON_MUJOCO_FRAME',
+      ({ ts, value }: ON_MUJOCO_FRAME) => {
         if (!playback.isRecording.value) return;
         playback.addKeyFrame(
           UpdateOp(
@@ -86,12 +88,10 @@ export const MuJoCo = ({
             ts,
           ),
         );
-      }),
-    ];
+      },
+    );
 
-    return () => {
-      cancel.forEach((f) => f());
-    };
+    return cancel;
   });
 
   return (
@@ -124,7 +124,8 @@ export const MuJoCo = ({
       keyFrame={keyFrame || _keyFrame}
       onFrame={onFrame}
       pause={!recording}
-      speed={1}
+      fps={fps || pbFps}
+      speed={pbSpeed}
       {...props}
     />
   );

@@ -26,7 +26,7 @@ const breathAnimation = keyframes`
   }
 `;
 
-const circleStyle = css`
+const activeStyle = css`
   fill: red;
   stroke: transparent;
   stroke-width: 0;
@@ -57,12 +57,7 @@ interface RecordingProps {
 }
 
 export const Recording = ({ active }: RecordingProps) => {
-  // const [style, setStyle] = useState<SerializedStyles | null>();
-  // useSignalEffect(() => {
-  //   if (isRecording.value) setStyle(circleStyle);
-  //   else setStyle(disabledStyle);
-  // });
-  const style = active ? circleStyle : disabledStyle;
+  const style = active ? activeStyle : disabledStyle;
   return (
     <svg width='100' height='100' viewBox='0 0 100 100'>
       <circle css={style} cx='50' cy='50' r='30' />

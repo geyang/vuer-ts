@@ -274,21 +274,24 @@ export class Playback {
 
   toggleRecording = () => {
     this.isRecording.value = !this.isRecording.value;
+    // also stop the playback.
+    this.isPaused.value = true;
   };
 
   togglePlayback = () => {
-    console.log('togglePlayback', this.isPaused.value);
+    // console.log('togglePlayback', this.isPaused.value);
 
     // if the history is empty this is always paused.
     if (!this.duration) this.isPaused.value = true;
 
-    if (this.curr.value === this.range.end.value)
+    if (this.curr.value === this.range.end.value) {
       this.curr.value = this.range.start.value;
-    else this.isPaused.value = !this.isPaused.value;
+      this.store.publish(this.currentFrame);
+    } else this.isPaused.value = !this.isPaused.value;
   };
 
   toggleLoop = () => {
-    console.log('toggleLoop', this.loop.value);
+    // console.log('toggleLoop', this.loop.value);
     this.loop.value = !this.loop.value;
   };
 }
@@ -354,7 +357,7 @@ export const PlaybackProvider = ({ children }: Props) => {
   >('vuer-playback', {});
 
   useSignalEffect(() => {
-    console.log('useSignalEffect', playback.curr.value);
+    // console.log('useSignalEffect', playback.curr.value);
     setState({
       fps: playback.fps.value,
       speed: playback.speed.value,
@@ -372,7 +375,7 @@ export const PlaybackProvider = ({ children }: Props) => {
       paused: playback.isPaused.value,
     });
   });
-  console.log('this is happening');
+  // console.log('this is happening');
 
   useAnimationFrame(playback.render);
 
