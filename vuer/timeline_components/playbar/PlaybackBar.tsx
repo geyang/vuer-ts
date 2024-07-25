@@ -1,10 +1,8 @@
 import { css } from '@emotion/react';
 import { PlaybackControls } from './PlaybackControls';
 import { Timestamp } from './CurrentTime';
-import { Playback, usePlayback } from '../playback';
-import { is } from '@react-three/fiber/dist/declarations/src/core/utils';
-import { useSocket } from '../../vuer';
-import { computed } from '@preact/signals-react';
+import { usePlayback } from '../playback';
+
 
 const PlaybackBarStyle = css`
   background: var(--surface-color);
@@ -51,7 +49,8 @@ export interface PlaybackBarProps {
  * ```
  */
 export const PlaybackBar = ({ progress }: PlaybackBarProps) => {
-  const { playback } = usePlayback();
+  const { playback, fps, speed, start, end, rangeStart, rangeEnd } =
+    usePlayback();
 
   return (
     <div
@@ -66,23 +65,19 @@ export const PlaybackBar = ({ progress }: PlaybackBarProps) => {
     >
       <Timestamp
         title='Current time'
-        frame={playback.range.start}
-        frameTime={computed(
-          () =>
-            (playback.range.start.value - playback.start.value) /
-            playback.fps.value,
-        )}
+        frame={rangeStart}
+        frameTime={(rangeStart - start) / fps}
+        fps={fps}
+        speed={speed}
       />
       <PlaybackControls />
       <Timestamp
         title='Duration'
-        frame={playback.range.end}
-        frameTime={computed(
-          () =>
-            (playback.range.end.value - playback.start.value) /
-            playback.fps.value,
-        )}
+        frame={rangeEnd}
+        frameTime={(rangeEnd - start) / fps}
         right
+        fps={fps}
+        speed={speed}
       />
     </div>
   );

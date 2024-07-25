@@ -81,7 +81,7 @@ export const MuJoCo = ({
     const cancel = uplink.subscribe(
       'ON_MUJOCO_FRAME',
       ({ ts, value }: ON_MUJOCO_FRAME) => {
-        if (!playback.isRecording.value) return;
+        if (!playback.isRecording) return;
         playback.addKeyFrame(
           UpdateOp(
             [{ key: _key, tag: 'MuJoCo', keyFrame: value.keyFrame } as Node],

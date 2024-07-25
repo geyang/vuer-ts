@@ -1,13 +1,13 @@
-import { usePlayback } from '../playback';
 import { css } from '@emotion/react';
-import { computed, Signal } from '@preact/signals-react';
 
 interface CurrentTimeProps {
   title: string;
   time?: number;
-  frame?: Signal<number>;
-  frameTime?: Signal<number>;
+  frame?: number;
+  frameTime?: number;
   right?: boolean;
+  fps?: number;
+  speed?: number;
 
   [key: string]: unknown;
 }
@@ -17,17 +17,16 @@ export function Timestamp({
   frame,
   frameTime,
   right = false,
+  fps, speed,
   ...rest
 }: CurrentTimeProps) {
-  const { playback } = usePlayback();
-
   let precision = 0;
   // let padding = playback.fps.toString().length;
-  if (playback.speed.value % 1 !== 0) {
+  if (speed % 1 !== 0) {
     precision = 2;
     // padding += 3;
   }
-  const time = computed(() => frame.value / playback.fps.value);
+  const time = frame / fps;
 
   return (
     <code
@@ -47,7 +46,7 @@ export function Timestamp({
             color: rgba(255, 255, 255, 0.54);
           `}
         >
-          [{frame}]{/*[{frame.value.toFixed(precision)}]*/}
+          [{frame}]
         </span>
       )}
       <span
@@ -57,7 +56,7 @@ export function Timestamp({
           color: rgba(255, 255, 255, 0.32);
         `}
       >
-        [{frameTime}]{/*{frameTime.value.toFixed(3)}*/}
+        {frameTime}
       </span>
       {right && (
         <span
@@ -65,7 +64,7 @@ export function Timestamp({
             color: rgba(255, 255, 255, 0.54);
           `}
         >
-          [{frame}]{/*[{frame.value.toFixed(precision)}]*/}
+          [{frame}]
         </span>
       )}
     </code>

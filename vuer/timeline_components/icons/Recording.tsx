@@ -1,18 +1,7 @@
 import {
   css,
   keyframes,
-  Theme,
-  CSSObject,
-  SerializedStyles,
 } from '@emotion/react';
-import {
-  computed,
-  Signal,
-  useComputed,
-  useSignalEffect,
-} from '@preact/signals-react';
-import { is } from '@react-three/fiber/dist/declarations/src/core/utils';
-import { useState } from 'react';
 
 const breathAnimation = keyframes`
   0% {

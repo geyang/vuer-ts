@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
-import { CSSProperties, HTMLAttributes } from 'react';
-import { computed, Signal } from '@preact/signals-react';
+import { HTMLAttributes } from 'react';
 
 const buttonStyle = css`
   display: block;

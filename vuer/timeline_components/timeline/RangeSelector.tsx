@@ -43,16 +43,16 @@ const style = css`
 export function RangeSelector({ rangeRef, viewWidth }: RangeSelectorProps) {
   const { playback } = usePlayback();
 
-  const [rStart, setLocalStart] = useState(playback.range.start.value);
-  const [rEnd, setLocalEnd] = useState(playback.range.end.value);
+  const [rStart, setLocalStart] = useState(playback.range.start);
+  const [rEnd, setLocalEnd] = useState(playback.range.end);
 
   useEffect(() => {
-    setLocalStart(playback.range.start.value);
-  }, [playback.range.start.value]);
+    setLocalStart(playback.range.start);
+  }, [playback.range.start]);
 
   useEffect(() => {
-    setLocalEnd(playback.range.end.value);
-  }, [playback.range.end.value]);
+    setLocalEnd(playback.range.end);
+  }, [playback.range.end]);
 
   const setStart = useCallback(
     (start: number) => {
@@ -82,8 +82,8 @@ export function RangeSelector({ rangeRef, viewWidth }: RangeSelectorProps) {
         ref={rangeRef}
         css={rangeStyle}
         style={{
-          left: `${((rStart - playback.start.value) / (playback.end.value - playback.start.value)) * 100}%`,
-          right: `${(((playback.duration + playback.end.value - rEnd) % playback.duration) / (playback.end.value - playback.start.value)) * 100}%`,
+          left: `${((rStart - playback.start) / (playback.end - playback.start)) * 100}%`,
+          right: `${(((playback.duration + playback.end - rEnd) % playback.duration) / (playback.end - playback.start)) * 100}%`,
         }}
       >
         {/*(start: number) => selectRange({ start, end: rangeEnd } as RangeOption)}*/}
@@ -91,16 +91,16 @@ export function RangeSelector({ rangeRef, viewWidth }: RangeSelectorProps) {
         <RangeHandle
           onChange={setStart}
           roundUp
-          start={playback.start.value}
-          end={playback.end.value}
+          start={playback.start}
+          end={playback.end}
           viewWidth={viewWidth}
         />
         <div css={style} />
         <RangeHandle
           onChange={setEnd}
           roundUp
-          start={playback.start.value}
-          end={playback.end.value}
+          start={playback.start}
+          end={playback.end}
           viewWidth={viewWidth}
         />
       </div>

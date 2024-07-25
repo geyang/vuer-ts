@@ -1,6 +1,7 @@
 export * from './interfaces';
 export * from './store';
 export * from './storeOps';
+export * from './emitter';
 export * from './util';
 export * from './websocket';
 

@@ -143,7 +143,7 @@ export function Timeline({}: TimelineProps) {
           newScale = Math.max(MAX_SCALE, newScale);
           newScale = Math.min(
             (MIN_SCALE *
-              Math.max(playback.end.value - playback.start.value, 1)) /
+              Math.max(playback.end - playback.start, 1)) /
               rect.width,
             newScale,
           );
@@ -168,8 +168,8 @@ export function Timeline({}: TimelineProps) {
           // if (event.button !== MouseButton.Left) return;
           // playheadRef.current.style.display = 'none';
           const frame = Math.round(
-            (pos / viewWidth) * (playback.end.value - playback.start.value) +
-              playback.start.value,
+            (pos / viewWidth) * (playback.end - playback.start) +
+              playback.start,
           );
           playback.emitSeek(frame);
         }}
@@ -195,8 +195,8 @@ export function Timeline({}: TimelineProps) {
           // playheadRef.current.style.display = 'none';
           const frame = Math.round(
             (pos / viewWidth) *
-              Math.max(playback.end.value - playback.start.value, 1) +
-              playback.start.value,
+              Math.max(playback.end - playback.start, 1) +
+              playback.start,
           );
           if (event.buttons & MouseMask.Primary) {
             playback.emitSeek(frame);

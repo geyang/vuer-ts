@@ -14,10 +14,23 @@ import {
 } from '../icons';
 import { usePlayback } from '../playback';
 import { Trash } from '../icons/Trash';
-import { computed } from '@preact/signals-react';
+import { useMemo } from 'react';
 
 export function PlaybackControls() {
-  const { playback, paused, loop, fps, recording } = usePlayback();
+  const { playback, maxlen, speed, paused, loop, fps, recording } =
+    usePlayback();
+
+  const options = useMemo(() => {
+    return [
+      { value: 0.125, text: '12.5%' },
+      { value: 0.25, text: '25%' },
+      { value: 0.5, text: '50%' },
+      { value: 1, text: '✕1' },
+      { value: 1.5, text: '✕1.5' },
+      { value: 2, text: '✕2' },
+      { value: 4, text: '✕4' },
+    ];
+  }, []);
 
   return (
     <div
@@ -29,24 +42,11 @@ export function PlaybackControls() {
     >
       <Select<number>
         title='Playback speed'
-        options={[
-          { value: 0.125, text: '12.5%' },
-          { value: 0.25, text: '25%' },
-          { value: 0.5, text: '50%' },
-          { value: 1, text: '✕1' },
-          { value: 1.5, text: '✕1.5' },
-          { value: 2, text: '✕2' },
-          { value: 4, text: '✕4' },
-        ]}
-        value={playback.speed}
-        onChange={(value) => {
-          playback.speed.value = value;
-        }}
+        options={options}
+        value={speed}
+        onChange={playback.setSpeed}
       />
-      <IconButton
-        title='Start [Shift + Left arrow]'
-        onClick={() => playback.reset()}
-      >
+      <IconButton title='Start [Shift + Left arrow]' onClick={playback.reset}>
         <SkipPrevious />
       </IconButton>
       <IconButton
@@ -56,9 +56,7 @@ export function PlaybackControls() {
         <FastRewind />
       </IconButton>
       <IconButton
-        title={computed(() =>
-          playback.isPaused.value ? 'Pause [Space]' : 'Play [Space]',
-        )}
+        title={paused ? 'Pause [Space]' : 'Play [Space]'}
         onClick={playback.togglePlayback}
       >
         {paused ? <PlayArrow /> : <Pause />}
@@ -79,10 +77,10 @@ export function PlaybackControls() {
       </IconCheckbox>
       <Input
         title='Current framerate'
-        value={playback.fps}
+        value={fps}
         postfix='FPS'
         onChange={(value) => {
-          playback.fps.value = value;
+          playback.fps = value;
         }}
         type='number'
         width='25px'
@@ -92,7 +90,7 @@ export function PlaybackControls() {
       </IconButton>
       <Input
         title='Current framerate'
-        value={playback.maxlen}
+        value={maxlen}
         prefix='Maxlen '
         onChange={playback.setMaxlen}
         type='number'
