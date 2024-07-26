@@ -42,7 +42,7 @@ export function PlaybackControls() {
     <div css={style}>
       <Select<number>
         title='Playback speed'
-        width={55}
+        width={60}
         options={options}
         value={speed}
         onChange={(s) => playback.setSpeed(s)}
@@ -91,7 +91,7 @@ export function PlaybackControls() {
         postfix='FPS'
         onChange={(v) => playback.setFrameRate(v)}
         type='number'
-        width='25px'
+        width={(playback.fps >= 100) ? '33px' : '25px'}
       />
       <IconButton title='Save snapshot'>
         <PhotoCamera />

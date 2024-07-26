@@ -7,17 +7,20 @@ import dts from 'vite-plugin-dts';
 import * as sass from 'sass';
 
 export default defineConfig({
+  css: {
+    preprocessorOptions: {
+      scss: {
+        implementation: sass,
+      },
+    },
+  },
   plugins: [
     react({
-      // tsDecorators: true,
       jsxImportSource: '@emotion/react',
       babel: {
         plugins: [
           '@emotion/babel-plugin',
-          // ['@babel/plugin-syntax-decorators', { decoratorsBeforeExport: true }],
-          // 'decorators-legacy',
           ['@babel/plugin-proposal-decorators', { legacy: true }],
-          // ['module:@preact/signals-react-transform', { mode: 'all' }],
         ],
       },
     }),
@@ -26,13 +29,6 @@ export default defineConfig({
     }),
     mdPlugin(),
   ],
-  css: {
-    preprocessorOptions: {
-      scss: {
-        implementation: sass,
-      },
-    },
-  },
   root: 'vuer',
   build: {
     outDir: resolve(__dirname, './dist'),
@@ -58,8 +54,6 @@ export default defineConfig({
         'react-dom',
         'styled-components',
         'three',
-        '@preact/signals-react',
-        '@preact/signals-core',
         '@react-three/fiber',
       ],
       output: {

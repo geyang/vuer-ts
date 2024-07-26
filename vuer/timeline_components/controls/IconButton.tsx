@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
 import { HTMLAttributes } from 'react';
-import { Signal } from '@preact/signals-react';
 
 const buttonStyle = css`
   display: block;
@@ -31,7 +30,7 @@ interface IconButtonProps
   > {
   title?: string;
   onClick?: () => void;
-  disabled?: boolean | Signal<boolean>;
+  disabled?: boolean;
 }
 
 export function IconButton({

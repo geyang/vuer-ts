@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { Signal } from '@preact/signals-react';
 import { css } from '@emotion/react';
 
 const style = css`
@@ -56,16 +55,13 @@ export function Select<T>({
     [onChange],
   );
 
-  const valueIsSignal = value instanceof Signal;
-  const v = valueIsSignal ? (value as Signal<T>).value : value;
-
   return (
     <select
       title={title}
       disabled={disabled}
       css={style}
       style={{ width: typeof width === 'number' ? `${width}px` : width }}
-      value={options.findIndex((option) => option.value === v)}
+      value={options.findIndex((option) => option.value === value)}
       onChange={_onChange}
     >
       {options.map((option, index) => (

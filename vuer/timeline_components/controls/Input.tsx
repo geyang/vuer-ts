@@ -5,7 +5,6 @@ import {
   useLayoutEffect,
   useRef,
 } from 'react';
-import { Signal } from '@preact/signals-react';
 
 const ContainerStyle = css`
   font-family: var(--font-family-mono);
