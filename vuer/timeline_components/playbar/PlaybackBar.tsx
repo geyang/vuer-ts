@@ -1,8 +1,8 @@
 import { css } from '@emotion/react';
 import { PlaybackControls } from './PlaybackControls';
 import { Timestamp } from './CurrentTime';
-import { usePlayback } from '../playback';
 
+import { usePlayback, usePlaybackStates, useTimelineStates } from "../playbackHooks";
 
 const PlaybackBarStyle = css`
   background: var(--surface-color);
@@ -49,8 +49,9 @@ export interface PlaybackBarProps {
  * ```
  */
 export const PlaybackBar = ({ progress }: PlaybackBarProps) => {
-  const { playback, fps, speed, start, end, rangeStart, rangeEnd } =
-    usePlayback();
+  const playback = usePlayback();
+  const { fps, speed } = usePlaybackStates();
+  const { start, end, rangeStart, rangeEnd } = useTimelineStates();
 
   return (
     <div

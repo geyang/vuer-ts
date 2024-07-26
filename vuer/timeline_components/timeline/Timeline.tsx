@@ -10,15 +10,17 @@ import { css } from '@emotion/react';
 import { Timestamps } from './Timestamps';
 import { RangeSelector } from './RangeSelector';
 import {
-  PlaybackOption,
   RangeOption,
   stateSetter,
-  usePlayback,
+
+
+
 } from '../playback';
 import { Playhead } from './Playhead';
 import { useSize, useStorage } from '../hooks';
 import { MouseButton, MouseMask } from './mouse_interfaces';
 import { clamp } from '../../layout_components/utils';
+import { usePlayback, usePlaybackStates, useTimelineStates } from "../playbackHooks";
 
 const ZOOM_SPEED = 0.000025;
 const ZOOM_MIN = 0.05;
@@ -78,7 +80,7 @@ const TrackContainerStyle = css`
   background-color: var(--surface-color);
 `;
 
-export interface TimelineProps extends PlaybackOption {}
+export interface TimelineProps {}
 
 export function Timeline({}: TimelineProps) {
   const containerRef = useRef<HTMLDivElement>();
@@ -93,14 +95,8 @@ export function Timeline({}: TimelineProps) {
       offset: 0.5 * rect.width,
     },
   );
-  const {
-    playback,
-    start,
-    end,
-    rangeStart,
-    rangeEnd,
-    curr,
-  } = usePlayback();
+  const playback = usePlayback();
+  const { start, end, rangeStart, rangeEnd, curr } = useTimelineStates();
 
   const viewWidth = scale * rect.width;
 
@@ -142,8 +138,7 @@ export function Timeline({}: TimelineProps) {
           let newScale = ratio * scale;
           newScale = Math.max(MAX_SCALE, newScale);
           newScale = Math.min(
-            (MIN_SCALE *
-              Math.max(playback.end - playback.start, 1)) /
+            (MIN_SCALE * Math.max(playback.end - playback.start, 1)) /
               rect.width,
             newScale,
           );
@@ -194,8 +189,7 @@ export function Timeline({}: TimelineProps) {
           // if (event.button !== MouseButton.Left) return;
           // playheadRef.current.style.display = 'none';
           const frame = Math.round(
-            (pos / viewWidth) *
-              Math.max(playback.end - playback.start, 1) +
+            (pos / viewWidth) * Math.max(playback.end - playback.start, 1) +
               playback.start,
           );
           if (event.buttons & MouseMask.Primary) {

@@ -1,17 +1,7 @@
-import {
-  createContext,
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useMemo,
-} from 'react';
 import { Deque } from './collections';
 import { Store } from '../vuer/store';
 import { EventType } from '../vuer/interfaces';
-import { useAnimationFrame } from './hooks/useAnimationFrame';
 import { EventEmitter } from '../vuer/emitter';
-import { useStorage } from './hooks';
-import { Args } from '@react-three/drei';
 
 export type stateSetter<T> = (value: T | ((T) => T)) => void;
 
@@ -100,23 +90,19 @@ function sentinel<
   This extends { signal: EventEmitter },
   Args extends any[],
   ReturnType,
->(etype: string): MethodDecorator {
-  function decorator(
-    originalMethod: (this: This, ...args: Args) => ReturnType,
-    context: ClassMethodDecoratorContext,
-    ...args: any[]
-  ): ((this: This, ...args: Args) => any) | void {
-    const methodName = String(context.name);
+>(etype: string) {
+  function decorator(target, key, descriptor) {
+    const originalMethod = descriptor.value;
 
-    function replacementMethod(this: This, ...args: Args): ReturnType {
-      console.log(`LOG: Entering method '${methodName}'.`);
+    descriptor.value = function (this: This, ...args: Args): ReturnType {
+      // console.log(`LOG: Entering method '${methodName}'.`);
       const result: ReturnType = originalMethod.call(this, ...args);
-      console.log(`LOG: Exiting method '${methodName}'.`);
-      this.signal.emit(etype, { etype });
+      // console.log(`LOG: Exiting method '${methodName}'.`);
+      this.signal.emit(etype, {});
       return result;
-    }
+    };
 
-    return replacementMethod as typeof originalMethod;
+    return descriptor;
   }
 
   return decorator;
@@ -191,7 +177,7 @@ export class Playback {
     return this._keyFrames;
   }
 
-  @sentinel<Playback, [number], void>('UPDATE')
+  @sentinel<Playback, [number], void>('UPDATE_STATE')
   setMaxlen(maxlen: number) {
     this._keyFrames = new Deque(this.keyFrames.toArray(), maxlen);
     this.maxlen = maxlen;
@@ -273,9 +259,10 @@ export class Playback {
     if (!frame) return;
 
     this.store.publish(frame);
+    this.signal.emit('UPDATE_TIMELINE', {});
   };
 
-  @sentinel<Playback, [Frame], void>('UPDATE')
+  @sentinel<Playback, [Frame], void>('UPDATE_TIMELINE')
   addKeyFrame(frame: Frame) {
     if (!this.isRecording) return;
 
@@ -290,7 +277,7 @@ export class Playback {
     }
   }
 
-  @sentinel<Playback, [], void>('UPDATE')
+  @sentinel<Playback, [], void>('UPDATE_TIMELINE')
   clear() {
     this.keyFrames.clear();
     this.start = this.end;
@@ -298,31 +285,31 @@ export class Playback {
     this.range.end = this.end;
   }
 
-  @sentinel<Playback, [], void>('UPDATE')
+  @sentinel<Playback, [], void>('UPDATE_TIMELINE')
   seekNext() {
     this.step();
     this.store.publish(this.currentFrame);
   }
 
-  @sentinel<Playback, [], void>('UPDATE')
+  @sentinel<Playback, [], void>('UPDATE_TIMELINE')
   seekPrevious() {
     this.step(-1);
     this.store.publish(this.currentFrame);
   }
 
-  @sentinel<Playback, [], void>('UPDATE')
+  @sentinel<Playback, [], void>('UPDATE_TIMELINE')
   reset() {
     this.curr = this.range.start;
     this.store.publish(this.currentFrame);
   }
 
-  @sentinel<Playback, [], void>('UPDATE')
+  @sentinel<Playback, [], void>('UPDATE_TIMELINE')
   seekEnd() {
     this.curr = this.range.end;
     this.store.publish(this.currentFrame);
   }
 
-  @sentinel<Playback, [], void>('UPDATE')
+  @sentinel<Playback, [], void>('UPDATE_TIMELINE')
   emitSeek(frame) {
     this.curr = frame;
     this.store.publish(this.currentFrame);
@@ -340,28 +327,34 @@ export class Playback {
     return this.keyFrames.get(this.keyFrames.size - 1);
   }
 
-  @sentinel<Playback, [], void>('UPDATE')
-  setSpeed = (speed: number) => {
-    this.speed = speed;
-  };
+  @sentinel<Playback, [], void>('UPDATE_STATE')
+  setFrameRate(fps: number) {
+    console.log(this);
+    this.fps = fps;
+  }
 
-  @sentinel<Playback, [], void>('UPDATE')
-  setRange = ({ start, end }: RangeOption) => {
+  @sentinel<Playback, [], void>('UPDATE_STATE')
+  setSpeed(speed: number) {
+    this.speed = speed;
+  }
+
+  @sentinel<Playback, [], void>('UPDATE_TIMELINE')
+  setRange({ start, end }: RangeOption) {
     if (typeof start === 'number') this.range.start = start;
     if (typeof start === 'function') this.range.start = start(this.range.start);
     if (typeof end === 'number') this.range.end = end;
     if (typeof end === 'function') this.range.end = end(this.range.end);
-  };
+  }
 
-  @sentinel<Playback, [], void>('UPDATE')
-  toggleRecording = () => {
+  @sentinel<Playback, [], void>('UPDATE_STATE')
+  toggleRecording() {
     this.isRecording = !this.isRecording;
     // also stop the playback.
     this.isPaused = true;
-  };
+  }
 
-  @sentinel<Playback, [], void>('UPDATE')
-  togglePlayback = () => {
+  @sentinel<Playback, [], void>('UPDATE_STATE')
+  togglePlayback() {
     // console.log('togglePlayback', this.isPaused);
 
     // if the history is empty this is always paused.
@@ -371,105 +364,11 @@ export class Playback {
       this.curr = this.range.start;
       this.store.publish(this.currentFrame);
     } else this.isPaused = !this.isPaused;
-  };
-
-  @sentinel<Playback, [], void>('UPDATE')
-  toggleLoop = () => {
-    // console.log('toggleLoop', this.loop);
-    this.loop = !this.loop;
-  };
-}
-
-export interface PlaybackContextType {
-  playback: Playback;
-  fps: number;
-  speed: number;
-  maxlen: number;
-
-  curr: number;
-
-  start: number;
-  end: number;
-  rangeStart: number;
-  rangeEnd: number;
-
-  recording: boolean;
-  loop: boolean;
-  paused: boolean;
-}
-
-export const PlaybackContext = createContext<PlaybackContextType | null>(null);
-
-interface Props extends PropsWithChildren {
-  // Define the props for the provider
-}
-
-export const PlaybackProvider = ({ children }: Props) => {
-  const playback = useMemo(() => new Playback(), []);
-
-  const [state, setState] = useStorage<
-    Omit<PlaybackContextType, 'playback'> | {}
-  >('vuer-playback', {});
-
-  useEffect(() => {
-    const remove = playback.signal.on('UPDATE', () => {
-      setState({
-        fps: playback.fps,
-        speed: playback.speed,
-        maxlen: playback.maxlen,
-
-        curr: playback.curr,
-
-        start: playback.start,
-        end: playback.end,
-        rangeStart: playback.range.start,
-        rangeEnd: playback.range.end,
-
-        recording: playback.isRecording,
-        loop: playback.loop,
-        paused: playback.isPaused,
-      });
-    });
-    return remove;
-  });
-  // console.log('this is happening');
-
-  useAnimationFrame(playback.render);
-
-  return (
-    <PlaybackContext.Provider
-      value={{ playback, ...state } as PlaybackContextType}
-    >
-      {children}
-    </PlaybackContext.Provider>
-  );
-};
-
-export interface PlaybackOption {
-  fps?: number;
-  speed?: number;
-  maxlen?: number;
-}
-
-// This function will be transformed
-/** @useSignals */
-export const usePlayback = ({
-  fps,
-  speed,
-  maxlen,
-}: PlaybackOption = {}): PlaybackContextType => {
-  const { playback, ...rest } =
-    useContext<PlaybackContextType>(PlaybackContext);
-
-  useEffect(() => {
-    if (fps) playback.fps = fps;
-    if (speed) playback.speed = speed;
-    if (maxlen) playback.setMaxlen(maxlen);
-  }, [fps, speed, maxlen]);
-
-  if (!playback) {
-    throw new Error('usePlayback must be used within a PlaybackProvider');
   }
 
-  return { playback, ...rest };
-};
+  @sentinel<Playback, [], void>('UPDATE_STATE')
+  toggleLoop() {
+    // console.log('toggleLoop', this.loop);
+    this.loop = !this.loop;
+  }
+}

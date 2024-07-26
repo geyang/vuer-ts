@@ -29,7 +29,7 @@ interface IconButtonProps
     HTMLAttributes<HTMLButtonElement>,
     'title' | 'onChange' | 'disabled'
   > {
-  title?: string | Signal<string>;
+  title?: string;
   onClick?: () => void;
   disabled?: boolean | Signal<boolean>;
 }

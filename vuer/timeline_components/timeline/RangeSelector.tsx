@@ -3,9 +3,15 @@ import { RefObject, useCallback, useEffect, useState } from 'react';
 import { MouseButton } from './mouse_interfaces';
 import { useKeyHold } from '../hooks';
 import { css } from '@emotion/react';
-import { RangeOption, stateSetter, usePlayback } from '../playback';
+import {
+  RangeOption,
+  stateSetter,
+
+
+} from '../playback';
 import { clamp } from '../../layout_components/utils';
 import { start } from 'node:repl';
+import { usePlayback, usePlaybackStates } from "../playbackHooks";
 
 const rangeStyle = css`
   border-radius: var(--radius);
@@ -41,7 +47,7 @@ const style = css`
 `;
 
 export function RangeSelector({ rangeRef, viewWidth }: RangeSelectorProps) {
-  const { playback } = usePlayback();
+  const playback = usePlayback();
 
   const [rStart, setLocalStart] = useState(playback.range.start);
   const [rEnd, setLocalEnd] = useState(playback.range.end);

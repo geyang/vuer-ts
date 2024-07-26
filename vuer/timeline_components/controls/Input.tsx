@@ -87,7 +87,7 @@ const InputStyle = css`
 
 interface InputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
-  value: number | Signal<number>;
+  value: number;
   postfix?: string;
   width?: number | string;
   onChange: (fps: number) => void;
@@ -106,7 +106,7 @@ export function Input({
   useLayoutEffect(() => {
     if (!inputRef.current) return;
     inputRef.current.size = Math.max(inputRef.current.value.length, 1);
-  }, [(value as Signal<number>).value]);
+  }, [value]);
 
   const cb = useCallback((e) => {
     const value = e.target.value;

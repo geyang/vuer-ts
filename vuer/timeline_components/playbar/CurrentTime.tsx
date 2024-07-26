@@ -1,5 +1,20 @@
 import { css } from '@emotion/react';
 
+const codeStyle = css`
+  height: 24px;
+  padding: 0;
+  background: transparent;
+`;
+
+const frameStyle = css`
+  color: rgba(255, 255, 255, 0.54);
+`;
+
+const frameTimeStyle = css`
+  margin: 0 8px;
+  color: rgba(255, 255, 255, 0.32);
+`;
+
 interface CurrentTimeProps {
   title: string;
   time?: number;
@@ -17,56 +32,25 @@ export function Timestamp({
   frame,
   frameTime,
   right = false,
-  fps, speed,
+  fps,
+  speed,
   ...rest
 }: CurrentTimeProps) {
-  let precision = 0;
-  // let padding = playback.fps.toString().length;
-  if (speed % 1 !== 0) {
-    precision = 2;
-    // padding += 3;
-  }
+  const precision = speed % 1 !== 0 ? 2 : 0;
   const time = frame / fps;
 
   return (
     <code
       title={`${title} ${frame} ${time}`}
-      css={css`
-        height: 24px;
-        padding: 0;
-        background: transparent;
-        text-align: right;
-        text-align: ${right ? 'right' : 'left'};
-      `}
+      css={codeStyle}
+      style={{ textAlign: right ? 'right' : 'left' }}
       {...rest}
     >
-      {!right && (
-        <span
-          css={css`
-            color: rgba(255, 255, 255, 0.54);
-          `}
-        >
-          [{frame}]
-        </span>
-      )}
-      <span
-        title={`${title} [HH:MM:SS:FF]`}
-        css={css`
-          margin: 0 8px;
-          color: rgba(255, 255, 255, 0.32);
-        `}
-      >
-        {frameTime}
+      {!right && <span css={frameStyle}>[{frame?.toFixed(precision)}]</span>}
+      <span title={`${title} [HH:MM:SS:FF]`} css={frameTimeStyle}>
+        {frameTime?.toFixed(precision)}
       </span>
-      {right && (
-        <span
-          css={css`
-            color: rgba(255, 255, 255, 0.54);
-          `}
-        >
-          [{frame}]
-        </span>
-      )}
+      {right && <span css={frameStyle}>[{frame?.toFixed(precision)}]</span>}
     </code>
   );
 }

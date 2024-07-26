@@ -2,18 +2,22 @@
 import { defineConfig, UserConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
-import { plugin as mdPlugin } from 'vite-plugin-markdown';
+import { plugin, plugin as mdPlugin } from 'vite-plugin-markdown';
 import dts from 'vite-plugin-dts';
 import * as sass from 'sass';
 
 export default defineConfig({
   plugins: [
     react({
+      // tsDecorators: true,
       jsxImportSource: '@emotion/react',
       babel: {
         plugins: [
           '@emotion/babel-plugin',
-          ['module:@preact/signals-react-transform', {mode: 'all'}],
+          // ['@babel/plugin-syntax-decorators', { decoratorsBeforeExport: true }],
+          // 'decorators-legacy',
+          ['@babel/plugin-proposal-decorators', { legacy: true }],
+          // ['module:@preact/signals-react-transform', { mode: 'all' }],
         ],
       },
     }),

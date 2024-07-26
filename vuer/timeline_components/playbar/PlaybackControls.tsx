@@ -12,13 +12,19 @@ import {
   SkipNext,
   SkipPrevious,
 } from '../icons';
-import { usePlayback } from '../playback';
 import { Trash } from '../icons/Trash';
 import { useMemo } from 'react';
+import { usePlayback, usePlaybackStates } from '../playbackHooks';
+
+const style = css`
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+`;
 
 export function PlaybackControls() {
-  const { playback, maxlen, speed, paused, loop, fps, recording } =
-    usePlayback();
+  const playback = usePlayback();
+  const { maxlen, speed, paused, loop, fps, recording } = usePlaybackStates();
 
   const options = useMemo(() => {
     return [
@@ -33,20 +39,18 @@ export function PlaybackControls() {
   }, []);
 
   return (
-    <div
-      css={css`
-        display: flex;
-        justify-content: center;
-        gap: 16px;
-      `}
-    >
+    <div css={style}>
       <Select<number>
         title='Playback speed'
+        width={55}
         options={options}
         value={speed}
-        onChange={playback.setSpeed}
+        onChange={(s) => playback.setSpeed(s)}
       />
-      <IconButton title='Start [Shift + Left arrow]' onClick={playback.reset}>
+      <IconButton
+        title='Start [Shift + Left arrow]'
+        onClick={() => playback.reset()}
+      >
         <SkipPrevious />
       </IconButton>
       <IconButton
@@ -57,31 +61,35 @@ export function PlaybackControls() {
       </IconButton>
       <IconButton
         title={paused ? 'Pause [Space]' : 'Play [Space]'}
-        onClick={playback.togglePlayback}
+        onClick={() => playback.togglePlayback()}
       >
         {paused ? <PlayArrow /> : <Pause />}
       </IconButton>
-      <IconButton title='Next frame [Right arrow]' onClick={playback.seekNext}>
+      <IconButton
+        title='Next frame [Right arrow]'
+        onClick={() => playback.seekNext()}
+      >
         <FastForward />
       </IconButton>
-      <IconButton title='End [Shift + Right arrow]' onClick={playback.seekEnd}>
+      <IconButton
+        title='End [Shift + Right arrow]'
+        onClick={() => playback.seekEnd()}
+      >
         <SkipNext />
       </IconButton>
       <IconCheckbox
         title='Disable looping [L]'
         titleOff='Enable looping [L]'
         active={loop}
-        onChange={playback.toggleLoop}
+        onChange={() => playback.toggleLoop()}
       >
         <Repeat />
       </IconCheckbox>
       <Input
         title='Current framerate'
-        value={fps}
+        value={playback.fps}
         postfix='FPS'
-        onChange={(value) => {
-          playback.fps = value;
-        }}
+        onChange={(v) => playback.setFrameRate(v)}
         type='number'
         width='25px'
       />
@@ -92,7 +100,7 @@ export function PlaybackControls() {
         title='Current framerate'
         value={maxlen}
         prefix='Maxlen '
-        onChange={playback.setMaxlen}
+        onChange={(v) => playback.setMaxlen(v)}
         type='number'
         width='50px'
       />
@@ -102,7 +110,10 @@ export function PlaybackControls() {
       >
         <Recording active={recording} />
       </IconButton>
-      <IconButton title='clear the key frames buffer' onClick={playback.clear}>
+      <IconButton
+        title='clear the key frames buffer'
+        onClick={() => playback.clear()}
+      >
         <Trash />
       </IconButton>
     </div>

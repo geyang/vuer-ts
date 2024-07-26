@@ -1,9 +1,9 @@
 import { MuJoCoModel, MuJoCoModelProps, KeyFrame } from '@vuer-ai/mujoco-ts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ClientEvent, useSocket, VuerProps } from '../vuer';
-import { usePlayback } from '../timeline_components/playback';
 import { UpdateOp } from '../vuer/eventHelpers';
 import { Node } from '../vuer/interfaces';
+import { usePlayback, usePlaybackStates } from "../timeline_components";
 
 export interface ON_MUJOCO_FRAME extends ClientEvent {
   value: { dt: number; keyFrame: KeyFrame };
@@ -57,13 +57,13 @@ export const MuJoCo = ({
   const { uplink, downlink, sendMsg } = useSocket();
   const [_keyFrame, setKeyFrame] = useState<KeyFrame | null>(null);
 
+  const playback = usePlayback();
   const {
-    playback,
     fps: pbFps,
     speed: pbSpeed,
     paused: pbPaused,
     recording,
-  } = usePlayback();
+  } = usePlaybackStates();
 
   const onFrame = useCallback(
     (frame: KeyFrame, delta: number) => {
