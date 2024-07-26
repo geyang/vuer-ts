@@ -1,18 +1,21 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { VuerProps } from '../../vuer/interfaces';
+import { VuerProps } from '../../vuer';
 
 export function AutoScroll({ _key: key, children, ...props }: VuerProps) {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
-  const scrollToBottom = useMemo(() => () => {
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 0.016);
-  }, []);
+  const scrollToBottom = useMemo(
+    () => () => {
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 0.016);
+    },
+    [],
+  );
 
   useEffect(() => {
     scrollToBottom();
-  }, [ children, scrollToBottom ]);
+  }, [children, scrollToBottom]);
 
   return (
     <div key={key} {...props}>

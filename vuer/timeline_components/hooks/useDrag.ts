@@ -1,5 +1,5 @@
 import { useDocumentEvent } from './useDocumentEvent';
-import { useCallback, useState } from "react";
+import { useCallback, useState } from 'react';
 
 interface MoveCallback {
   (dx: number, dy: number, x: number, y: number): void;
@@ -13,20 +13,20 @@ export function useDrag(
   onMove: MoveCallback,
   onDrop?: DropCallback,
   button: number | null = 0,
-): [ (event: MouseEvent) => void, boolean ] {
-  const [ isDragging, setDragging ] = useState(false);
-  const [ startPosition, setStartPosition ] = useState({ x: 0, y: 0 });
+): [(event: MouseEvent) => void, boolean] {
+  const [isDragging, setDragging] = useState(false);
+  const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
   useDocumentEvent(
     'mouseup',
     useCallback(
-      event => {
+      (event) => {
         if (isDragging) {
           event.stopPropagation();
           setDragging(false);
           onDrop?.(event);
         }
       },
-      [ isDragging, onDrop ],
+      [isDragging, onDrop],
     ),
     isDragging,
     true,
@@ -34,7 +34,7 @@ export function useDrag(
 
   useDocumentEvent(
     'click',
-    useCallback(event => {
+    useCallback((event) => {
       event.stopPropagation();
     }, []),
     isDragging,
@@ -44,7 +44,7 @@ export function useDrag(
   useDocumentEvent(
     'mousemove',
     useCallback(
-      event => {
+      (event) => {
         onMove(
           event.x - startPosition.x,
           event.y - startPosition.y,
@@ -53,7 +53,7 @@ export function useDrag(
         );
         setStartPosition({ x: event.x, y: event.y });
       },
-      [ onMove, startPosition, setStartPosition ],
+      [onMove, startPosition, setStartPosition],
     ),
     isDragging,
   );
@@ -67,8 +67,8 @@ export function useDrag(
       setStartPosition({ x: event.x, y: event.y });
       setDragging(true);
     },
-    [ onMove, button, setDragging ],
+    [onMove, button, setDragging],
   );
 
-  return [ handleDrag, isDragging ];
+  return [handleDrag, isDragging];
 }

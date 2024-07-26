@@ -91,7 +91,7 @@ export function PlaybackControls() {
         postfix='FPS'
         onChange={(v) => playback.setFrameRate(v)}
         type='number'
-        width={(playback.fps >= 100) ? '33px' : '25px'}
+        width={playback.fps >= 100 ? '33px' : '25px'}
       />
       <IconButton title='Save snapshot'>
         <PhotoCamera />

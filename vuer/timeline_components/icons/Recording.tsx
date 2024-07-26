@@ -1,7 +1,4 @@
-import {
-  css,
-  keyframes,
-} from '@emotion/react';
+import { css, keyframes } from '@emotion/react';
 
 const breathAnimation = keyframes`
   0% {

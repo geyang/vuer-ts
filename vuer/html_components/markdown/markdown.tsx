@@ -1,18 +1,19 @@
-import { CSSProperties, PropsWithChildren, ReactElement, useMemo, } from 'react';
+import { CSSProperties, useMemo } from 'react';
 import rehypeRaw from 'rehype-raw';
 import { Remark } from 'react-remark';
-import { VuerProps } from '../../vuer/interfaces';
+import { VuerProps } from '../../vuer';
 
 type MarkdownProps = VuerProps<{
   children: string | string[];
   style?: CSSProperties;
 }>;
 
-export function Markdown(
-  {
-    _key: key, children, style, ...props
-  }: MarkdownProps,
-) {
+export function Markdown({
+  _key: key,
+  children,
+  style,
+  ...props
+}: MarkdownProps) {
   const { markdown } = useMemo(
     () => ({
       markdown: typeof children === 'string' ? children : children.join(' '),
@@ -20,12 +21,12 @@ export function Markdown(
       //   p: ({ style: _style, ..._props }: PropsWithChildren<{ style: CSSProperties }>): ReactElement => <p style={{ ...style, ..._style } as CSSProperties} {..._props} />,
       // },
     }),
-    [ children, style ],
+    [children, style],
   );
   return (
     <Remark
       // @ts-ignore: not sure why this errors
-      rehypePlugins={[ rehypeRaw ]}
+      rehypePlugins={[rehypeRaw]}
       // rehypeReactOptions={components as RemarkRehypeOptions}
       remarkToRehypeOptions={{ allowDangerousHtml: true }}
       {...props}

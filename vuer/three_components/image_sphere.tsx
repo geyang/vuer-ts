@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import {
   LinearFilter,
@@ -11,8 +11,8 @@ import {
   SphereGeometry,
   Texture,
 } from 'three';
-import { Args, Sphere } from '@react-three/drei';
-import { useXR } from "@react-three/xr";
+import { Args } from '@react-three/drei';
+import { useXR } from '@react-three/xr';
 
 function interpolateTexture(texture: Texture, interpolate: boolean) {
   if (!texture) return;
@@ -41,35 +41,33 @@ export type ImageSphereProps = {
   material?;
 };
 
-export default function ImageSphere(
-  {
-    matRef,
-    rgb,
-    alpha,
-    depth,
-    depthScale = 1,
-    depthBias = 0,
-    distanceToCamera = 1.0, // default to 1. for occlusion.
-    opacity = 1.0,
-    fixed = false,
-    layers = null,
-    side = 2,
-    wireframe = false,
-    material = {},
-  }: ImageSphereProps,
-) {
+export default function ImageSphere({
+  matRef,
+  rgb,
+  alpha,
+  depth,
+  depthScale = 1,
+  depthBias = 0,
+  distanceToCamera = 1.0, // default to 1. for occlusion.
+  opacity = 1.0,
+  fixed = false,
+  layers = null,
+  side = 2,
+  wireframe = false,
+  material = {},
+}: ImageSphereProps) {
   const sphereRef = useRef<Mesh<SphereGeometry>>();
 
   // make new component for just the projection.
   const { camera }: { camera: PerspectiveCamera } = useThree();
 
-  const isPresenting = useXR((state) => state.isPresenting)
+  const isPresenting = useXR((state) => state.isPresenting);
   useEffect(() => {
     if (!sphereRef.current) return;
-    if (typeof layers === "number" && isPresenting) {
-      sphereRef.current.layers.set(layers)
+    if (typeof layers === 'number' && isPresenting) {
+      sphereRef.current.layers.set(layers);
     }
-  }, [ layers, sphereRef.current, isPresenting ]);
+  }, [layers, sphereRef.current, isPresenting]);
 
   /**
    * This is the uv mapping for the stereoscopic projection. Should move
@@ -106,14 +104,14 @@ export default function ImageSphere(
 
   // note: only works with perspective camera
   const args: Args<typeof SphereGeometry> = useMemo(() => {
-    if (camera.type !== "PerspectiveCamera") {
-      console.warn("ImageSphere only works with perspective camera");
+    if (camera.type !== 'PerspectiveCamera') {
+      console.warn('ImageSphere only works with perspective camera');
       return;
     }
     const c = camera as PerspectiveCamera;
 
-    const cyRad = c.fov / 360 * Math.PI
-    const cxRad = Math.atan(Math.tan(cyRad) * c.aspect)
+    const cyRad = (c.fov / 360) * Math.PI;
+    const cxRad = Math.atan(Math.tan(cyRad) * c.aspect);
 
     // todo: changing the arguments to the sphere will affect the uv map, because it effectively regenerates
     //       a new sphere geometry.
@@ -122,13 +120,14 @@ export default function ImageSphere(
       distanceToCamera,
       img?.width,
       img?.height,
-      -0.5 * Math.PI - cxRad, 2 * cxRad,
-      0.5 * Math.PI - cyRad, 2 * cyRad
-    ]
+      -0.5 * Math.PI - cxRad,
+      2 * cxRad,
+      0.5 * Math.PI - cyRad,
+      2 * cyRad,
+    ];
     // the sphere needs to re-construct anyways.
     return args as Args<typeof SphereGeometry>;
-
-  }, [ camera.fov, camera.aspect ]);
+  }, [camera.fov, camera.aspect]);
 
   useFrame(() => {
     if (!sphereRef.current) return;
@@ -140,18 +139,18 @@ export default function ImageSphere(
   });
 
   const matProp = useMemo(() => {
-    if (depth?.image) return { "displacementMap-colorSpace": NoColorSpace, ...material };
+    if (depth?.image)
+      return { 'displacementMap-colorSpace': NoColorSpace, ...material };
     return material;
-  }, [ depth, material ]);
-
+  }, [depth, material]);
 
   if (depth?.image) {
     return (
-      <mesh ref={sphereRef}  scale={[ 1, 1, 1 ]}>
-        <sphereGeometry args={args}/>
+      <mesh ref={sphereRef} scale={[1, 1, 1]}>
+        <sphereGeometry args={args} />
         <meshStandardMaterial
           ref={matRef}
-          attach="material"
+          attach='material'
           map={rgb}
           alphaMap={alpha}
           displacementMap={depth}
@@ -166,23 +165,24 @@ export default function ImageSphere(
         />
       </mesh>
     );
-  } else return (
-    <mesh ref={sphereRef}  scale={[ 1, 1, 1 ]}>
-      <sphereGeometry args={args}/>
-      <meshBasicMaterial
-        ref={matRef}
-        attach="material"
-        map={rgb}
-        alphaMap={alpha}
-        displacementScale={depthScale}
-        displacementBias={depthBias}
-        wireframe={wireframe}
-        transparent={!!alpha || typeof opacity == 'number'}
-        opacity={opacity}
-        side={side as Side}
-        // do not add the displacementMap color space attribute
-        {...material}
-      />
-    </mesh>
-  );
+  } else
+    return (
+      <mesh ref={sphereRef} scale={[1, 1, 1]}>
+        <sphereGeometry args={args} />
+        <meshBasicMaterial
+          ref={matRef}
+          attach='material'
+          map={rgb}
+          alphaMap={alpha}
+          displacementScale={depthScale}
+          displacementBias={depthBias}
+          wireframe={wireframe}
+          transparent={!!alpha || typeof opacity == 'number'}
+          opacity={opacity}
+          side={side as Side}
+          // do not add the displacementMap color space attribute
+          {...material}
+        />
+      </mesh>
+    );
 }

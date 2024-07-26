@@ -1,5 +1,4 @@
-import { css } from "@emotion/react";
-import { useEffect, useState } from "react";
+import { css } from '@emotion/react';
 
 interface PlayheadProps {
   seeking: number;
@@ -7,40 +6,40 @@ interface PlayheadProps {
 }
 
 const PlayheadStyle = css`
-    position: absolute;
-    width: 0;
-    border-left: 1px solid var(--theme);
-    margin-left: -50%;
-    border-box: content-box;
-    top: 6px;
-    bottom: 0;
+  position: absolute;
+  width: 0;
+  border-left: 1px solid var(--theme);
+  margin-left: -50%;
+  border-box: content-box;
+  top: 6px;
+  bottom: 0;
+  background-color: var(--theme);
+  pointer-events: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  margin-left: -50%;
+
+  //transition-duration: 1s;
+
+  :before {
+    display: block;
+    padding: 0 4px;
+    border-radius: var(--radius);
     background-color: var(--theme);
-    pointer-events: none;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    margin-left: -50%;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-small);
+    line-height: 20px;
+    font-weight: bold;
+    color: #000000;
+  }
 
-    //transition-duration: 1s;
-
-    :before {
-        display: block;
-        padding: 0 4px;
-        border-radius: var(--radius);
-        background-color: var(--theme);
-        font-family: var(--font-family-mono);
-        font-size: var(--font-size-small);
-        line-height: 20px;
-        font-weight: bold;
-        color: #000000;
-    }
-
-    :before {
-        content: attr(data-seeking);
-    }`;
+  :before {
+    content: attr(data-seeking);
+  }
+`;
 
 export function Playhead({ seeking, leftPos }: PlayheadProps) {
-
   return (
     <div
       data-seeking={seeking}

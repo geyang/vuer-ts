@@ -1,17 +1,10 @@
 import { DragIndicator } from '../icons';
 import { RefObject, useCallback, useEffect, useState } from 'react';
 import { MouseButton } from './mouse_interfaces';
-import { useKeyHold } from '../hooks';
 import { css } from '@emotion/react';
-import {
-  RangeOption,
-  stateSetter,
-
-
-} from '../playback';
+import { stateSetter } from '../playback';
 import { clamp } from '../../layout_components/utils';
-import { start } from 'node:repl';
-import { usePlayback, usePlaybackStates } from "../playbackHooks";
+import { usePlayback } from '../playbackHooks';
 
 const rangeStyle = css`
   border-radius: var(--radius);

@@ -1,12 +1,16 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { MeshProps } from '@react-three/fiber';
 import { half2float } from './half2float';
-import { BufferAttribute, RepeatWrapping, TextureLoader } from "three";
+import { BufferAttribute, RepeatWrapping, TextureLoader } from 'three';
 
-enum Side { front, back, double }
+enum Side {
+  front,
+  back,
+  double,
+}
 
 type MaterialArgs = {
-  mapRepeat?: [ number, number ];
+  mapRepeat?: [number, number];
   [key: string]: unknown;
 };
 
@@ -16,7 +20,13 @@ type TriMeshProps = MeshProps & {
   colors?: Uint8Array;
   color?: string;
   uv?: Uint16Array;
-  materialType?: 'basic' | 'standard' | 'phong' | 'lambert' | 'normal' | 'depth';
+  materialType?:
+    | 'basic'
+    | 'standard'
+    | 'phong'
+    | 'lambert'
+    | 'normal'
+    | 'depth';
   wireframe?: boolean;
   opacity?: number;
   side?: 'front' | 'back' | 'double';
@@ -30,35 +40,38 @@ type GeoCache = {
   uv?: Float32Array;
 };
 
-export function TriMesh(
-  {
-    position = [ 0, 0, 0 ],
-    rotation = [ 0, 0, 0 ],
-    vertices,
-    faces,
-    colors,
-    color,
-    uv,
-    materialType = 'standard',
-    wireframe,
-    opacity,
-    side = 'double',
-    material,
-    ...rest
-  }: TriMeshProps,
-) {
+export function TriMesh({
+  position = [0, 0, 0],
+  rotation = [0, 0, 0],
+  vertices,
+  faces,
+  colors,
+  color,
+  uv,
+  materialType = 'standard',
+  wireframe,
+  opacity,
+  side = 'double',
+  material,
+  ...rest
+}: TriMeshProps) {
   const geometry = useMemo<GeoCache>(() => {
-    const byteRatio = Uint8Array.BYTES_PER_ELEMENT / Float32Array.BYTES_PER_ELEMENT;
+    const byteRatio =
+      Uint8Array.BYTES_PER_ELEMENT / Float32Array.BYTES_PER_ELEMENT;
     return {
       vertices: half2float(vertices),
-      faces: new Uint32Array(faces.buffer.slice(faces.byteOffset), 0, byteRatio * faces.byteLength),
+      faces: new Uint32Array(
+        faces.buffer.slice(faces.byteOffset),
+        0,
+        byteRatio * faces.byteLength,
+      ),
       colors: colors && Float32Array.from(colors, (octet) => octet / 0xff),
       uv: uv && half2float(uv),
     };
-  }, [ vertices, faces, colors, uv ]);
+  }, [vertices, faces, colors, uv]);
 
-  const [ materialParams, setMaterial ] = useState({});
-  const [ textures, setTexture ] = useState({});
+  const [materialParams, setMaterial] = useState({});
+  const [textures, setTexture] = useState({});
   const loader = useMemo(() => new TextureLoader(), []);
   const meshRef = useRef();
   const updateRef = useRef(false);
@@ -70,15 +83,16 @@ export function TriMesh(
       const value = material[k];
       const isMap = k.endsWith('map') || k.endsWith('Map');
       if (typeof value === 'string' && isMap) {
-        loader && loader.load(value, (newTexture) => {
-          const repeat = material[`${k}Repeat`] as [ number, number ];
-          if (!!repeat) {
-            newTexture.wrapS = newTexture.wrapT = RepeatWrapping;
-            newTexture.repeat.set(...repeat);
-          }
-          setTexture((store) => ({ ...store, [k]: newTexture }));
-          updateRef.current = true;
-        });
+        loader &&
+          loader.load(value, (newTexture) => {
+            const repeat = material[`${k}Repeat`] as [number, number];
+            if (!!repeat) {
+              newTexture.wrapS = newTexture.wrapT = RepeatWrapping;
+              newTexture.repeat.set(...repeat);
+            }
+            setTexture((store) => ({ ...store, [k]: newTexture }));
+            updateRef.current = true;
+          });
       } else {
         setMaterial((store) => ({ ...store, [k]: value }));
         // the previous update flag is set asynchronously. This is synchronous.
@@ -98,8 +112,8 @@ export function TriMesh(
     // @ts-ignore: geom is defined
     const geom = meshRef?.current?.geometry;
     if (!geom || !geometry.uv) return;
-    geom.attributes.uv = new BufferAttribute(geometry.uv, 2)
-  }, [ geometry.uv ])
+    geom.attributes.uv = new BufferAttribute(geometry.uv, 2);
+  }, [geometry.uv]);
 
   const MType = `mesh${materialType.charAt(0).toUpperCase()}${materialType.slice(1)}Material`;
 
@@ -114,21 +128,21 @@ export function TriMesh(
     >
       <bufferGeometry onUpdate={(self) => self.computeVertexNormals()}>
         <bufferAttribute
-          attach="attributes-position"
+          attach='attributes-position'
           array={geometry.vertices}
           count={geometry.vertices.length / 3}
           itemSize={3}
         />
         {geometry.colors && (
           <bufferAttribute
-            attach="attributes-color"
+            attach='attributes-color'
             array={geometry.colors}
             count={geometry.colors.length / 3}
             itemSize={3}
           />
         )}
         <bufferAttribute
-          attach="index"
+          attach='index'
           array={geometry.faces}
           count={geometry.faces.length}
           itemSize={1}
@@ -136,7 +150,7 @@ export function TriMesh(
       </bufferGeometry>
       <MType
         // @ts-ignore: suppress not in intrinsic props error.
-        attach="material"
+        attach='material'
         wireframe={wireframe}
         // only use vertex colors if it is provided.
         vertexColors={!!colors}

@@ -1,4 +1,4 @@
-import  create from 'zustand';
+import create from 'zustand';
 import { Euler, Vector3 } from '@react-three/fiber';
 
 export interface SceneStoreType {
@@ -10,8 +10,10 @@ export interface SceneStoreType {
 
 // export const SceneContext = React.createContext("Scene");
 export const useSceneStore = create<SceneStoreType>((set) => ({
-  position: [ 0, 0, 0 ],
-  rotation: [ 0, 0, 0, 'XYZ' ],
-  scale: [ 1, 1, 1 ],
-  update: (value: object) => { set((state: object) => ({ ...state, ...value })); },
+  position: [0, 0, 0],
+  rotation: [0, 0, 0, 'XYZ'],
+  scale: [1, 1, 1],
+  update: (value: object) => {
+    set((state: object) => ({ ...state, ...value }));
+  },
 }));

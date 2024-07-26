@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 export function useDocumentEvent<T extends keyof DocumentEventMap>(
   type: T,
@@ -10,5 +10,5 @@ export function useDocumentEvent<T extends keyof DocumentEventMap>(
     if (!enabled) return;
     document.addEventListener(type, listener, capture);
     return () => document.removeEventListener(type, listener, capture);
-  }, [ type, listener, enabled, capture ]);
+  }, [type, listener, enabled, capture]);
 }

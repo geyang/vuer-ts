@@ -2,7 +2,6 @@ import {
   createContext,
   ReactElement,
   useCallback,
-  useContext,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -10,12 +9,17 @@ import {
 } from 'react';
 import { button, buttonGroup, useControls } from 'leva';
 import { ButtonInput, ButtonSettings } from 'leva/plugin';
-import { ImageBackground } from '../three_components/image_background';
-import { BBox } from '../three_components/primitives/bbox';
-import { GroupSlave, rot2array, scale2array, v3array, } from '../three_components/group';
+import { ImageBackground } from '../three_components';
+import { BBox } from '../three_components';
+import {
+  GroupSlave,
+  rot2array,
+  scale2array,
+  v3array,
+} from '../three_components/group';
 import { V3 } from '../three_components/number_types';
-import { ClientEvent, ServerEvent, VuerProps } from "../vuer/interfaces";
-import { useSocket, SocketContextType } from "../vuer/websocket";
+import { ClientEvent, ServerEvent, VuerProps } from '../vuer';
+import { SocketContextType, useSocket } from '../vuer';
 
 export const RenderContext = createContext({});
 
@@ -28,8 +32,9 @@ function buttonHelper(
   // the type: key is used to indicate that this is a button object.
   { type, etype, ...options }: ButtonProps,
   sendMsg: (e: ClientEvent) => void,
-): ButtonInput | { type: string } & ButtonSettings {
-  if (type === 'BUTTON') return button(() => sendMsg({ key, etype } as ClientEvent), options);
+): ButtonInput | ({ type: string } & ButtonSettings) {
+  if (type === 'BUTTON')
+    return button(() => sendMsg({ key, etype } as ClientEvent), options);
   return { type, ...options };
 }
 
@@ -46,7 +51,7 @@ export type BaseRenderSettingsType = {
   layers: string[];
 };
 
-export type CameraMoveEvent = ClientEvent<{ render?: object }>
+export type CameraMoveEvent = ClientEvent<{ render?: object }>;
 
 export type RenderProps = VuerProps<{
   layers: string[];
@@ -56,25 +61,21 @@ export type RenderProps = VuerProps<{
   };
 }>;
 
-export function Render(
-  {
-    // _key,
-    layers = [],
-    settings = {},
-    children = [],
-  }: RenderProps,
-) {
+export function Render({
+  // _key,
+  layers = [],
+  settings = {},
+  children = [],
+}: RenderProps) {
   let controls;
-  let
-    setLeva: (state) => void;
+  let setLeva: (state) => void;
   const context = useMemo<{ layers: Set<ReactElement> }>(
     () => ({ layers: new Set() }),
     [],
   );
   const { uplink } = useSocket() as SocketContextType;
 
-   
-  [ controls, setLeva ] = useControls(
+  [controls, setLeva] = useControls(
     // _key ? `Render-${_key}` : "Render",
     'Render',
     () => ({
@@ -116,10 +117,19 @@ export function Render(
         },
       }),
     }),
-    [ layers ],
+    [layers],
   );
-  const _settings = useMemo(() => Object.entries(settings || {})
-    .reduce((acc, [ key, value ]) => ({ ...acc, [key]: buttonHelper(key, value, uplink.publish) }), {}), [ settings ]);
+  const _settings = useMemo(
+    () =>
+      Object.entries(settings || {}).reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]: buttonHelper(key, value, uplink.publish),
+        }),
+        {},
+      ),
+    [settings],
+  );
 
   const l = useMemo<ReactElement[]>(() => {
     const keyVals = children.map((c: ReactElement) => [
@@ -129,11 +139,13 @@ export function Render(
     return Object.fromEntries(keyVals);
   }, []);
 
-  const layerSelect = useControls('Render.Layers', l, [ layers ]) as { [key: string]: boolean };
+  const layerSelect = useControls('Render.Layers', l, [layers]) as {
+    [key: string]: boolean;
+  };
   const selectChildren = useMemo<ReactElement[]>(
     // @ts-ignore: something is wrong
     () => children.filter((c: ReactElement) => layerSelect[c.key]),
-    [ layerSelect ],
+    [layerSelect],
   );
 
   const renderSettings = useControls('Render.more․․․', _settings, {
@@ -141,13 +153,17 @@ export function Render(
   }) as BaseRenderSettingsType;
   // the world position and rotations are added on the top.
   useEffect(() => {
-    setTimeout(() => uplink?.publish({ etype: 'CAMERA_UPDATE', ts: Date.now() } as ClientEvent), 0);
+    setTimeout(
+      () =>
+        uplink?.publish({
+          etype: 'CAMERA_UPDATE',
+          ts: Date.now(),
+        } as ClientEvent),
+      0,
+    );
     return uplink.addReducer(
       'CAMERA_MOVE',
-      ({
-        value: { render, ..._value },
-        ..._event
-      }: CameraMoveEvent) => ({
+      ({ value: { render, ..._value }, ..._event }: CameraMoveEvent) => ({
         ..._event,
         value: {
           ..._value,
@@ -161,14 +177,15 @@ export function Render(
             layers: selectChildren.map((c) => c.key),
           },
         },
-      }));
-  }, [ selectChildren, uplink, renderSettings, controls ]);
+      }),
+    );
+  }, [selectChildren, uplink, renderSettings, controls]);
 
   return (
     <>
       {renderSettings.use_aabb ? (
         <GroupSlave>
-          <BBox min={renderSettings.aabb_min} max={renderSettings.aabb_max}/>
+          <BBox min={renderSettings.aabb_min} max={renderSettings.aabb_max} />
         </GroupSlave>
       ) : null}
       <RenderContext.Provider value={context}>
@@ -179,15 +196,15 @@ export function Render(
 }
 
 type RenderLayerProps = VuerProps<{
-  _key: string,
-  channel: string,
-  alphaChannel: string,
-  title: string,
-  settings: never,
-  distance: number,
-  interpolate: boolean,
-  opacity: number,
-  folderOptions: never,
+  _key: string;
+  channel: string;
+  alphaChannel: string;
+  title: string;
+  settings: never;
+  distance: number;
+  interpolate: boolean;
+  opacity: number;
+  folderOptions: never;
 }>;
 
 type BaseRenderParamsType = {
@@ -203,33 +220,32 @@ type BaseRenderParamsType = {
   alphaChannel: string;
 };
 
-export function RenderLayer(
-  {
-    _key,
-    /** local parameters */
-    title = `Render.Channel [${_key}]`,
-    // these two are now included in the render parameters
-    channel,
-    alphaChannel,
-    settings,
-    distance = 10,
-    interpolate = false,
-    opacity = 1.0,
-    folderOptions,
-  }: RenderLayerProps,
-) {
-  const [ rgbURI, setRGB ] = useState<Blob | string>();
-  const [ alphaURI, setAlphaMap ] = useState<Blob | string>();
+export function RenderLayer({
+  _key,
+  /** local parameters */
+  title = `Render.Channel [${_key}]`,
+  // these two are now included in the render parameters
+  channel,
+  alphaChannel,
+  settings,
+  distance = 10,
+  interpolate = false,
+  opacity = 1.0,
+  folderOptions,
+}: RenderLayerProps) {
+  const [rgbURI, setRGB] = useState<Blob | string>();
+  const [alphaURI, setAlphaMap] = useState<Blob | string>();
   const { uplink, downlink } = useSocket() as SocketContextType;
   const setting_cache: { [key: string]: unknown } = useMemo(
-    () => Object.entries(settings || {}).reduce(
-      (acc, [ key, value ]) => ({
-        ...acc,
-        [key]: buttonHelper(key, value as ButtonProps, uplink.publish),
-      }),
-      {},
-    ),
-    [ settings, uplink.publish ],
+    () =>
+      Object.entries(settings || {}).reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]: buttonHelper(key, value as ButtonProps, uplink.publish),
+        }),
+        {},
+      ),
+    [settings, uplink.publish],
   );
 
   const renderParams = useControls(title, setting_cache, folderOptions, [
@@ -237,7 +253,10 @@ export function RenderLayer(
   ]) as BaseRenderParamsType;
   // the world position and rotations are added on the top.
   useLayoutEffect(() => {
-    setTimeout(() => uplink?.publish({ etype: 'CAMERA_UPDATE', ts: Date.now() }), 0);
+    setTimeout(
+      () => uplink?.publish({ etype: 'CAMERA_UPDATE', ts: Date.now() }),
+      0,
+    );
     return uplink.addReducer(
       'CAMERA_MOVE',
       ({ value: { render = {}, ..._value }, ..._event }: CameraMoveEvent) =>
@@ -254,7 +273,7 @@ export function RenderLayer(
         }),
       channel,
     );
-  }, [ uplink, renderParams ]);
+  }, [uplink, renderParams]);
 
   const control = useControls(
     `${title}.more․․․`,
@@ -262,7 +281,10 @@ export function RenderLayer(
       interpolate,
       distance,
       opacity: {
-        value: opacity || 1, label: 'Opacity', min: 0, max: 1.0,
+        value: opacity || 1,
+        label: 'Opacity',
+        min: 0,
+        max: 1.0,
       },
     },
     // @ts-ignore: this is a bug in leva.
@@ -288,9 +310,9 @@ export function RenderLayer(
         setAlphaMap(uri);
       }
     },
-    [ renderParams.useAlpha ],
+    [renderParams.useAlpha],
   );
-  useLayoutEffect(() => downlink.subscribe('RENDER', onMessage), [ downlink ]);
+  useLayoutEffect(() => downlink.subscribe('RENDER', onMessage), [downlink]);
 
   return (
     <>
@@ -301,7 +323,7 @@ export function RenderLayer(
             rotation={rot2array(renderParams.rotation)}
             scale={scale2array(renderParams.scale)}
           >
-            <BBox min={renderParams.aabb_min} max={renderParams.aabb_max}/>
+            <BBox min={renderParams.aabb_min} max={renderParams.aabb_max} />
           </group>
         </GroupSlave>
       ) : null}

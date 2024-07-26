@@ -5,20 +5,22 @@ import React, {
   KeyboardEventHandler,
   MouseEvent,
   useCallback,
-  useContext,
   useMemo,
-  useState
-} from "react";
-import { useSocket } from "../vuer/websocket";
-import { ClientEvent, VuerProps } from "../vuer/interfaces";
-import { imageToBase64 } from "../vuer/util";
+  useState,
+} from 'react';
+import { useSocket } from '../vuer';
+import { ClientEvent, VuerProps } from '../vuer';
+import { imageToBase64 } from '../vuer';
 
 type VuerControlProps<T = unknown> = VuerProps<{ value: never } & T>;
 
 export function Button({ _key: key, value, ...props }: VuerControlProps) {
   const { sendMsg } = useSocket();
   return (
-    <button onClick={() => sendMsg({ etype: 'CLICK', key } as ClientEvent)} {...props}>
+    <button
+      onClick={() => sendMsg({ etype: 'CLICK', key } as ClientEvent)}
+      {...props}
+    >
       {value}
     </button>
   );
@@ -32,16 +34,19 @@ export function Button({ _key: key, value, ...props }: VuerControlProps) {
  * @param props - the rest of the props of this input component
  * @constructor
  */
- 
+
 export function Slider({
-  _key: key, value: defaultValue, children, ...props
+  _key: key,
+  value: defaultValue,
+  children,
+  ...props
 }: VuerControlProps) {
   const { sendMsg } = useSocket();
-  const [ value, setValue ] = useState<number>(defaultValue || 0);
+  const [value, setValue] = useState<number>(defaultValue || 0);
   return (
     <>
       <input
-        type="range"
+        type='range'
         value={value}
         onMouseUp={({ target }: MouseEvent<HTMLInputElement>) => {
           const { value } = target as HTMLInputElement;
@@ -64,7 +69,7 @@ export function Img({ _key: key, children, alt, ...props }: ImgProps) {
   return (
     <img
       alt={alt || key}
-      className="input-image"
+      className='input-image'
       onClick={(e: MouseEvent<HTMLImageElement>) => {
         console.log('click on image');
         e.preventDefault();
@@ -77,7 +82,10 @@ export function Img({ _key: key, children, alt, ...props }: ImgProps) {
           etype: 'CLICK',
           key,
           value: {
-            x, y, w: rect.width, h: rect.height,
+            x,
+            y,
+            w: rect.width,
+            h: rect.height,
           },
         } as ClientEvent);
       }}
@@ -97,44 +105,49 @@ type InputProps = VuerProps<{
   value: string;
 }>;
 
-export function Input(
-  {
-    _key: key,
-    value: _value,
-    style,
-    textareaStyle = {},
-    placeholder,
-    defaultValue,
-    // todo: allow multiple to choose from.
-    // defaultValues,
-    clearOnSubmit,
-    children,
-    // todo: allow line break with enter.
-    ...props
-  }: InputProps,
-) {
-  const [ value, setValue ] = useState(_value);
+export function Input({
+  _key: key,
+  value: _value,
+  style,
+  textareaStyle = {},
+  placeholder,
+  defaultValue,
+  // todo: allow multiple to choose from.
+  // defaultValues,
+  clearOnSubmit,
+  children,
+  // todo: allow line break with enter.
+  ...props
+}: InputProps) {
+  const [value, setValue] = useState(_value);
   const { sendMsg } = useSocket();
-  const onChange = useMemo<ChangeEventHandler<HTMLTextAreaElement>>(() => ({ target }) => {
-    setValue(target.value);
-  }, []);
+  const onChange = useMemo<ChangeEventHandler<HTMLTextAreaElement>>(
+    () =>
+      ({ target }) => {
+        setValue(target.value);
+      },
+    [],
+  );
 
-  const onKeyUp = useMemo<KeyboardEventHandler<HTMLTextAreaElement>>(() => (e: KeyboardEvent) => {
-    // info: choose default
-    if (e.keyCode == 39 && !value) {
-      // on right arrow key:
-      if (!defaultValue) return;
-      e.preventDefault();
-      setValue(defaultValue);
-    }
-    // info: submit
-    if (e.keyCode == 13 && !e.shiftKey) {
-      // on enter:
-      e.preventDefault();
-      sendMsg({ etype: 'INPUT', key, value } as ClientEvent);
-      if (clearOnSubmit) setValue('');
-    }
-  }, [ value ]);
+  const onKeyUp = useMemo<KeyboardEventHandler<HTMLTextAreaElement>>(
+    () => (e: KeyboardEvent) => {
+      // info: choose default
+      if (e.keyCode == 39 && !value) {
+        // on right arrow key:
+        if (!defaultValue) return;
+        e.preventDefault();
+        setValue(defaultValue);
+      }
+      // info: submit
+      if (e.keyCode == 13 && !e.shiftKey) {
+        // on enter:
+        e.preventDefault();
+        sendMsg({ etype: 'INPUT', key, value } as ClientEvent);
+        if (clearOnSubmit) setValue('');
+      }
+    },
+    [value],
+  );
 
   return (
     <form
@@ -149,8 +162,8 @@ export function Input(
     >
       <textarea
         placeholder={
-          placeholder
-          || `"${defaultValue}" [ press ➡ for default, ⏎ to submit ]`
+          placeholder ||
+          `"${defaultValue}" [ press ➡ for default, ⏎ to submit ]`
         }
         value={value}
         onChange={onChange}
@@ -175,11 +188,13 @@ type ImageUploadProps = VuerProps<{ label: string }>;
 
 export function ImageUpload({ _key: key, label }: ImageUploadProps) {
   const { sendMsg } = useSocket();
-  const [ file, setFile ] = useState<Blob | null>(null);
+  const [file, setFile] = useState<Blob | null>(null);
   const onChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     (e: ChangeEvent<HTMLInputElement>) => {
       setFile(e.target.files[0]);
-    }, []);
+    },
+    [],
+  );
   return (
     <form
       onSubmit={(e) => {
@@ -193,12 +208,9 @@ export function ImageUpload({ _key: key, label }: ImageUploadProps) {
         }
       }}
     >
-      <label htmlFor="file">
-        {label}
-        {' '}
-      </label>
-      <input type="file" onChange={onChange}/>
-      <input type="submit" value="Submit"/>
+      <label htmlFor='file'>{label} </label>
+      <input type='file' onChange={onChange} />
+      <input type='submit' value='Submit' />
     </form>
   );
 }

@@ -4,7 +4,6 @@ import React, {
   ReactNode,
   Suspense,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -17,15 +16,15 @@ import { acceleratedRaycast } from 'three-mesh-bvh';
 import { Perf } from 'r3f-perf';
 import queryString, { ParsedQuery } from 'query-string';
 import { CameraLike, OrbitCamera } from './camera';
-import { Gamepad } from "./controls/gamepad";
+import { Gamepad } from './controls/gamepad';
 import { Download } from './download';
 import { GroupSlave, SceneGroup } from './group';
 import { BackgroundColor } from './color';
 import { document } from '../third_party/browser-monads';
-import { ClientEvent, VuerProps } from "../vuer/interfaces";
-import { useSocket, SocketContextType } from "../vuer/websocket";
+import { ClientEvent, VuerProps } from '../vuer/interfaces';
+import { SocketContextType, useSocket } from '../vuer/websocket';
 // @ts-ignore: no type definition for three-stdlib
-import { OrbitControls as tOrbitControls } from "three-stdlib/controls/OrbitControls";
+import { OrbitControls as tOrbitControls } from 'three-stdlib/controls/OrbitControls';
 
 // question: what does this do? - Ge
 Mesh.prototype.raycast = acceleratedRaycast;
@@ -38,22 +37,22 @@ Mesh.prototype.raycast = acceleratedRaycast;
 //   // TextGeometry,
 // });
 
-export interface SceneProps extends VuerProps<{
-  _key?: string;
-  canvasRef?: MutableRefObject<HTMLElement | HTMLCanvasElement>
-  className?: string;
-  style?: object;
-  frameloop?: "always" | "demand";
-  xrMode?: "AR" | "VR" | "hidden";
-  up?: [ number, number, number ];
-  bgChildren?: ReactNode | ReactNode[];
-  rawChildren?: ReactNode | ReactNode[];
-  htmlChildren?: ReactNode | ReactNode[];
-  grid?: boolean;
-  initCamPosition?: [ number, number, number ];
-  initCamRotation?: [ number, number, number ];
-}> {
-}
+export interface SceneProps
+  extends VuerProps<{
+    _key?: string;
+    canvasRef?: MutableRefObject<HTMLElement | HTMLCanvasElement>;
+    className?: string;
+    style?: object;
+    frameloop?: 'always' | 'demand';
+    xrMode?: 'AR' | 'VR' | 'hidden';
+    up?: [number, number, number];
+    bgChildren?: ReactNode | ReactNode[];
+    rawChildren?: ReactNode | ReactNode[];
+    htmlChildren?: ReactNode | ReactNode[];
+    grid?: boolean;
+    initCamPosition?: [number, number, number];
+    initCamRotation?: [number, number, number];
+  }> {}
 
 /**
  * This is the root component for the 3D scene.
@@ -88,16 +87,19 @@ export function Scene({
   up = null,
   initCamPosition,
   initCamRotation,
-}: SceneProps,) {
+}: SceneProps) {
   const ref = useRef<HTMLCanvasElement>();
   const canvasRef = _canvasRef || ref;
   const { sendMsg, uplink } = useSocket() as SocketContextType;
-  const queries = useMemo<ParsedQuery>(() => queryString.parse(document.location.search), []);
+  const queries = useMemo<ParsedQuery>(
+    () => queryString.parse(document.location.search),
+    [],
+  );
 
   useEffect(() => {
     if (!up) return;
     Object3D.DEFAULT_UP.copy(new Vector3(...up));
-  }, [ up ])
+  }, [up]);
 
   const onCameraMove = useCallback(
     (camera: CameraLike) => {
@@ -113,7 +115,7 @@ export function Scene({
         },
       } as ClientEvent);
     },
-    [ sendMsg, uplink ],
+    [sendMsg, uplink],
   );
 
   const divStyle = useMemo<CSSProperties>(
@@ -127,19 +129,19 @@ export function Scene({
         border: '0px',
       }),
     }),
-    [ style ],
+    [style],
   );
 
   const camCtrlRef = useRef<tOrbitControls>();
 
   let button;
-  const mode = xrMode || queries.xrMode || "VR";
+  const mode = xrMode || queries.xrMode || 'VR';
 
-  if (mode === "AR") {
-    button = <ARButton/>;
-  } else if (mode === "VR") {
-    button = <VRButton/>;
-  } else if (mode === "hidden") {
+  if (mode === 'AR') {
+    button = <ARButton />;
+  } else if (mode === 'VR') {
+    button = <VRButton />;
+  } else if (mode === 'hidden') {
     button = null;
   }
 
@@ -159,14 +161,14 @@ export function Scene({
         >
           <XR foveation={1}>
             {queries.debug || queries.perf ? (
-              <Perf position="top-left"/>
+              <Perf position='top-left' />
             ) : null}
             {/* <FileDrop/> */}
             {/* <DreiHands/> */}
-            <Controllers/>
-            <Gamepad/>
-            <SceneGroup/>
-            <BackgroundColor/>
+            <Controllers />
+            <Gamepad />
+            <SceneGroup />
+            <BackgroundColor />
             {/** Hoist the SceneGroup control hooks up here. This is not the original
              usage pattern, but it turned out to work really well.*/}
             <OrbitCamera
@@ -185,11 +187,11 @@ export function Scene({
               <GroupSlave>{children}</GroupSlave>
             </Suspense>
             {rawChildren}
-            <Download/>
-            <GizmoHelper alignment="bottom-left" margin={[ 80, 80 ]}>
+            <Download />
+            <GizmoHelper alignment='bottom-left' margin={[80, 80]}>
               <GizmoViewport
-                axisColors={[ '#9d4b4b', '#2f7f4f', '#3b5b9d' ]}
-                labelColor="white"
+                axisColors={['#9d4b4b', '#2f7f4f', '#3b5b9d']}
+                labelColor='white'
               />
             </GizmoHelper>
             {/*<ambientLight intensity={0.1}/>*/}
@@ -207,7 +209,12 @@ export function Scene({
             {/*<pointLight position={[ 20, 10, 10 ]}/>*/}
             {/*<pointLight position={[ -10, 10, 20 ]}/>*/}
             {/*<fog attach='fog' args={[ '#2c3f57', 1, 10 ]}/>*/}
-            <Sphere args={[100]} position={[0, 0, 0]} material-color={'#2c3f57'} material-side={2}/>
+            <Sphere
+              args={[100]}
+              position={[0, 0, 0]}
+              material-color={'#2c3f57'}
+              material-side={2}
+            />
           </XR>
         </Canvas>
       </div>

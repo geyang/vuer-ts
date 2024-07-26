@@ -18,12 +18,16 @@ export function list2menu(nodes: Node[], expand: boolean) {
   nodes.forEach((node: Node) => {
     const {
       // @ts-ignore: not even used anymore, can just remove.
-      label, color, threshold, hide, ...rest
+      label, color, threshold, hide,
+      ...rest
     } = node;
     if (color) {
-      menu[`${label}`] = folder({
-        [`${label}_color`]: { value: color, label: 'color' },
-      }, { collapsed: !expand, color });
+      menu[`${label}`] = folder(
+        {
+          [`${label}_color`]: { value: color, label: 'color' },
+        },
+        { collapsed: !expand, color },
+      );
       menu[`${label}_show`] = { value: !hide, label: 'show' };
     } else {
       menu[`${label}_show`] = { value: !hide, label };

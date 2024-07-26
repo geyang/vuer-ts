@@ -1,12 +1,12 @@
 import {
-  SetEvent,
   AddEvent,
-  UpdateEvent,
-  UpsertEvent,
+  Node,
   RemoveEvent,
   SceneType,
+  SetEvent,
+  UpdateEvent,
+  UpsertEvent,
 } from './interfaces';
-import { Node } from './interfaces';
 
 export const SetOp = (
   scene: { tag: string } & SceneType,

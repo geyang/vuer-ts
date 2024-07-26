@@ -1,26 +1,12 @@
-import {
-  useLayoutEffect,
-  useRef,
-  WheelEvent,
-  PointerEvent,
-  useState,
-  useEffect,
-} from 'react';
+import { PointerEvent, useEffect, useRef, WheelEvent } from 'react';
 import { css } from '@emotion/react';
 import { Timestamps } from './Timestamps';
 import { RangeSelector } from './RangeSelector';
-import {
-  RangeOption,
-  stateSetter,
-
-
-
-} from '../playback';
 import { Playhead } from './Playhead';
 import { useSize, useStorage } from '../hooks';
 import { MouseButton, MouseMask } from './mouse_interfaces';
 import { clamp } from '../../layout_components/utils';
-import { usePlayback, usePlaybackStates, useTimelineStates } from "../playbackHooks";
+import { usePlayback, useTimelineStates } from '../playbackHooks';
 
 const ZOOM_SPEED = 0.000025;
 const ZOOM_MIN = 0.05;

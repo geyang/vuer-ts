@@ -1,4 +1,4 @@
-import React, { createContext, PropsWithRef, useContext, useMemo } from 'react';
+import React, { createContext, PropsWithRef, useMemo } from 'react';
 import queryString from 'query-string';
 import { Leva } from 'leva';
 import { document } from '../third_party/browser-monads';
@@ -35,7 +35,7 @@ export function VuerRoot({ style = {}, ...rest }: VuerRootProps) {
   }, []);
   const collapseMenu = useMemo<boolean>(
     () => queries.collapseMenu === 'true',
-    [ queries.collapseMenu ],
+    [queries.collapseMenu],
   );
 
   const sceneStyle = useMemo(
@@ -47,7 +47,7 @@ export function VuerRoot({ style = {}, ...rest }: VuerRootProps) {
       overscrollBehaviorX: 'none',
       ...style,
     }),
-    [ style ],
+    [style],
   );
 
   const { downlink } = useSocket();

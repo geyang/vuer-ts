@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { useUnmount } from './useUnmount';
 
-export const useThrottleFn = <T, U extends unknown[]>(fn: (...args: U) => T, ms: number = 200, args: U) => {
-  const [ state, setState ] = useState<T | null>(null);
+export const useThrottleFn = <T, U extends unknown[]>(
+  fn: (...args: U) => T,
+  ms: number = 200,
+  args: U,
+) => {
+  const [state, setState] = useState<T | null>(null);
   const timeout = useRef<ReturnType<typeof setTimeout>>();
   const nextArgs = useRef<U>();
 

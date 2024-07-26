@@ -1,9 +1,15 @@
-import { useCallback, useMemo } from "react";
-import { Mesh, OrthographicCamera, PlaneGeometry, Scene, ShaderMaterial } from "three";
+import { useCallback, useMemo } from 'react';
+import {
+  Mesh,
+  OrthographicCamera,
+  PlaneGeometry,
+  Scene,
+  ShaderMaterial,
+} from 'three';
 
 const useDepthRender = (disable = false) => {
-  const [ postScene, postMaterial, postCamera ] = useMemo(() => {
-    if (disable) return [ null, null, null ];
+  const [postScene, postMaterial, postCamera] = useMemo(() => {
+    if (disable) return [null, null, null];
     const pcam = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
     const pmat = new ShaderMaterial({
       vertexShader: `
@@ -66,8 +72,8 @@ const useDepthRender = (disable = false) => {
       uniforms: {
         cameraNear: { value: 0.1 },
         cameraFar: { value: 10 },
-        tDepth: { value: null }
-      }
+        tDepth: { value: null },
+      },
     });
 
     // setup the scene for rendering the post FX
@@ -76,23 +82,24 @@ const useDepthRender = (disable = false) => {
     const pscn = new Scene();
     pscn.add(postQuad);
 
-    return [ pscn, pmat, pcam ];
+    return [pscn, pmat, pcam];
+  }, [disable]);
 
-  }, [ disable ])
+  const renderFn = useCallback(
+    ({ renderer, depthTexture, near, far }) => {
+      if (!postMaterial) return;
 
-  const renderFn = useCallback(({ renderer, depthTexture, near, far }) => {
-    if (!postMaterial) return;
+      postMaterial.uniforms.tDepth.value = depthTexture;
+      postMaterial.uniforms.cameraNear.value = near;
+      postMaterial.uniforms.cameraFar.value = far;
 
-    postMaterial.uniforms.tDepth.value = depthTexture;
-    postMaterial.uniforms.cameraNear.value = near
-    postMaterial.uniforms.cameraFar.value = far
-
-    renderer.setRenderTarget(null);
-    renderer.render(postScene, postCamera);
-  }, [ disable ]);
+      renderer.setRenderTarget(null);
+      renderer.render(postScene, postCamera);
+    },
+    [disable],
+  );
 
   return renderFn;
-
-}
+};
 
 export { useDepthRender };

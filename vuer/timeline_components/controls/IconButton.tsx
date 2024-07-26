@@ -43,11 +43,8 @@ export function IconButton({
     <button
       disabled={disabled as unknown as boolean}
       title={title as unknown as string}
-      css={[
-        buttonStyle,
-        disabled && disabledStyle,
-      ]}
-      type="button"
+      css={[buttonStyle, disabled && disabledStyle]}
+      type='button'
       onClick={disabled ? null : onClick}
     >
       {children}

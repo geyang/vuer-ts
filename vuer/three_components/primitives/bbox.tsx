@@ -19,25 +19,23 @@ type BBoxProps = MeshProps & {
   scale?: number;
 };
 
-export function BBox(
-  {
-    // use three.js convention
-    min = { x: -1, y: -1, z: -1 },
-    max = { x: 1, y: 1, z: 1 },
-    color = '0xffffff',
-    scale = 1.01,
-    ..._
-  }: BBoxProps,
-) {
+export function BBox({
+  // use three.js convention
+  min = { x: -1, y: -1, z: -1 },
+  max = { x: 1, y: 1, z: 1 },
+  color = '0xffffff',
+  scale = 1.01,
+  ..._
+}: BBoxProps) {
   // const scale = 2
-  const dimension: number[] = [ max.x - min.x, max.y - min.y, max.z - min.z ];
+  const dimension: number[] = [max.x - min.x, max.y - min.y, max.z - min.z];
   const position: number[] = [
     min.x + dimension[0] / 2,
     min.y + dimension[1] / 2,
     min.z + dimension[2] / 2,
   ];
   return (
-  // @ts-ignore: fixme
+    // @ts-ignore: fixme
     <mesh position={position} {..._}>
       {/* @ts-ignore: fixme */}
       <boxGeometry args={dimension} />

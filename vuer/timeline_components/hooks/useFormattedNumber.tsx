@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo } from 'react';
 
 export function useFormattedNumber(value: number, precision = 6) {
   return useMemo(() => {
@@ -16,5 +16,5 @@ export function useFormattedNumber(value: number, precision = 6) {
     }
 
     return value.toFixed(Math.max(0, adjustedPrecision));
-  }, [ value, precision ]);
+  }, [value, precision]);
 }

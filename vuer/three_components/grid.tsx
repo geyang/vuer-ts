@@ -1,10 +1,10 @@
-import { ReactFragment, ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import queryString from 'query-string';
 import { Grid as DreiGrid } from '@react-three/drei';
 import { useControls } from 'leva';
 import { useThree } from '@react-three/fiber';
 import { document } from '../third_party/browser-monads';
-import { Euler, Object3D, Quaternion, Vector3 } from "three";
+import { Euler, Object3D, Quaternion, Vector3 } from 'three';
 
 interface GridQueries {
   grid?: string;
@@ -24,24 +24,28 @@ interface GridProps {
  * @param levaPrefix - The prefix for the leva controls
  * @param show - Whether to show the grid
  * */
-export function Grid({ _key, far, levaPrefix = 'Scene.', hide }: GridProps): ReactNode | Iterable<ReactNode> {
+export function Grid({
+  _key,
+  far,
+  levaPrefix = 'Scene.',
+  hide,
+}: GridProps): ReactNode | Iterable<ReactNode> {
   const q = useMemo<GridQueries>(
     () => queryString.parse(document.location.search),
     [],
   );
   const { camera } = useThree();
 
-  const queryGrid = (q.grid?.toLowerCase() === 'false') ? false : true;
+  const queryGrid = q.grid?.toLowerCase() === 'false' ? false : true;
 
-  let prefix = levaPrefix ? `${levaPrefix}Grid Plane` : 'Grid Plane'
+  let prefix = levaPrefix ? `${levaPrefix}Grid Plane` : 'Grid Plane';
   prefix = _key ? `${prefix}-[${_key}]` : prefix;
 
-  const {
-    showGrid, offset, fadeDistance, ...config
-  } = useControls(
-    prefix, {
+  const { showGrid, offset, fadeDistance, ...config } = useControls(
+    prefix,
+    {
       showGrid: {
-        value: (typeof hide === 'undefined') ? queryGrid : hide,
+        value: typeof hide === 'undefined' ? queryGrid : hide,
         label: 'Show Grid',
       },
       offset: 0,
@@ -57,7 +61,7 @@ export function Grid({ _key, far, levaPrefix = 'Scene.', hide }: GridProps): Rea
       infiniteGrid: true,
     },
     { collapsed: true },
-    [ far, camera.far ],
+    [far, camera.far],
   );
 
   const { rot, pos } = useMemo(() => {
@@ -67,20 +71,20 @@ export function Grid({ _key, far, levaPrefix = 'Scene.', hide }: GridProps): Rea
     const quaternion = new Quaternion();
     quaternion.setFromUnitVectors(upVector, Object3D.DEFAULT_UP);
 
-    const euler = new Euler()
+    const euler = new Euler();
     euler.setFromQuaternion(quaternion, 'XYZ');
     const position = Object3D.DEFAULT_UP.clone().multiplyScalar(offset);
     return { rot: euler, pos: position };
-  }, [ Object3D.DEFAULT_UP, offset ])
+  }, [Object3D.DEFAULT_UP, offset]);
 
   if (!showGrid) return <></>;
   return (
     <DreiGrid
       position={pos}
       rotation={rot}
-      args={[ 10, 10 ]}
+      args={[10, 10]}
       fadeDistance={Math.min(camera.far || 5, fadeDistance)}
       {...config}
     />
   );
-};
+}

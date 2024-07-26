@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import * as levaPlugin from 'leva/plugin';
 import * as dropzone from 'react-dropzone';
-import { DropZone, FileContainer, Instructions, Remove, } from './StyledFile';
+import { DropZone, FileContainer, Instructions, Remove } from './StyledFile';
+import { Row } from "leva/dist/declarations/src/components/UI";
 
 const { useDropzone } = dropzone;
 
@@ -21,15 +22,15 @@ const { useDropzone } = dropzone;
 const { Components, useInputContext } = levaPlugin;
 
 export function FileComponent() {
-  const {
-    label, value, onUpdate, disabled,
-  } = useInputContext<{ value: { name: string } }>();
+  const { label, value, onUpdate, disabled } = useInputContext<{
+    value: { name: string };
+  }>();
 
   const onDrop = useCallback(
     (acceptedFiles: string | unknown[]) => {
       if (acceptedFiles.length) onUpdate(acceptedFiles[0]);
     },
-    [ onUpdate ],
+    [onUpdate],
   );
 
   const clear = useCallback(
@@ -37,7 +38,7 @@ export function FileComponent() {
       e.stopPropagation();
       onUpdate(undefined);
     },
-    [ onUpdate ],
+    [onUpdate],
   );
 
   const { getRootProps, getInputProps, isDragAccept } = useDropzone({
@@ -52,9 +53,9 @@ export function FileComponent() {
       <Label>{label}</Label>
       <FileContainer fullwidth={!!value}>
         {value && <div>{value?.name}</div>}
-        {value && <Remove onClick={clear} disabled={!value}/>}
+        {value && <Remove onClick={clear} disabled={!value} />}
         {!value && (
-          <DropZone {...(getRootProps({ isDragAccept }))}>
+          <DropZone {...getRootProps({ isDragAccept })}>
             <input {...getInputProps()} />
             <Instructions>
               {isDragAccept ? 'drop file' : 'click or drop'}

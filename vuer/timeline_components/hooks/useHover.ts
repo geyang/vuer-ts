@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-type UseHoverType<T extends HTMLElement> = [ React.RefObject<T>, boolean ];
+type UseHoverType<T extends HTMLElement> = [React.RefObject<T>, boolean];
 
 export function useHover<T extends HTMLElement>(
   handleMouseOver?: () => void,
   handleMouseOut?: () => void,
 ): UseHoverType<T> {
-  const [ value, setValue ] = useState(false);
+  const [value, setValue] = useState(false);
 
   const ref = useRef<T>(null);
 
@@ -33,8 +33,8 @@ export function useHover<T extends HTMLElement>(
         };
       }
     },
-    [ ref.current ], // Recall only if ref changes
+    [ref.current], // Recall only if ref changes
   );
 
-  return [ ref, value ];
+  return [ref, value];
 }

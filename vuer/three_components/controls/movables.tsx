@@ -4,38 +4,44 @@ import {
   MutableRefObject,
   PropsWithChildren,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import { Euler, Group, Matrix4, Mesh, Quaternion, Vector3, } from 'three';
+import { Euler, Group, Matrix4, Mesh, Quaternion, Vector3 } from 'three';
 import { MeshProps, Vector3 as rVector3 } from '@react-three/fiber';
 import { PivotControls } from '@react-three/drei';
 import { useXR } from '@react-three/xr';
 import { SqueezeRayGrab } from './utils';
-import { useSocket, SocketContextType } from "../../vuer/websocket";
-import { ClientEvent, VuerProps } from "../../vuer/interfaces";
+import { SocketContextType, useSocket } from '../../vuer/websocket';
+import { ClientEvent, VuerProps } from '../../vuer/interfaces';
 
-export const HandleBox = forwardRef((
-  {
-    size,
-    children,
-    opacity = 1.0,
-    ...rest
-  }: MeshProps & PropsWithChildren<{
-    size: [ number, number, number ];
-    opacity?: number;
-  }>,
-  ref: ForwardedRef<Mesh>,
-) => (
-  <mesh ref={ref} {...rest}>
-    <boxGeometry args={size}/>
-    <meshPhongMaterial opacity={opacity} transparent={opacity < 1} color={0xfffff7}/>
-    {children}
-  </mesh>
-));
+export const HandleBox = forwardRef(
+  (
+    {
+      size,
+      children,
+      opacity = 1.0,
+      ...rest
+    }: MeshProps &
+      PropsWithChildren<{
+        size: [number, number, number];
+        opacity?: number;
+      }>,
+    ref: ForwardedRef<Mesh>,
+  ) => (
+    <mesh ref={ref} {...rest}>
+      <boxGeometry args={size} />
+      <meshPhongMaterial
+        opacity={opacity}
+        transparent={opacity < 1}
+        color={0xfffff7}
+      />
+      {children}
+    </mesh>
+  ),
+);
 
 type Sim3Type = {
   position: Vector3;
@@ -45,49 +51,91 @@ type Sim3Type = {
 };
 
 type MoveHandleInputType = {
-  matrix?: [ number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number ];
-  matrixWorld?: [ number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number ];
-  position?: [ number, number, number ];
-  rotation?: [ number, number, number, ]; // (EulerOrder | undefined) ];
-  quaternion?: [ number, number, number, number ];
+  matrix?: [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+  ];
+  matrixWorld?: [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+  ];
+  position?: [number, number, number];
+  rotation?: [number, number, number]; // (EulerOrder | undefined) ];
+  quaternion?: [number, number, number, number];
 };
 
-type PivotProps = VuerProps<{
-  anchor?: [ number, number, number ];
-  offset?: [ number, number, number ];
-  scale?: number;
-  lineWidth?: number;
-  onMove?: (event: MoveHandleInputType) => void;
-  onMoveEnd?: (event: MoveHandleInputType) => void;
-} & MoveHandleInputType>;
-
-export function Pivot(
+type PivotProps = VuerProps<
   {
-    children,
-    _key,
-    _ref,
-    anchor,
-    offset,
-    scale = 0.4,
-    lineWidth = 1.0,
-    matrix,
-    position,
-    rotation,
-    onMove, onMoveEnd,
-    ...rest
-  }: PivotProps,
-) {
-  const [ state, setState ] = useState({});
+    anchor?: [number, number, number];
+    offset?: [number, number, number];
+    scale?: number;
+    lineWidth?: number;
+    onMove?: (event: MoveHandleInputType) => void;
+    onMoveEnd?: (event: MoveHandleInputType) => void;
+  } & MoveHandleInputType
+>;
+
+export function Pivot({
+  children,
+  _key,
+  _ref,
+  anchor,
+  offset,
+  scale = 0.4,
+  lineWidth = 1.0,
+  matrix,
+  position,
+  rotation,
+  onMove,
+  onMoveEnd,
+  ...rest
+}: PivotProps) {
+  const [state, setState] = useState({});
   const ref = useRef();
   const localRef = (_ref || ref) as MutableRefObject<Group | Mesh>;
   const { sendMsg } = useSocket() as SocketContextType;
 
-  const cache = useMemo<Sim3Type>(() => ({
-    position: new Vector3(...(position || [ 0, 0, 0 ]) as [ number, number, number ]),
-    rotation: new Euler(...(rotation || [ 0, 0, 0 ]) as [ number, number, number ]),//, (EulerOrder) ]),
-    quaternion: new Quaternion(),
-    scale: new Vector3(),
-  }), []);
+  const cache = useMemo<Sim3Type>(
+    () => ({
+      position: new Vector3(
+        ...((position || [0, 0, 0]) as [number, number, number]),
+      ),
+      rotation: new Euler(
+        ...((rotation || [0, 0, 0]) as [number, number, number]),
+      ), //, (EulerOrder) ]),
+      quaternion: new Quaternion(),
+      scale: new Vector3(),
+    }),
+    [],
+  );
 
   useEffect(() => {
     if (!localRef.current) return;
@@ -96,7 +144,7 @@ export function Pivot(
     pivot.matrix.fromArray(matrix);
     pivot.matrix.decompose(pivot.position, pivot.quaternion, pivot.scale);
     pivot.rotation.setFromQuaternion(pivot.quaternion);
-  }, [ matrix, localRef.current ]);
+  }, [matrix, localRef.current]);
 
   useEffect(() => {
     if (!localRef.current) return;
@@ -112,16 +160,16 @@ export function Pivot(
       dirty = true;
     }
     if (dirty) pivot?.updateMatrix();
-  }, [ position, rotation, localRef.current ]);
+  }, [position, rotation, localRef.current]);
 
   function onDrag(
     local: Matrix4,
     // @ts-ignore: not used
-     
+
     dLocal: Matrix4,
     world: Matrix4,
     // @ts-ignore: not used
-     
+
     dWorld: Matrix4,
   ): void {
     local.decompose(cache.position, cache.quaternion, cache.scale);
@@ -173,39 +221,32 @@ export function Pivot(
 }
 
 function addThree(
-  [ x1, y1, z1 ]: [ number, number, number ] = [ 0, 0, 0 ],
-  [ x2, y2, z2 ]: [ number, number, number ] = [ 0, 0, 0 ],
-): [ number, number, number ] {
-  return [
-    x1 + x2,
-    y1 + y2,
-    z1 + z2,
-  ];
+  [x1, y1, z1]: [number, number, number] = [0, 0, 0],
+  [x2, y2, z2]: [number, number, number] = [0, 0, 0],
+): [number, number, number] {
+  return [x1 + x2, y1 + y2, z1 + z2];
 }
 
-
 type PivotXRProps = VuerProps<{
-  offset?: [ number, number, number ];
+  offset?: [number, number, number];
   scale?: number;
-  position?: [ number, number, number ];
-  rotation?: [ number, number, number ];
+  position?: [number, number, number];
+  rotation?: [number, number, number];
   onMove?: (event: MoveHandleInputType) => void;
   onMoveEnd?: (event: MoveHandleInputType) => void;
 }>;
 
-export function PivotXR(
-  {
-    _key,
-    _ref,
-    offset,
-    scale,
-    position,
-    rotation,
-    children = [],
-    onMove,
-    onMoveEnd,
-  }: PivotXRProps,
-) {
+export function PivotXR({
+  _key,
+  _ref,
+  offset,
+  scale,
+  position,
+  rotation,
+  children = [],
+  onMove,
+  onMoveEnd,
+}: PivotXRProps) {
   // const cloud_ref = useRef(children.length && children[0], children);
   const ref = useRef();
   const localRef = (_ref || ref) as MutableRefObject<Mesh>;
@@ -213,12 +254,15 @@ export function PivotXR(
   const { sendMsg } = useSocket() as SocketContextType;
 
   // make memo for position and rotation
-  const cache = useMemo<Sim3Type>(() => ({
-    position: new Vector3(),
-    rotation: new Euler(),
-    quaternion: new Quaternion(),
-    scale: new Vector3(),
-  }), []);
+  const cache = useMemo<Sim3Type>(
+    () => ({
+      position: new Vector3(),
+      rotation: new Euler(),
+      quaternion: new Quaternion(),
+      scale: new Vector3(),
+    }),
+    [],
+  );
 
   const onSqueezeEnd = useCallback(() => {
     const local = localRef.current?.matrix;
@@ -233,8 +277,8 @@ export function PivotXR(
       position: cache.position.toArray(),
       rotation: cache.rotation.toArray(),
       quaternion: cache.quaternion.toArray(),
-    } as MoveHandleInputType
-    onMoveEnd && onMoveEnd(state)
+    } as MoveHandleInputType;
+    onMoveEnd && onMoveEnd(state);
     sendMsg({
       ts: Date.now(),
       etype: 'OBJECT_MOVE_END',
@@ -253,8 +297,8 @@ export function PivotXR(
       position: cache.position.toArray(),
       rotation: cache.rotation.toArray(),
       quaternion: cache.quaternion.toArray(),
-    } as MoveHandleInputType
-    onMove && onMove(state)
+    } as MoveHandleInputType;
+    onMove && onMove(state);
     sendMsg({
       ts: Date.now(),
       etype: 'OBJECT_MOVE',
@@ -267,15 +311,19 @@ export function PivotXR(
     <group position={position} rotation={rotation}>
       {children}
     </group>
-  )
+  );
 
   return (
     <SqueezeRayGrab
-      onSqueezeEnd={onSqueezeEnd} onMove={onMoveHandle} position={position} rotation={rotation}
-      bgChildren={render()}>
+      onSqueezeEnd={onSqueezeEnd}
+      onMove={onMoveHandle}
+      position={position}
+      rotation={rotation}
+      bgChildren={render()}
+    >
       <HandleBox
         ref={localRef}
-        size={[ scale, scale, scale ]}
+        size={[scale, scale, scale]}
         opacity={0.5}
         rotation={rotation}
         position={addThree(position, offset) as rVector3}
@@ -284,31 +332,33 @@ export function PivotXR(
   );
 }
 
-type MovableType = VuerProps<{
-  anchor?: [ number, number, number ];
-  offset?: [ number, number, number ];
-  annotations?: string[];
-  scale?: number;
-  lineWidth?: number;
-  handleOffset?: [ number, number, number ];
-  hide?: boolean;
-} & PivotXRProps & PivotProps, Group | Mesh>;
-
-export function Movable(
+type MovableType = VuerProps<
   {
-    _key,
-    _ref,
-    children,
-    anchor,
-    offset,
-    annotations,
-    scale = 0.4,
-    lineWidth = 2,
-    handleOffset = [ 0, 0, 0 ],
-    hide,
-    ...props
-  }: MovableType,
-) {
+    anchor?: [number, number, number];
+    offset?: [number, number, number];
+    annotations?: string[];
+    scale?: number;
+    lineWidth?: number;
+    handleOffset?: [number, number, number];
+    hide?: boolean;
+  } & PivotXRProps &
+    PivotProps,
+  Group | Mesh
+>;
+
+export function Movable({
+  _key,
+  _ref,
+  children,
+  anchor,
+  offset,
+  annotations,
+  scale = 0.4,
+  lineWidth = 2,
+  handleOffset = [0, 0, 0],
+  hide,
+  ...props
+}: MovableType) {
   // hide movable leads to pass-through
   const { isPresenting } = useXR();
   if (hide) return <>{children}</>;

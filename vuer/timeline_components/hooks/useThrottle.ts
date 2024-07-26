@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
 export function useThrottle(value, interval = 500) {
-  const [ throttledValue, setThrottledValue ] = useState(value);
+  const [throttledValue, setThrottledValue] = useState(value);
   const lastUpdated = useRef(null);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export function useThrottle(value, interval = 500) {
 
       return () => window.clearTimeout(id);
     }
-  }, [ value, interval ]);
+  }, [value, interval]);
 
   return throttledValue;
 }

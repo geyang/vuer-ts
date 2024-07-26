@@ -1,11 +1,8 @@
- 
 // @ts-nocheck: todo fix this file
 import { useEffect, useState } from 'react';
 import { useControls } from 'leva';
 import { pluginFile } from '../third_party/leva-file-picker';
-import {
-  Glb, Obj, Pcd, Ply, Urdf,
-} from './three_components/data_loaders';
+import { Glb, Obj, Pcd, Ply, Urdf } from "../three_components";
 
 export function FileDrop() {
   const [ buffer, setBuffer ] = useState(null);

@@ -1,10 +1,9 @@
-import React from "react";
-import { HUDPlane, HUDPlaneProps } from "../../video_plane";
-import { useVideo } from "./useVuerVideo";
-import { useVuerVideoTexture } from "./useVuerVideoTexture";
-import { useWebRTC } from "./useWebRTC";
-import { VuerProps } from "../../../vuer/interfaces";
-
+import React from 'react';
+import { HUDPlane, HUDPlaneProps } from '../../video_plane';
+import { useVideo } from './useVuerVideo';
+import { useVuerVideoTexture } from './useVuerVideoTexture';
+import { useWebRTC } from './useWebRTC';
+import { VuerProps } from '../../../vuer/interfaces';
 
 export type WebRTCStereoPlaneProps = VuerProps<{
   src: string;
@@ -16,7 +15,8 @@ export type WebRTCStereoPlaneProps = VuerProps<{
   start?: boolean;
   playsInline?: boolean;
   side?: number;
-}> & HUDPlaneProps;
+}> &
+  HUDPlaneProps;
 
 export const WebRTCStereoVideoPlane = ({
   src,
@@ -31,22 +31,49 @@ export const WebRTCStereoVideoPlane = ({
   playsInline = true,
   ...props
 }: WebRTCStereoPlaneProps) => {
-
   const srcObj = useWebRTC(src, { iceServer, ...rtcOptions });
 
-  const video = useVideo(srcObj, { crossOrigin, muted, loop, start, playsInline })
-  const leftTexture = useVuerVideoTexture(video, { repeat: [ 0.5, 1 ], offset: [ 0, 0 ] });
-  const rightTexture = useVuerVideoTexture(video, { repeat: [ 0.5, 1 ], offset: [ 0.5, 0 ] });
+  const video = useVideo(srcObj, {
+    crossOrigin,
+    muted,
+    loop,
+    start,
+    playsInline,
+  });
+  const leftTexture = useVuerVideoTexture(video, {
+    repeat: [0.5, 1],
+    offset: [0, 0],
+  });
+  const rightTexture = useVuerVideoTexture(video, {
+    repeat: [0.5, 1],
+    offset: [0.5, 0],
+  });
 
-  return <>
-    <HUDPlane layers={1} {...props}>
-      {leftTexture && <meshBasicMaterial map={leftTexture} toneMapped={false} side={2} {...props}/>}
-    </HUDPlane>
-    <HUDPlane layers={2} {...props}>
-      {rightTexture && <meshBasicMaterial map={rightTexture} toneMapped={false} side={2} {...props}/>}
-    </HUDPlane>
-  </>
-}
+  return (
+    <>
+      <HUDPlane layers={1} {...props}>
+        {leftTexture && (
+          <meshBasicMaterial
+            map={leftTexture}
+            toneMapped={false}
+            side={2}
+            {...props}
+          />
+        )}
+      </HUDPlane>
+      <HUDPlane layers={2} {...props}>
+        {rightTexture && (
+          <meshBasicMaterial
+            map={rightTexture}
+            toneMapped={false}
+            side={2}
+            {...props}
+          />
+        )}
+      </HUDPlane>
+    </>
+  );
+};
 
 export type StereoPlaneProps = VuerProps<{
   src: string;
@@ -56,7 +83,8 @@ export type StereoPlaneProps = VuerProps<{
   loop?: boolean;
   start?: boolean;
   playsInline?: boolean;
-}> & HUDPlaneProps;
+}> &
+  HUDPlaneProps;
 
 export const StereoVideoPlane = ({
   src,
@@ -68,19 +96,44 @@ export const StereoVideoPlane = ({
   playsInline = true,
   ...props
 }: StereoPlaneProps) => {
-
   const video = useVideo(src, {
-    crossOrigin, muted, loop, start, playsInline
+    crossOrigin,
+    muted,
+    loop,
+    start,
+    playsInline,
   });
-  const leftTexture = useVuerVideoTexture(video, { repeat: [ 0.5, 1 ], offset: [ 0, 0 ] });
-  const rightTexture = useVuerVideoTexture(video, { repeat: [ 0.5, 1 ], offset: [ 0.5, 0 ] });
+  const leftTexture = useVuerVideoTexture(video, {
+    repeat: [0.5, 1],
+    offset: [0, 0],
+  });
+  const rightTexture = useVuerVideoTexture(video, {
+    repeat: [0.5, 1],
+    offset: [0.5, 0],
+  });
 
-  return <>
-    <HUDPlane layers={1} {...props}>
-      {leftTexture && <meshBasicMaterial map={leftTexture} toneMapped={false} side={2} {...props}/>}
-    </HUDPlane>
-    <HUDPlane layers={2} {...props}>
-      {rightTexture && <meshBasicMaterial map={rightTexture} toneMapped={false} side={2} {...props}/>}
-    </HUDPlane>
-  </>
-}
+  return (
+    <>
+      <HUDPlane layers={1} {...props}>
+        {leftTexture && (
+          <meshBasicMaterial
+            map={leftTexture}
+            toneMapped={false}
+            side={2}
+            {...props}
+          />
+        )}
+      </HUDPlane>
+      <HUDPlane layers={2} {...props}>
+        {rightTexture && (
+          <meshBasicMaterial
+            map={rightTexture}
+            toneMapped={false}
+            side={2}
+            {...props}
+          />
+        )}
+      </HUDPlane>
+    </>
+  );
+};

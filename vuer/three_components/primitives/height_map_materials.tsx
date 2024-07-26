@@ -1,12 +1,22 @@
-import { MaterialProps, MeshStandardMaterialProps, useLoader } from '@react-three/fiber';
-import { DataTexture, NoColorSpace, TangentSpaceNormalMap, Texture, TextureLoader, } from 'three';
+import {
+  MaterialProps,
+  MeshStandardMaterialProps,
+  useLoader,
+} from '@react-three/fiber';
+import {
+  DataTexture,
+  NoColorSpace,
+  TangentSpaceNormalMap,
+  Texture,
+  TextureLoader,
+} from 'three';
 import { useLayoutEffect, useMemo } from 'react';
 import { useControls } from 'leva';
- 
+
 // @ts-expect-error
 import { TextureImageData } from 'three/src/textures/types';
 import { height2normal } from './normal_map_utils';
-import { MaterialTypes } from "./three_materials";
+import { MaterialTypes } from './three_materials';
 
 // export function SimpleMaterial({_key, displacementMap, normalMap, ...rest}) {
 //     const dM = useLoader(TextureLoader, displacementMap);
@@ -23,7 +33,8 @@ import { MaterialTypes } from "./three_materials";
 //     );
 // }
 
-const isLoaded = (image: TextureImageData) => image?.complete && image.naturalHeight !== 0;
+const isLoaded = (image: TextureImageData) =>
+  image?.complete && image.naturalHeight !== 0;
 
 type HeightMaterialProps = Omit<MaterialProps, 'normalMap'> & {
   _key?: string;
@@ -38,21 +49,22 @@ type HeightMaterialProps = Omit<MaterialProps, 'normalMap'> & {
   [key: string]: unknown;
 };
 
-export function HeightMaterial(
-  {
-    _key,
-    _ref,
-    type = 'standard',
-    normalMap,
-    displacementMap,
-    normalScale = [ 1, 1 ],
-    displacementScale = 1,
-    ...rest
-  }: HeightMaterialProps,
-) {
+export function HeightMaterial({
+  _key,
+  _ref,
+  type = 'standard',
+  normalMap,
+  displacementMap,
+  normalScale = [1, 1],
+  displacementScale = 1,
+  ...rest
+}: HeightMaterialProps) {
   const MType = `mesh${type.charAt(0).toUpperCase()}${type.slice(1)}Material`;
 
-  const displacementTexture = useLoader(TextureLoader, displacementMap || []) as Texture;
+  const displacementTexture = useLoader(
+    TextureLoader,
+    displacementMap || [],
+  ) as Texture;
   if (displacementTexture) displacementTexture.colorSpace = NoColorSpace;
 
   const width = displacementTexture.image?.width;
@@ -65,20 +77,19 @@ export function HeightMaterial(
     const m = new Uint8ClampedArray(4 * width * height);
     m.fill(255);
     return m;
-  }, [ width, height ]);
+  }, [width, height]);
 
-  const computedNormal = useMemo<null | Texture & { flipY: boolean }>(
-    (): null | DataTexture => {
-      // allow using normalMap === false to turn off the normal calculation
-      if (normalMap || normalMap === false) return null;
-      const texture = new DataTexture(normalData, width, height);
-      // flip the image when sending to GPU.
-      texture.flipY = true;
-      texture.colorSpace = NoColorSpace;
-      return texture;
-    },
-    [ normalMap, width, height ],
-  );
+  const computedNormal = useMemo<
+    null | (Texture & { flipY: boolean })
+  >((): null | DataTexture => {
+    // allow using normalMap === false to turn off the normal calculation
+    if (normalMap || normalMap === false) return null;
+    const texture = new DataTexture(normalData, width, height);
+    // flip the image when sending to GPU.
+    texture.flipY = true;
+    texture.colorSpace = NoColorSpace;
+    return texture;
+  }, [normalMap, width, height]);
 
   useLayoutEffect(() => {
     if (!!normalMap || normalMap === false) return;
@@ -89,7 +100,7 @@ export function HeightMaterial(
     computedNormal.image = { data: normalData, width, height };
     computedNormal.colorSpace = NoColorSpace;
     computedNormal.needsUpdate = true;
-  }, [ normalMap, displacementTexture.image, width, height ]);
+  }, [normalMap, displacementTexture.image, width, height]);
 
   // prettier-ignore
   const folderName = `${_key} Height Map`;
@@ -98,16 +109,16 @@ export function HeightMaterial(
     {
       displacementScale: {
         value: displacementScale,
-        render: (): boolean => (!!displacementMap),
+        render: (): boolean => !!displacementMap,
         options: { min: 0, step: 0.01 },
       },
       normalScale: {
         value: normalScale,
-        render: (): boolean => (!!displacementMap && normalMap !== false),
+        render: (): boolean => !!displacementMap && normalMap !== false,
         options: { min: 0, step: 0.01 },
       },
     },
-    [ displacementMap, displacementScale, normalMap, normalScale ],
+    [displacementMap, displacementScale, normalMap, normalScale],
   );
 
   const props: MeshStandardMaterialProps = {};
@@ -127,7 +138,7 @@ export function HeightMaterial(
     <MType
       ref={_ref}
       key={_key}
-      attach="material"
+      attach='material'
       {...props}
       {...controls}
       {...rest}

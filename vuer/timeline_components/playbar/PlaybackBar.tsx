@@ -2,7 +2,11 @@ import { css } from '@emotion/react';
 import { PlaybackControls } from './PlaybackControls';
 import { Timestamp } from './CurrentTime';
 
-import { usePlayback, usePlaybackStates, useTimelineStates } from "../playbackHooks";
+import {
+  usePlayback,
+  usePlaybackStates,
+  useTimelineStates,
+} from '../playbackHooks';
 
 const PlaybackBarStyle = css`
   background: var(--surface-color);

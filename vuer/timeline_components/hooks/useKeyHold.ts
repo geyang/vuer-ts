@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
-
+import { useEffect, useState } from 'react';
 
 export function useKeyHold(key: string) {
-  const [ isHeld, setHeld ] = useState(false);
+  const [isHeld, setHeld] = useState(false);
 
   useEffect(() => {
     const handleDown = (event: KeyboardEvent) => {
@@ -30,7 +29,7 @@ export function useKeyHold(key: string) {
       window.removeEventListener('blur', handleBlur);
       window.removeEventListener('contextmenu', handleBlur);
     };
-  }, [ key ]);
+  }, [key]);
 
   return isHeld;
 }

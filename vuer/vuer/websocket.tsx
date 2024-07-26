@@ -1,4 +1,12 @@
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState, } from 'react';
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import useWebSocket from 'react-use-websocket';
 import { button, useControls } from 'leva';
 import useStateRef from 'react-usestateref';
@@ -15,7 +23,9 @@ export type SocketContextType = {
   uplink: Store<ClientEvent>;
   downlink: Store<ServerEvent>;
 };
-export const SocketContext = createContext<SocketContextType | undefined>(undefined);
+export const SocketContext = createContext<SocketContextType | undefined>(
+  undefined,
+);
 
 export const useSocket = (): SocketContextType => {
   const context = useContext(SocketContext);
@@ -23,15 +33,17 @@ export const useSocket = (): SocketContextType => {
     throw new Error('useSocket must be used within a SocketProvider');
   }
   return context;
-}
+};
 
 const DEFAULT_PORT = 8012;
 
 function getSocketURI(queryWS?: string): string {
   // queries.ws || `${window.location.hostname}:${window.location.port}` || 'ws://localhost:8012',
   if (!!queryWS) return queryWS as string;
-  if (window.location.hostname == "vuer.ai") return `ws://localhost:${DEFAULT_PORT}`;
-  if (window.location.protocol == "https:") return `wss://${window.location.hostname}`;
+  if (window.location.hostname == 'vuer.ai')
+    return `ws://localhost:${DEFAULT_PORT}`;
+  if (window.location.protocol == 'https:')
+    return `wss://${window.location.hostname}`;
   return `ws://${window.location.hostname}:${window.location.port || DEFAULT_PORT}`;
 }
 
@@ -44,13 +56,19 @@ type wsQueries = {
   interval?: string; // should get turned into numbers
 };
 
-export function WebSocketProvider({ onMessage: paramsOnMessage, children }: WebSocketProviderProps) {
-  const [ isConnected, setIsConnected ] = useStateRef(false);
-  const [ connectWS, setConnectWS ] = useState(true);
-  const [ reconnect, allowReconnect ] = useState(true);
-  const [ , , shouldReconnect ] = useStateRef(true);
+export function WebSocketProvider({
+  onMessage: paramsOnMessage,
+  children,
+}: WebSocketProviderProps) {
+  const [isConnected, setIsConnected] = useStateRef(false);
+  const [connectWS, setConnectWS] = useState(true);
+  const [reconnect, allowReconnect] = useState(true);
+  const [, , shouldReconnect] = useStateRef(true);
 
-  const queries = useMemo<wsQueries>(() => queryString.parse(document.location.search), []);
+  const queries = useMemo<wsQueries>(
+    () => queryString.parse(document.location.search),
+    [],
+  );
   const uplink = useMemo<Store<ClientEvent>>(() => new Store(), []);
   const downlink = useMemo<Store<ServerEvent>>(() => new Store(), []);
 
@@ -86,7 +104,7 @@ export function WebSocketProvider({ onMessage: paramsOnMessage, children }: WebS
         downlink.publish(event);
       });
     },
-    [ socketURI ],
+    [socketURI],
   );
 
   function onOpen() {
@@ -125,7 +143,7 @@ export function WebSocketProvider({ onMessage: paramsOnMessage, children }: WebS
       reconnectAttempts: queries.reconnect ? parseInt(queries.reconnect) : 3,
       reconnectInterval: queries.interval ? parseInt(queries.interval) : 3000,
     },
-    (!!socketURI && connectWS),
+    !!socketURI && connectWS,
   );
 
   const sendMsg = useCallback<msgFn>(
@@ -141,13 +159,15 @@ export function WebSocketProvider({ onMessage: paramsOnMessage, children }: WebS
       const message = pack(event);
       if (event) sendMessage(message);
     },
-    [ readyState ],
+    [readyState],
   );
 
-  useEffect(() => uplink.subscribe('*', sendMsg), [ sendMsg, uplink ]);
+  useEffect(() => uplink.subscribe('*', sendMsg), [sendMsg, uplink]);
 
   return (
-    <SocketContext.Provider value={{ sendMsg, uplink, downlink } as SocketContextType}>
+    <SocketContext.Provider
+      value={{ sendMsg, uplink, downlink } as SocketContextType}
+    >
       {children}
     </SocketContext.Provider>
   );

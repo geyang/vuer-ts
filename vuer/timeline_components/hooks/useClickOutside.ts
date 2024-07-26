@@ -1,4 +1,4 @@
-import { MutableRefObject, useCallback } from "react";
+import { MutableRefObject, useCallback } from 'react';
 import { useDocumentEvent } from './useDocumentEvent';
 
 export function useClickOutside<T extends Element>(
@@ -8,12 +8,15 @@ export function useClickOutside<T extends Element>(
   useDocumentEvent(
     'click',
     useCallback(
-      event => {
-        if (targetRef.current && !targetRef.current.contains(event.target as Node)) {
+      (event) => {
+        if (
+          targetRef.current &&
+          !targetRef.current.contains(event.target as Node)
+        ) {
           onClick();
         }
       },
-      [ targetRef.current, onClick ],
+      [targetRef.current, onClick],
     ),
   );
 }

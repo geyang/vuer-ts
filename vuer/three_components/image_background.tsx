@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState, } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useThree } from '@react-three/fiber';
 import {
   LinearFilter,
@@ -9,9 +9,9 @@ import {
   Texture,
   TextureLoader,
 } from 'three';
-import ImagePlane, { ImagePlaneProps } from "./image_plane";
-import ImageSphere, { ImageSphereProps } from "./image_sphere";
-import { useControls } from "leva";
+import ImagePlane, { ImagePlaneProps } from './image_plane';
+import ImageSphere, { ImageSphereProps } from './image_sphere';
+import { useControls } from 'leva';
 
 function interpolateTexture(texture: Texture, interpolate: boolean) {
   if (!texture) return;
@@ -34,41 +34,41 @@ export type ImageBackgroundProps = {
   opacity?: number;
   levaPrefix?: string;
   [key: string]: unknown;
-} & ImageSphereProps & ImagePlaneProps;
+} & ImageSphereProps &
+  ImagePlaneProps;
 
-export function ImageBackground(
-  {
-    _key,
-    geometry,
-    src,
-    alphaSrc,
-    depthSrc,
-    interpolate = false,
-    // distanceToCamera = 10,
-    // opacity = 1.0,
-    depthScale = 1,
-    depthBias = 0,
-    fixed = false,
-    levaPrefix = "Scene.",
-    // side = 0,
-    // wireframe = false,
-    // material = {},
-    ...rest
-  }: ImageBackgroundProps,
-) {
+export function ImageBackground({
+  _key,
+  geometry,
+  src,
+  alphaSrc,
+  depthSrc,
+  interpolate = false,
+  // distanceToCamera = 10,
+  // opacity = 1.0,
+  depthScale = 1,
+  depthBias = 0,
+  fixed = false,
+  levaPrefix = 'Scene.',
+  // side = 0,
+  // wireframe = false,
+  // material = {},
+  ...rest
+}: ImageBackgroundProps) {
   const meshRef = useRef<MeshBasicMaterial>();
-  const { camera }: { camera: PerspectiveCamera | OrthographicCamera } = useThree();
+  const { camera }: { camera: PerspectiveCamera | OrthographicCamera } =
+    useThree();
 
-  const [ rgbTexture, setRGB ] = useState<Texture>();
-  const [ alphaTexture, setAlpha ] = useState<Texture>();
-  const [ depthTexture, setDepth ] = useState<Texture>();
+  const [rgbTexture, setRGB] = useState<Texture>();
+  const [alphaTexture, setAlpha] = useState<Texture>();
+  const [depthTexture, setDepth] = useState<Texture>();
 
   const loader = useMemo(() => new TextureLoader(), []);
 
   const blobOpts: unknown = useMemo(() => {
-    if (depthTexture && camera.type === "PerspectiveCamera") return {};
+    if (depthTexture && camera.type === 'PerspectiveCamera') return {};
     return { imageOrientation: 'flipY' };
-  }, [ camera.type, depthTexture ]);
+  }, [camera.type, depthTexture]);
 
   useEffect(() => {
     if (!src) {
@@ -76,7 +76,7 @@ export function ImageBackground(
     } else if (typeof src === 'string') {
       loader.load(src, setRGB);
     } else {
-      const blob: ImageBitmapSource = new Blob([ src ], { type: 'image' });
+      const blob: ImageBitmapSource = new Blob([src], { type: 'image' });
       const texture = new Texture();
       createImageBitmap(blob, blobOpts).then((imageBitmap) => {
         texture.image = imageBitmap;
@@ -85,7 +85,7 @@ export function ImageBackground(
         setRGB(texture);
       });
     }
-  }, [ src, blobOpts ]);
+  }, [src, blobOpts]);
 
   useEffect(() => {
     if (!alphaSrc) {
@@ -93,7 +93,7 @@ export function ImageBackground(
     } else if (typeof alphaSrc === 'string') {
       loader.load(alphaSrc, setAlpha);
     } else {
-      const blob: ImageBitmapSource = new Blob([ alphaSrc ], { type: 'image' });
+      const blob: ImageBitmapSource = new Blob([alphaSrc], { type: 'image' });
       const texture = new Texture();
       createImageBitmap(blob, blobOpts).then((imageBitmap) => {
         texture.image = imageBitmap;
@@ -102,7 +102,7 @@ export function ImageBackground(
         setAlpha(texture);
       });
     }
-  }, [ alphaSrc, blobOpts ]);
+  }, [alphaSrc, blobOpts]);
 
   useEffect(() => {
     if (!depthSrc) {
@@ -110,7 +110,7 @@ export function ImageBackground(
     } else if (typeof depthSrc === 'string') {
       loader.load(depthSrc, setDepth);
     } else {
-      const blob: ImageBitmapSource = new Blob([ depthSrc ], { type: 'image' });
+      const blob: ImageBitmapSource = new Blob([depthSrc], { type: 'image' });
       const texture = new Texture();
       createImageBitmap(blob, blobOpts).then((imageBitmap) => {
         texture.image = imageBitmap;
@@ -119,37 +119,83 @@ export function ImageBackground(
         setDepth(texture);
       });
     }
-  }, [ depthSrc, blobOpts ]);
+  }, [depthSrc, blobOpts]);
 
   useEffect(() => {
     if (rgbTexture) interpolateTexture(rgbTexture, interpolate);
     if (alphaTexture) interpolateTexture(alphaTexture, interpolate);
     if (depthTexture) interpolateTexture(depthTexture, interpolate);
-  }, [ rgbTexture, alphaTexture, depthTexture, interpolate ]);
+  }, [rgbTexture, alphaTexture, depthTexture, interpolate]);
 
-  let prefix = levaPrefix ? `${levaPrefix}Image Background` : 'Image Background'
+  let prefix = levaPrefix
+    ? `${levaPrefix}Image Background`
+    : 'Image Background';
   prefix = _key ? `${prefix}-[${_key}]` : prefix;
 
-  const ctrl = useControls(prefix, {
-    fixed,
-    depthScale: { value: depthScale, step: 0.01, label: "Depth Scale" },
-    depthBias: { value: depthBias, step: 0.01, label: "Depth Offset" },
-  }, [ fixed, depthScale, depthBias ]);
+  const ctrl = useControls(
+    prefix,
+    {
+      fixed,
+      depthScale: { value: depthScale, step: 0.01, label: 'Depth Scale' },
+      depthBias: { value: depthBias, step: 0.01, label: 'Depth Offset' },
+    },
+    [fixed, depthScale, depthBias],
+  );
 
   if (geometry === 'plane') {
-    return <ImagePlane matRef={meshRef} rgb={rgbTexture} alpha={alphaTexture}
-      depth={depthTexture} {...ctrl} {...rest}/>;
+    return (
+      <ImagePlane
+        matRef={meshRef}
+        rgb={rgbTexture}
+        alpha={alphaTexture}
+        depth={depthTexture}
+        {...ctrl}
+        {...rest}
+      />
+    );
   } else if (geometry === 'sphere') {
-    return <ImageSphere matRef={meshRef} rgb={rgbTexture} alpha={alphaTexture} {...ctrl}
-      depth={depthTexture} {...rest}/>;
+    return (
+      <ImageSphere
+        matRef={meshRef}
+        rgb={rgbTexture}
+        alpha={alphaTexture}
+        {...ctrl}
+        depth={depthTexture}
+        {...rest}
+      />
+    );
   } else if (!depthTexture) {
-    return <ImagePlane matRef={meshRef} rgb={rgbTexture} alpha={alphaTexture} {...ctrl} {...rest}/>;
+    return (
+      <ImagePlane
+        matRef={meshRef}
+        rgb={rgbTexture}
+        alpha={alphaTexture}
+        {...ctrl}
+        {...rest}
+      />
+    );
   } else if (camera.type === 'OrthographicCamera') {
-    return <ImagePlane matRef={meshRef} rgb={rgbTexture} alpha={alphaTexture}
-      depth={depthTexture} {...ctrl} {...rest}/>;
+    return (
+      <ImagePlane
+        matRef={meshRef}
+        rgb={rgbTexture}
+        alpha={alphaTexture}
+        depth={depthTexture}
+        {...ctrl}
+        {...rest}
+      />
+    );
   } else if (camera.type === 'PerspectiveCamera') {
-    return <ImageSphere matRef={meshRef} rgb={rgbTexture} alpha={alphaTexture} {...ctrl}
-      depth={depthTexture} {...rest}/>;
+    return (
+      <ImageSphere
+        matRef={meshRef}
+        rgb={rgbTexture}
+        alpha={alphaTexture}
+        {...ctrl}
+        depth={depthTexture}
+        {...rest}
+      />
+    );
   }
   return null;
 }

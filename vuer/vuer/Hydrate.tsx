@@ -1,7 +1,7 @@
 import { ElementType, ReactNode, useContext } from 'react';
-import { AppContext } from "./VuerRoot";
+import { AppContext } from './VuerRoot';
 import * as comp_list from '../all_components';
-import { Node } from "./interfaces";
+import { Node } from './interfaces';
 
 export interface HydrateProps {
   _key?: string;
@@ -12,22 +12,21 @@ export interface HydrateProps {
   [key: string]: unknown;
 }
 
-export function Hydrate(
-  {
-    _key,
-    tag,
-    children,
-    className,
-    ...rest
-  }: HydrateProps,
-): ReactNode | null | undefined {
-
+export function Hydrate({
+  _key,
+  tag,
+  children,
+  className,
+  ...rest
+}: HydrateProps): ReactNode | null | undefined {
   const Component = (comp_list[tag] || tag) as ElementType;
 
   const { showWarning } = useContext(AppContext);
 
   if (!tag) {
-    showWarning(`No tag provided for component <${tag} ${_key} className="${className}">${children} </...>`)
+    showWarning(
+      `No tag provided for component <${tag} ${_key} className="${className}">${children} </...>`,
+    );
     return children as string[];
   }
 
