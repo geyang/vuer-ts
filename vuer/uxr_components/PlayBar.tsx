@@ -1,9 +1,10 @@
+import { MutableRefObject } from "react";
 import { useThree } from '@react-three/fiber';
 import { animated, useSpring } from '@react-spring/three';
 import { useGesture } from 'react-use-gesture';
 
 export type PlayBarProps = {
-  camCtrlRef: React.MutableRefObject<unknown>;
+  camCtrlRef: MutableRefObject<unknown>;
 };
 
 export function PlayBar({ camCtrlRef }: PlayBarProps) {

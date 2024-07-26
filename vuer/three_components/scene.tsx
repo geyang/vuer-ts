@@ -21,8 +21,8 @@ import { Download } from './download';
 import { GroupSlave, SceneGroup } from './group';
 import { BackgroundColor } from './color';
 import { document } from '../third_party/browser-monads';
-import { ClientEvent, VuerProps } from '../vuer/interfaces';
-import { SocketContextType, useSocket } from '../vuer/websocket';
+import { ClientEvent, VuerProps } from '../vuer';
+import { SocketContextType, useSocket } from '../vuer';
 // @ts-ignore: no type definition for three-stdlib
 import { OrbitControls as tOrbitControls } from 'three-stdlib/controls/OrbitControls';
 

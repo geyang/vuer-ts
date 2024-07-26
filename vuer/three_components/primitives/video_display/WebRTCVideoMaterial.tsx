@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Vector2 } from 'three';
 import { useVuerVideoTexture } from './useVuerVideoTexture';
 import { useWebRTC } from './useWebRTC';
-import { VuerProps } from '../../../vuer/interfaces';
+import { VuerProps } from '../../../vuer';
 import { useVideo } from './useVuerVideo';
 
 export type VideoMaterialProps = {

@@ -9,7 +9,7 @@ import { Mesh, Object3D, Raycaster, Vector2, Vector3 } from 'three';
 import { Camera, Intersection, invalidate, useThree } from '@react-three/fiber';
 import { Sphere as ThreeSphere } from '@react-three/drei';
 import { useControls } from 'leva';
-import { useSocket } from '../../vuer/websocket';
+import { useSocket } from '../../vuer';
 
 function getPosition(
   camera: Camera,

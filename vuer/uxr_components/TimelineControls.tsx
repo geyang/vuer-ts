@@ -1,7 +1,7 @@
 import { button, useControls } from 'leva';
 import { useCallback, useEffect } from 'react';
-import { SocketContextType, useSocket } from '../vuer/websocket';
-import { ClientEvent, VuerProps } from '../vuer/interfaces';
+import { SocketContextType, useSocket } from '../vuer';
+import { ClientEvent, VuerProps } from '../vuer';
 import { useThree } from '@react-three/fiber';
 
 export type PlayBarProps = VuerProps<{

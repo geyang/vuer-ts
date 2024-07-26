@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import * as levaPlugin from 'leva/plugin';
 import * as dropzone from 'react-dropzone';
 import { DropZone, FileContainer, Instructions, Remove } from './StyledFile';
-import { Row } from "leva/dist/declarations/src/components/UI";
 
 const { useDropzone } = dropzone;
 

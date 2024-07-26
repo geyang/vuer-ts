@@ -10,7 +10,7 @@ const PlayheadStyle = css`
   width: 0;
   border-left: 1px solid var(--theme);
   margin-left: -50%;
-  border-box: content-box;
+  box-sizing: content-box;
   top: 6px;
   bottom: 0;
   background-color: var(--theme);
@@ -18,7 +18,6 @@ const PlayheadStyle = css`
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  margin-left: -50%;
 
   //transition-duration: 1s;
 

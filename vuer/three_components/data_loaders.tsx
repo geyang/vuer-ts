@@ -34,8 +34,8 @@ import {
   UrdfView,
   UrdfViewProps,
 } from './components';
-import { AppContext, ClientEvent } from '../index';
-import { useSocket } from '../vuer/websocket';
+import { AppContext, ClientEvent } from '../vuer';
+import { useSocket } from '../vuer';
 
 // todo: pass reference
 type Props = PropsWithChildren<{

@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { Points } from 'three';
 import { half2float } from './half2float';
-import { Matrix16T } from '../../vuer/interfaces';
+import { Matrix16T } from '../../vuer';
 
 type PointCloudProps = PropsWithChildren<{
   _key?: string;

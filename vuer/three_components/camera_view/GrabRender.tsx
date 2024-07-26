@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useThree } from '@react-three/fiber';
-import { ClientEvent, ServerRPC } from '../../vuer/interfaces';
-import { SocketContextType, useSocket } from '../../vuer/websocket';
+import { ClientEvent, ServerRPC } from '../../vuer';
+import { SocketContextType, useSocket } from '../../vuer';
 
 export type GrabRenderEvent = ServerRPC & {
   // this is the UUID of the request.

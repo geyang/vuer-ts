@@ -1,4 +1,4 @@
-import { Matrix16T, VuerProps } from '../../vuer/interfaces';
+import { Matrix16T, VuerProps } from '../../vuer';
 import { useLayoutEffect, useRef } from 'react';
 import { Group as ThreeGroup } from 'three';
 

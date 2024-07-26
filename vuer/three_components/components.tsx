@@ -17,7 +17,7 @@ import {
 } from 'three';
 import { URDFRobot } from 'urdf-loader';
 import { MaterialProps, useThree } from '@react-three/fiber';
-import { Matrix16T, VuerProps } from '../vuer/interfaces';
+import { Matrix16T, VuerProps } from '../vuer';
 import { GLTF } from 'three-stdlib';
 import { ALL_MATERIALS, MaterialTypes } from './primitives/three_materials';
 import { VuerGroup, VuerGroupProps } from './primitives/better_group';

@@ -9,7 +9,7 @@ import {
   Vector3,
 } from 'three';
 import { Line, Sphere } from '@react-three/drei';
-import { VuerProps } from '../vuer/interfaces';
+import { VuerProps } from '../vuer';
 
 function equals(aArr: number[], bArr: number[]) {
   for (let i = 0; i < aArr.length; i++) {

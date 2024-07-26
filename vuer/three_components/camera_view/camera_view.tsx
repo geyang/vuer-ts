@@ -22,8 +22,8 @@ import {
 import { Frustum } from '../frustum';
 import { Movable } from '../controls/movables';
 import { useControls } from 'leva';
-import { ClientEvent, VuerProps } from '../../vuer/interfaces';
-import { SocketContextType, useSocket } from '../../vuer/websocket';
+import { ClientEvent, VuerProps } from '../../vuer';
+import { SocketContextType, useSocket } from '../../vuer';
 import { GrabRenderEvent } from './GrabRender';
 import { useDepthRender } from './depthHelper';
 import { useRender } from './renderHelper';

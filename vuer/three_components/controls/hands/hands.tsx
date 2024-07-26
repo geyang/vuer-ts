@@ -3,8 +3,8 @@ import { useFrame } from '@react-three/fiber';
 import throttle from 'lodash.throttle';
 import { useController, useXR } from '@react-three/xr';
 
-import { ClientEvent, VuerProps } from '../../../vuer/interfaces';
-import { SocketContextType, useSocket } from '../../../vuer/websocket';
+import { ClientEvent, VuerProps } from '../../../vuer';
+import { SocketContextType, useSocket } from '../../../vuer';
 import { Group } from 'three';
 
 const HAND_MODEL_JOINT_KEYS = [

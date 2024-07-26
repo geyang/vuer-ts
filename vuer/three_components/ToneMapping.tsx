@@ -9,7 +9,7 @@ import {
   ReinhardToneMapping,
 } from 'three';
 import { useControls } from 'leva';
-import { VuerProps } from '../vuer/interfaces';
+import { VuerProps } from '../vuer';
 
 const TONE_MAPPING_OPTIONS = {
   None: NoToneMapping,

@@ -8,7 +8,7 @@ import {
   PlaneGeometry,
   Vector3,
 } from 'three';
-import { Matrix16T, QuaternionT, VuerProps } from '../vuer/interfaces';
+import { Matrix16T, QuaternionT, VuerProps } from '../vuer';
 import { useXR } from '@react-three/xr';
 import {
   VideoMaterial,

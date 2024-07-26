@@ -19,7 +19,7 @@ import {
   SpotLightHelper,
   Vector3,
 } from "three";
-import { VuerProps } from "../vuer/interfaces";
+import { VuerProps } from "../vuer";
 
 type LightProps<TLP> = VuerProps<{
   intensity?: number;
