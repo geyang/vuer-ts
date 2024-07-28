@@ -26,10 +26,6 @@ export interface RangeOption {
   end?: number | ((end: number) => number);
 }
 
-export interface PlaybackUpdateType {
-  etype: string;
-}
-
 /**
  * Creates a method decorator that emits an event after the method's execution.
  *
@@ -86,7 +82,8 @@ export interface PlaybackUpdateType {
  * @returns A method decorator function that takes the target object, property key, and property descriptor as arguments,
  *          and modifies the method to emit an event upon completion.
  */
-function sentinel<
+
+export function sentinel<
   This extends { signal: EventEmitter },
   Args extends any[],
   ReturnType,
@@ -177,10 +174,23 @@ export class Playback {
     return this._keyFrames;
   }
 
-  @sentinel<Playback, [number], void>('UPDATE_STATE')
-  setMaxlen(maxlen: number) {
+  loadFrameBuffer(keyFrames: Frame[]) {
+    this.maxlen = Math.max(this.maxlen, keyFrames.length);
+    this._keyFrames = new Deque(
+      keyFrames,
+      this.maxlen
+    );
+  }
+
+  changeBufferLength = (maxlen: number) => {
     this._keyFrames = new Deque(this.keyFrames.toArray(), maxlen);
     this.maxlen = maxlen;
+
+  };
+
+  // @sentinel<Playback, [number], void>('UPDATE_STATE')
+  setMaxlen = (maxlen: number) => {
+    this.changeBufferLength(maxlen);
 
     if (this.keyFrames.size === 0) {
       this.start = this.end;
@@ -192,7 +202,10 @@ export class Playback {
       this.range.start = Math.max(this.start, this.range.start);
       this.range.end = Math.min(this.end, this.range.end);
     }
-  }
+
+    this.signal.emit('UPDATE_STATE', {});
+    this.signal.emit('UPDATE_TIMELINE', {})
+  };
 
   get duration(): number {
     return this.keyFrames.size;
@@ -215,7 +228,10 @@ export class Playback {
         if (this.loop) curr = this.range.start;
         else {
           curr = this.range.end;
-          if (this.keyFrames.size) this.isPaused = true;
+          if (this.keyFrames.size) {
+            this.isPaused = true;
+            this.signal.emit('UPDATE_STATE', {});
+          }
         }
       }
       if (curr < this.range.start) {
@@ -262,8 +278,8 @@ export class Playback {
     this.signal.emit('UPDATE_TIMELINE', {});
   };
 
-  @sentinel<Playback, [Frame], void>('UPDATE_TIMELINE')
-  addKeyFrame(frame: Frame) {
+  // @sentinel<Playback, [Frame], void>('UPDATE_TIMELINE')
+  addKeyFrame = (frame: Frame) => {
     if (!this.isRecording) return;
 
     if (this.curr === this.end && this.keyFrames.size) this.curr += 1;
@@ -275,45 +291,54 @@ export class Playback {
       if (this.range.start === this.start) this.range.start += 1;
       this.start += 1;
     }
-  }
+    this.signal.emit('UPDATE_TIMELINE', {});
+    this.signal.emit('UPDATE_FRAME_BUFFER', {});
+  };
 
-  @sentinel<Playback, [], void>('UPDATE_TIMELINE')
-  clear() {
+  //@sentinel<Playback, [], void>('UPDATE_TIMELINE')
+  clear = () => {
     this.keyFrames.clear();
-    this.start = this.end;
-    this.range.start = this.end;
+    this.start = 0;
+    this.end = 0;
+    this.range.start = this.start;
     this.range.end = this.end;
-  }
+    this.signal.emit('UPDATE_TIMELINE', {});
+  };
 
-  @sentinel<Playback, [], void>('UPDATE_TIMELINE')
-  seekNext() {
+  //@sentinel<Playback, [], void>('UPDATE_TIMELINE')
+  seekNext = () => {
     this.step();
     this.store.publish(this.currentFrame);
-  }
+    this.signal.emit('UPDATE_TIMELINE', {});
+  };
 
-  @sentinel<Playback, [], void>('UPDATE_TIMELINE')
-  seekPrevious() {
+  //@sentinel<Playback, [], void>('UPDATE_TIMELINE')
+  seekPrevious = () => {
     this.step(-1);
     this.store.publish(this.currentFrame);
-  }
+    this.signal.emit('UPDATE_TIMELINE', {});
+  };
 
-  @sentinel<Playback, [], void>('UPDATE_TIMELINE')
-  reset() {
+  //@sentinel<Playback, [], void>('UPDATE_TIMELINE')
+  reset = () => {
     this.curr = this.range.start;
     this.store.publish(this.currentFrame);
-  }
+    this.signal.emit('UPDATE_TIMELINE', {});
+  };
 
-  @sentinel<Playback, [], void>('UPDATE_TIMELINE')
-  seekEnd() {
+  //@sentinel<Playback, [], void>('UPDATE_TIMELINE')
+  seekEnd = () => {
     this.curr = this.range.end;
     this.store.publish(this.currentFrame);
-  }
+    this.signal.emit('UPDATE_TIMELINE', {});
+  };
 
-  @sentinel<Playback, [], void>('UPDATE_TIMELINE')
-  emitSeek(frame) {
+  //@sentinel<Playback, [], void>('UPDATE_TIMELINE')
+  emitSeek = (frame) => {
     this.curr = frame;
     this.store.publish(this.currentFrame);
-  }
+    this.signal.emit('UPDATE_TIMELINE', {});
+  };
 
   get currentFrame(): Frame {
     return this.keyFrames.get(Math.round(this.curr) - this.start);
@@ -327,48 +352,68 @@ export class Playback {
     return this.keyFrames.get(this.keyFrames.size - 1);
   }
 
-  @sentinel<Playback, [], void>('UPDATE_STATE')
-  setFrameRate(fps: number) {
+  //@sentinel<Playback, [], void>('UPDATE_STATE')
+  setFrameRate = (fps: number) => {
     console.log(this);
     this.fps = fps;
-  }
+    this.signal.emit('UPDATE_STATE', {});
+  };
 
-  @sentinel<Playback, [], void>('UPDATE_STATE')
-  setSpeed(speed: number) {
+  //@sentinel<Playback, [], void>('UPDATE_STATE')
+  setSpeed = (speed: number) => {
     this.speed = speed;
-  }
+    this.signal.emit('UPDATE_STATE', {});
+  };
 
-  @sentinel<Playback, [], void>('UPDATE_TIMELINE')
-  setRange({ start, end }: RangeOption) {
+  //@sentinel<Playback, [], void>('UPDATE_TIMELINE')
+  setRange = ({ start, end }: RangeOption) => {
     if (typeof start === 'number') this.range.start = start;
     if (typeof start === 'function') this.range.start = start(this.range.start);
     if (typeof end === 'number') this.range.end = end;
     if (typeof end === 'function') this.range.end = end(this.range.end);
-  }
+    this.signal.emit('UPDATE_TIMELINE', {});
+  };
 
-  @sentinel<Playback, [], void>('UPDATE_STATE')
-  toggleRecording() {
+  //@sentinel<Playback, [], void>('UPDATE_STATE')
+  toggleRecording = () => {
     this.isRecording = !this.isRecording;
     // also stop the playback.
     this.isPaused = true;
-  }
+    this.signal.emit('UPDATE_STATE', {});
+  };
 
-  @sentinel<Playback, [], void>('UPDATE_STATE')
-  togglePlayback() {
-    // console.log('togglePlayback', this.isPaused);
+  //@sentinel<Playback, [], void>('UPDATE_STATE')
+  togglePlayback = () => {
+    const oldPaused = this.isPaused;
+    const oldRecording = this.isRecording;
 
-    // if the history is empty this is always paused.
-    if (!this.duration) this.isPaused = true;
+    if (this.isPaused) {
+      this.isRecording = false;
 
-    if (this.curr === this.range.end) {
-      this.curr = this.range.start;
-      this.store.publish(this.currentFrame);
-    } else this.isPaused = !this.isPaused;
-  }
+      if (this.curr === this.range.end) {
+        this.curr = this.range.start;
+        this.store.publish(this.currentFrame);
 
-  @sentinel<Playback, [], void>('UPDATE_STATE')
-  toggleLoop() {
-    // console.log('toggleLoop', this.loop);
+        this.signal.emit('UPDATE_TIMELINE', {});
+
+        if (this.loop) {
+          this.isPaused = false;
+        }
+      } else {
+        this.isPaused = false;
+      }
+    } else {
+      this.isPaused = true;
+    }
+
+    if (oldPaused !== this.isPaused || oldRecording !== this.isRecording) {
+      this.signal.emit('UPDATE_STATE', {});
+    }
+  };
+
+  //@sentinel<Playback, [], void>('UPDATE_STATE')
+  toggleLoop = () => {
     this.loop = !this.loop;
-  }
+    this.signal.emit('UPDATE_STATE', {});
+  };
 }

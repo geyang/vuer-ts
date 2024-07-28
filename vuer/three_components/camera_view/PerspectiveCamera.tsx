@@ -1,6 +1,6 @@
 import { PerspectiveCamera as PerspectiveCameraImpl } from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
-import mergeRefs from 'react-merge-refs';
+import mergeRefs from 'merge-refs';
 import { useFBO } from '@react-three/drei';
 import { forwardRef, useLayoutEffect, useRef } from 'react';
 import { ForwardRefComponent } from '@react-three/drei/helpers/ts-utils';
@@ -87,13 +87,13 @@ export const PerspectiveCamera: ForwardRefComponent<
       const c = children as (texture: THREE.Texture) => React.ReactNode;
       return (
         <>
-          <perspectiveCamera ref={mergeRefs([cameraRef, ref])} {...props} />
+          <perspectiveCamera ref={mergeRefs(cameraRef, ref)} {...props} />
           <group ref={groupRef}>{c(fbo.texture)}</group>
         </>
       );
     } else {
       return (
-        <perspectiveCamera ref={mergeRefs([cameraRef, ref])} {...props}>
+        <perspectiveCamera ref={mergeRefs(cameraRef, ref)} {...props}>
           {children as React.ReactNode}
         </perspectiveCamera>
       );

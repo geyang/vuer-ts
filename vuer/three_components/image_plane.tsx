@@ -15,6 +15,7 @@ import {
   Vector3,
 } from 'three';
 import { Matrix16T, QuaternionT } from '../vuer/interfaces';
+
 import { useXR } from '@react-three/xr';
 
 function interpolateTexture(texture: Texture, interpolate: boolean) {
@@ -76,7 +77,9 @@ export default function ImagePlane({
   const { camera }: { camera: PerspectiveCamera | OrthographicCamera } =
     useThree();
 
-  const isPresenting = useXR((state) => state.isPresenting);
+  const xrState = useXR();
+  // emulate the isPresenting flag of v5
+  const isPresenting = xrState.mode !== 'inline';
 
   useEffect(() => {
     if (!planeRef.current || !isPresenting) return;

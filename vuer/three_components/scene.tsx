@@ -8,10 +8,15 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import { Mesh, Object3D, Vector3 } from 'three';
+import {
+  LinearToneMapping,
+  Mesh,
+  NoToneMapping,
+  Object3D,
+  Vector3,
+} from 'three';
 import { Canvas } from '@react-three/fiber';
 import { GizmoHelper, GizmoViewport, Sphere } from '@react-three/drei';
-import { ARButton, Controllers, VRButton, XR } from '@react-three/xr';
 import { acceleratedRaycast } from 'three-mesh-bvh';
 import { Perf } from 'r3f-perf';
 import queryString, { ParsedQuery } from 'query-string';
@@ -25,6 +30,8 @@ import { ClientEvent, VuerProps } from '../vuer/interfaces';
 import { SocketContextType, useSocket } from '../vuer/websocket';
 // @ts-ignore: no type definition for three-stdlib
 import { OrbitControls as tOrbitControls } from 'three-stdlib/controls/OrbitControls';
+import { XRButton } from './controls/xrButton';
+import { createXRStore, XR } from "@react-three/xr";
 
 // question: what does this do? - Ge
 Mesh.prototype.raycast = acceleratedRaycast;
@@ -137,35 +144,45 @@ export function Scene({
   let button;
   const mode = xrMode || queries.xrMode || 'VR';
 
-  if (mode === 'AR') {
-    button = <ARButton />;
-  } else if (mode === 'VR') {
-    button = <VRButton />;
-  } else if (mode === 'hidden') {
-    button = null;
-  }
+  const store = createXRStore();
+
+  // fixme: make the XRButton more intelligent, show relevant info when session don't exist.
+  // if (mode === 'AR') {
+  //   button = <button onClick={() => store.enterAR()}>Enter AR</button>;
+  // } else if (mode === 'VR') {
+  //   button = <button onClick={() => store.enterVR()}>Enter AR</button>;
+  // } else if (mode === 'hidden') {
+  //   button = null;
+  // }
 
   return (
     <>
       <div style={divStyle} className={className}>
-        {button}
+        <XRButton />
         <Canvas
           ref={ref}
-          shadows
+          linear
+          flat
+          legacy={false}
           // preserve buffer needed for download and grab image data
-          gl={{ preserveDrawingBuffer: true }}
+          gl={{
+            antialias: true,
+            toneMapping: LinearToneMapping,
+            preserveDrawingBuffer: true,
+          }}
           frameloop={frameloop}
           // frameloop="demand"
           // why set it to 1: https://stackoverflow.com/a/32936969/1560241
           tabIndex={1}
         >
-          <XR foveation={1}>
+          <XR store={store}>
             {queries.debug || queries.perf ? (
               <Perf position='top-left' />
             ) : null}
             {/* <FileDrop/> */}
             {/* <DreiHands/> */}
-            <Controllers />
+            {/* this is now deprecated in @react-three/xr@latest */}
+            {/*<Controllers />*/}
             <Gamepad />
             <SceneGroup />
             <BackgroundColor />
@@ -209,6 +226,8 @@ export function Scene({
             {/*<pointLight position={[ 20, 10, 10 ]}/>*/}
             {/*<pointLight position={[ -10, 10, 20 ]}/>*/}
             {/*<fog attach='fog' args={[ '#2c3f57', 1, 10 ]}/>*/}
+            {/*<fog attach={'fog'} args={['#2c3f57', 1, 10]} />*/}
+            {/*<fog color="black" near={1} far={10} />*/}
             <Sphere
               args={[100]}
               position={[0, 0, 0]}

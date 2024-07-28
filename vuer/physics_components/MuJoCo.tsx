@@ -20,7 +20,7 @@ export interface MuJoCoProps
       /**
        * Staging the environment with fogs, lights and so on.
        */
-      stage?: boolean;
+      // stage?: boolean;
     } & MuJoCoModelProps
   > {}
 
@@ -51,19 +51,21 @@ export const MuJoCo = ({
   keyFrame,
   pause,
   speed,
-  stage = true,
+  // stage = true,
   ...props
 }: MuJoCoProps) => {
   const { uplink, downlink, sendMsg } = useSocket();
   const [_keyFrame, setKeyFrame] = useState<KeyFrame | null>(null);
 
   const playback = usePlayback();
+  const playbackState = usePlaybackStates();
+
   const {
     fps: pbFps,
     speed: pbSpeed,
     paused: pbPaused,
     recording,
-  } = usePlaybackStates();
+  } = playbackState || { paused: false };
 
   const onFrame = useCallback(
     (frame: KeyFrame, delta: number) => {
@@ -94,6 +96,55 @@ export const MuJoCo = ({
     return cancel;
   });
 
+  // const [shouldPause, setPause] = useState<boolean | null>(null);
+  //
+  // useEffect(()=>{
+  //   setPause(pause)
+  // }, [pause]);
+  //
+  // useEffect(()=>{
+  //   setPause(!recording)
+  // }, [recording]);
+
+  /**
+   * if either one of these is true, it should pause.
+   * if it is recording, this should definitely not be paused.
+   * The precedences are:
+   *
+   * 1. if passed in directly it should obey, as long as it is not undefined or null
+   * 2. if passed in null (None in python), it then falls to the player state:
+   *    - If the player is recording, the physics should run.
+   *    - if the player is not recording, the physics should stop.
+   *    - if the player is not defined, such as in the index.html page (the main page),
+   *      it should run as normal. But this will introduce power issues since this is
+   *      the default. Maybe we should insert a button to control the state of the
+   *      physics engine.
+   *
+   * Reference Implementation
+   *
+   * ```typescript
+   *   let shouldPause;
+   *   if (typeof pause !== 'undefined' && pause !== null) {
+   *      shouldPause = pause;
+   *   } else if (recording) {
+   *      shouldPause = false;
+   *   } else {
+   *      shouldPause = pbPaused;
+   *   }
+   * ```
+   */
+  let shouldPause;
+  if (typeof pause !== 'undefined' && pause !== null) {
+    shouldPause = pause;
+    console.info(`Simulation playback is ${pause ? "paused" : "running"} by MuJoCo(pause=${pause})`);
+  } else {
+    shouldPause = pbPaused === true && !recording;
+    shouldPause = !(pbPaused === false)
+    if (recording) {
+      shouldPause = false;
+    }
+  }
+
   return (
     /**
      * Renders the MuJoCoModel component with dynamic simulation control based on playback interaction.
@@ -123,7 +174,7 @@ export const MuJoCo = ({
     <MuJoCoModel
       keyFrame={keyFrame || _keyFrame}
       onFrame={onFrame}
-      pause={!recording}
+      pause={shouldPause}
       fps={fps || pbFps}
       speed={pbSpeed}
       {...props}

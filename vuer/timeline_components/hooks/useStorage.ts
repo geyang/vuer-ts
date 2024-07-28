@@ -1,36 +1,45 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import useStateRef from 'react-usestateref';
 
 export function useStorage<T>(
   id: string,
   initialState: T = null,
   collection = 'vuer-default',
 ): [T, (newState: T) => void, boolean] {
-  // const name = useApplication().project.name;
   const key = `${collection}-${id}`;
-  const [savedState, wasLoaded] = useMemo(() => {
-    console.log('loading', key);
-    const savedState = localStorage.getItem(key);
-    console.log('loaded', key, savedState);
-    try {
-      console.log('parsing', key);
-      const parsed = JSON.parse(savedState);
-      console.log('parsed', key, parsed);
-      return savedState ? [parsed, true] : [initialState, false];
-    } catch (e) {
-      console.error('Error parsing storage', key, savedState, e);
-      return [initialState, false];
+
+  const [savedState, savedString, wasLoaded] = useMemo(() => {
+    const saved = localStorage.getItem(key);
+
+    if (typeof saved === 'undefined') {
+      const serialized = JSON.stringify(initialState);
+      localStorage.setItem(key, serialized);
+      console.log('initialized', key, serialized);
+      return [initialState, serialized, false];
+    } else {
+      const parsedState = JSON.parse(saved);
+      console.log('loaded', key, saved);
+      return [parsedState, saved, true];
     }
   }, [key]);
-  const [state, setState] = useState<T>(savedState);
+
+  const [state, setState, stateRef] = useStateRef<T>(savedState);
+  const [serialized, setSerialized, serRef] = useStateRef<string>(savedString);
 
   const updateState = useCallback(
-    (newState: T) => {
-      if (key) {
-        localStorage.setItem(key, JSON.stringify(newState));
+    (value: T) => {
+      if (typeof value === 'function') value = value(stateRef.current);
+
+      const valueStr = JSON.stringify(value);
+
+      if (valueStr !== serRef.current && key) {
+        localStorage.setItem(key, valueStr);
+        setState(value);
+        setSerialized(valueStr);
+        console.log('saved', key, serRef.current);
       }
-      setState(newState);
     },
-    [setState, key],
+    [key, setState, serRef],
   );
 
   return [state, updateState, wasLoaded];

@@ -44,7 +44,9 @@ export function useVideo(
     [src],
   ) as HTMLVideoElement;
 
-  const { isPresenting } = useXR();
+  const xrState = useXR();
+  // emulate the isPresenting flag of v5
+  const isPresenting = xrState.mode !== 'inline';
 
   useEffect(() => {
     if (!video) return;

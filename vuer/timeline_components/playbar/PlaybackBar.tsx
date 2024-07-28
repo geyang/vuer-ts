@@ -29,9 +29,7 @@ const PlaybackBarStyle = css`
   }
 `;
 
-export interface PlaybackBarProps {
-  progress: number;
-}
+export interface PlaybackBarProps {}
 
 /**
  * note: this is now moved into the App itself, to avoid dependency on the Socket connection.
@@ -52,7 +50,7 @@ export interface PlaybackBarProps {
  * }, [ playback, downlink ])
  * ```
  */
-export const PlaybackBar = ({ progress }: PlaybackBarProps) => {
+export const PlaybackBar = ({}: PlaybackBarProps) => {
   const playback = usePlayback();
   const { fps, speed } = usePlaybackStates();
   const { start, end, rangeStart, rangeEnd } = useTimelineStates();
@@ -63,7 +61,7 @@ export const PlaybackBar = ({ progress }: PlaybackBarProps) => {
         PlaybackBarStyle,
         css`
           :before {
-            width: ${progress}%;
+            width: ${playback.progress}%;
           }
         `,
       ]}

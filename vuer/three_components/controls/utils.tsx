@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   ForwardedRef,
   forwardRef,
@@ -6,18 +7,19 @@ import {
   useMemo,
   useRef,
 } from 'react';
-import { Interactive, XRController, XRInteractionEvent } from '@react-three/xr';
 import { useFrame } from '@react-three/fiber';
-
-import { Group, Matrix4 } from 'three';
+import { Group, Matrix4, XRControllerEventType } from 'three';
 import { VuerProps } from '../../vuer/interfaces';
+
+// const { XRControllerState } = await import('@react-three/xr');
+
 
 type SqueezeRayGrabProps = VuerProps<
   {
-    onSqueezeStart?: (e?: XRInteractionEvent) => void;
-    onSqueezeEnd?: (e?: XRInteractionEvent) => void;
+    onSqueezeStart?: (e?: XRControllerEventType) => void;
+    onSqueezeEnd?: (e?: XRControllerEventType) => void;
     onMove?: (e?: { world: Matrix4; local: Matrix4 }) => void;
-    onSelect?: (e?: XRInteractionEvent) => void;
+    onSelect?: (e?: XRControllerEventType) => void;
     bgChildren?: ReactNode | ReactNode[];
     [key: string]: unknown;
   },
@@ -40,7 +42,7 @@ export const SqueezeRayGrab = forwardRef(
     const ref = useRef<Group>();
     const groupRef = (forwardedRef || ref) as MutableRefObject<Group>;
     const grabbingController =
-      useRef() as MutableRefObject<XRController | null>;
+      useRef() as MutableRefObject<XRControllerState | null>;
 
     const previousTransform = useMemo(() => new Matrix4(), []);
 

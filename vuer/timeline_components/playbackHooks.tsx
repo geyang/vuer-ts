@@ -7,7 +7,7 @@ import {
 } from 'react';
 import { useStorage } from './hooks';
 import { useAnimationFrame } from './hooks/useAnimationFrame';
-import { Playback } from './playback';
+import { Frame, Playback } from './playback';
 
 export interface TimelineState {
   curr: number;
@@ -26,6 +26,8 @@ export interface PlaybackState {
   paused: boolean;
 }
 
+export interface FullPlaybackState extends PlaybackState, TimelineState {}
+
 export const PlaybackContext = createContext<Playback | null>(null);
 export const PlaybackStateContext = createContext<PlaybackState | null>(null);
 export const TimelineStateContext = createContext<TimelineState | null>(null);
@@ -34,10 +36,10 @@ interface Props extends PropsWithChildren {
   // Define the props for the provider
 }
 
-export const PlaybackProvider = ({ children }: Props) => {
+export const PlaybackProvider = ({ children }: Props = { children: [] }) => {
   const playback = useMemo(() => new Playback(), []);
 
-  console.log('PlaybackProvider is rendering.');
+  // console.log('PlaybackProvider is rendering.');
 
   // kickstart the rendering loop.
   useAnimationFrame(playback.render);
@@ -48,17 +50,38 @@ export const PlaybackProvider = ({ children }: Props) => {
     </PlaybackContext.Provider>
   );
 };
-export const PlaybackStateProvider = ({ children }) => {
+export const PlaybackStateProvider = ({ children } = { children: [] }) => {
   const playback = useContext(PlaybackContext);
+  const [state, setState, isLoaded] = useStorage<PlaybackState | {}>(
+    'vuer-playback',
+    {},
+  );
 
-  console.log('PlaybackStateProvider is rendering.');
+  const [buffer, setBuffer] = useStorage<Frame[]>('vuer-frame-buffer', []);
 
-  const [state, setState] = useStorage<PlaybackState | {}>('vuer-playback', {});
+  // console.log('load: playback init', state, isLoaded);
+
+  useEffect(() => {
+    if (!playback) return;
+    const { fps, speed, maxlen, recording, loop, paused } = (state ||
+      {}) as unknown as PlaybackState;
+
+    if (fps) playback.fps = fps;
+    playback.speed = speed;
+    // do not signal.
+    playback.isRecording = recording;
+    playback.loop = loop;
+    playback.isPaused = paused;
+    playback.changeBufferLength(maxlen);
+
+    // allow clearing up the buffer;
+    playback.loadFrameBuffer(buffer);
+  }, [playback]);
 
   useEffect(() => {
     const remove = playback.signal.on('UPDATE_STATE', () => {
-      console.log('setting states');
-      setState({
+      setState((prev) => ({
+        ...prev,
         fps: playback.fps,
         speed: playback.speed,
         maxlen: playback.maxlen,
@@ -66,11 +89,17 @@ export const PlaybackStateProvider = ({ children }) => {
         recording: playback.isRecording,
         loop: playback.loop,
         paused: playback.isPaused,
-      });
+      }));
     });
     return remove;
-  });
-  console.log('PlaybackState update is happening.');
+  }, [playback]);
+
+  useEffect(() => {
+    const remove = playback.signal.on('UPDATE_FRAME_BUFFER', () => {
+      setBuffer(playback.keyFrames.toArray())
+    });
+    return remove;
+  }, [playback]);
 
   return (
     <PlaybackStateContext.Provider value={state as PlaybackState}>
@@ -78,28 +107,42 @@ export const PlaybackStateProvider = ({ children }) => {
     </PlaybackStateContext.Provider>
   );
 };
-export const TimelineStateProvider = ({ children }) => {
+export const TimelineStateProvider = ({ children } = { children: [] }) => {
   const playback = useContext(PlaybackContext);
+  const [state, setState, isLoaded] = useStorage<TimelineState | {}>(
+    'vuer-timeline',
+    {},
+  );
 
-  console.log('PlaybackStateProvider is rendering.');
+  useEffect(() => {
+    if (!playback) return;
+    const { curr, start, end, rangeStart, rangeEnd } = (state ||
+      {}) as unknown as TimelineState;
 
-  const [state, setState] = useStorage<TimelineState | {}>('vuer-playback', {});
+    playback.curr = curr;
+
+    playback.start = start;
+    playback.end = end;
+    playback.range.start = rangeStart;
+    playback.range.end = rangeEnd;
+
+  }, [playback]);
 
   useEffect(() => {
     const remove = playback.signal.on('UPDATE_TIMELINE', () => {
-      console.log('setting states');
-      setState({
+      // console.log('setting states');
+      setState((prev) => ({
+        ...prev,
         curr: playback.curr,
 
         start: playback.start,
         end: playback.end,
         rangeStart: playback.range.start,
         rangeEnd: playback.range.end,
-      });
+      }));
     });
     return remove;
-  });
-  console.log('TimelineState update is happening.');
+  }, [playback]);
 
   return (
     <TimelineStateContext.Provider value={state as TimelineState}>
@@ -108,27 +151,17 @@ export const TimelineStateProvider = ({ children }) => {
   );
 };
 
-// export interface PlaybackOption {
-//   fps?: number;
-//   speed?: number;
-//   maxlen?: number;
-// }
-
 export const usePlayback = (): Playback => {
   const playback = useContext(PlaybackContext);
-
   if (!playback) {
     throw new Error('usePlayback must be used within a PlaybackProvider');
   }
-
   return playback;
 };
 // This function will be transformed
 export const usePlaybackStates = (): PlaybackState => {
-  const playbackState = useContext<PlaybackState>(PlaybackStateContext);
-  return playbackState;
+  return useContext<PlaybackState>(PlaybackStateContext);
 };
 export const useTimelineStates = (): TimelineState => {
-  const timelineState = useContext<TimelineState>(TimelineStateContext);
-  return timelineState;
+  return useContext<TimelineState>(TimelineStateContext);
 };

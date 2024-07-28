@@ -2,7 +2,7 @@
 import { defineConfig, UserConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
-import { plugin, plugin as mdPlugin } from 'vite-plugin-markdown';
+import { plugin as mdPlugin } from 'vite-plugin-markdown';
 import dts from 'vite-plugin-dts';
 import * as sass from 'sass';
 
@@ -26,6 +26,7 @@ export default defineConfig({
     }),
     dts({
       insertTypesEntry: true,
+      copyDtsFiles: true,
     }),
     mdPlugin(),
   ],
@@ -55,6 +56,7 @@ export default defineConfig({
         'styled-components',
         'three',
         '@react-three/fiber',
+        '@react-three/drei',
       ],
       output: {
         globals: {

@@ -27,7 +27,9 @@ export function useVuerVideoTexture(
     return texture;
   }, [video]);
 
-  const isPresenting = useXR().isPresenting;
+  const xrState = useXR();
+  // emulate the isPresenting flag of v5
+  const isPresenting = xrState.mode !== 'inline';
 
   useFrame(() => {
     // this is a safari bug. The video texture needs to be updated every frame.
