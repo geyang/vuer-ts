@@ -47,10 +47,11 @@ export function HUDPlane({
   const { camera }: { camera: PerspectiveCamera | OrthographicCamera } =
     useThree();
 
-  const xrState = useXR();
+  //const xrState = useXR();
+  const { isPresenting } = useXR();
 
   // emulate the isPresenting flag of v5
-  const isPresenting = xrState.mode !== 'inline';
+  // const isPresenting = xrState.mode !== 'inline';
 
   useEffect(() => {
     if (!planeRef.current) return;

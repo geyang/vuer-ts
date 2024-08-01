@@ -5,6 +5,7 @@ import { resolve } from 'node:path';
 import { plugin as mdPlugin } from 'vite-plugin-markdown';
 import dts from 'vite-plugin-dts';
 import * as sass from 'sass';
+import * as path from "node:path";
 
 export default defineConfig({
   css: {
@@ -56,7 +57,9 @@ export default defineConfig({
         'styled-components',
         'three',
         '@react-three/fiber',
+        // '@react-three/xr',
         '@react-three/drei',
+        'react-helmet-async',
       ],
       output: {
         globals: {
@@ -64,6 +67,15 @@ export default defineConfig({
           'react-dom': 'ReactDOM',
         },
       },
+    },
+  },
+  resolve: {
+    preserveSymlinks: true,
+    alias: {
+      '@vuer-ai/mujoco-ts/*': path.resolve(
+        __dirname,
+        './node_modules/@vuer-ai/mujoco-ts/src/*',
+      ),
     },
   },
 } satisfies UserConfig);

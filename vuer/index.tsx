@@ -1,9 +1,3 @@
-/** Component Registar
- *
- * - This file is used to register all the components that are available to the user.
- *
- * todo: need to change this into a factory function and a registry object.
- */
 export * from './core_components';
 
 export * from './timeline_components';

@@ -61,9 +61,10 @@ export default function ImageSphere({
   // make new component for just the projection.
   const { camera }: { camera: PerspectiveCamera } = useThree();
 
-  const xrState = useXR();
+  //const xrState = useXR();
+  const { isPresenting } = useXR();
   // emulate the isPresenting flag of v5
-  const isPresenting = xrState.mode !== 'inline';
+  // const isPresenting = xrState.mode !== 'inline';
 
   useEffect(() => {
     if (!sphereRef.current) return;

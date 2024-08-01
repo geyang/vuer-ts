@@ -164,6 +164,7 @@ export function SceneContainer({
     const removeSet = stream.subscribe(
       'SET',
       ({ ts, etype, data }: SetEvent) => {
+        delete data.key;
         // the top level is a dummy node
         if (data.tag !== 'Scene')
           showError(

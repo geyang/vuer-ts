@@ -45,8 +45,8 @@ export const UpdateOp = (nodes: Node[], ts?: number): UpdateEvent => {
 
 export const UpsertOp = (
   nodes: Node[],
-  to: string = 'children',
   ts?: number,
+  to?: string,
 ): UpsertEvent => {
   return {
     ts: ts || Date.now(),

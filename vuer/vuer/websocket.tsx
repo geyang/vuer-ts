@@ -60,6 +60,9 @@ export function WebSocketProvider({
   onMessage: paramsOnMessage,
   children,
 }: WebSocketProviderProps) {
+
+  const isSSR = typeof window === 'undefined';
+
   const [isConnected, setIsConnected] = useStateRef(false);
   const [connectWS, setConnectWS] = useState(true);
   const [reconnect, allowReconnect] = useState(true);

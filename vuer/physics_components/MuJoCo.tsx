@@ -1,7 +1,7 @@
 import { KeyFrame, MuJoCoModel, MuJoCoModelProps } from '@vuer-ai/mujoco-ts';
 import { useCallback, useEffect, useState } from 'react';
 import { ClientEvent, useSocket, VuerProps } from '../vuer';
-import { UpdateOp } from '../vuer/eventHelpers';
+import { UpsertOp } from '../vuer/eventHelpers';
 import { Node } from '../vuer';
 import { usePlayback, usePlaybackStates } from '../timeline_components';
 
@@ -46,7 +46,7 @@ export interface MuJoCoProps
  */
 export const MuJoCo = ({
   _ref,
-  _key = 'default',
+  _key = 'mujoco-default',
   fps,
   keyFrame,
   pause,
@@ -85,9 +85,9 @@ export const MuJoCo = ({
       ({ ts, value }: ON_MUJOCO_FRAME) => {
         if (!playback.isRecording) return;
         playback.addKeyFrame(
-          UpdateOp(
-            [{ key: _key, tag: 'MuJoCo', keyFrame: value.keyFrame } as Node],
-            ts,
+          UpsertOp(
+            [{ key: _key, tag: 'MuJoCo', keyFrame: value?.keyFrame } as Node],
+            value?.keyFrame?.time || Date.now(),
           ),
         );
       },
@@ -136,10 +136,12 @@ export const MuJoCo = ({
   let shouldPause;
   if (typeof pause !== 'undefined' && pause !== null) {
     shouldPause = pause;
-    console.info(`Simulation playback is ${pause ? "paused" : "running"} by MuJoCo(pause=${pause})`);
+    console.info(
+      `Simulation playback is ${pause ? 'paused' : 'running'} by MuJoCo(pause=${pause})`,
+    );
   } else {
     shouldPause = pbPaused === true && !recording;
-    shouldPause = !(pbPaused === false)
+    shouldPause = !(pbPaused === false);
     if (recording) {
       shouldPause = false;
     }

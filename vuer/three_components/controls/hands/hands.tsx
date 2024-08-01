@@ -88,9 +88,10 @@ export function Hands({
 }: HandsProps): ReactNode {
   const { sendMsg } = useSocket() as SocketContextType;
 
-  const xrState = useXR();
+  //const xrState = useXR();
+  const { isPresenting } = useXR();
   // emulate the isPresenting flag of v5
-  const isPresenting = xrState.mode !== 'inline';
+  // const isPresenting = xrState.mode !== 'inline';
 
   const leftHandRef = useRef() as MutableRefObject<Group>;
   const rightHandRef = useRef() as MutableRefObject<Group>;

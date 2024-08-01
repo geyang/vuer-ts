@@ -61,8 +61,9 @@ export interface SceneType {
   bgChildren: Node[];
 }
 
+// the key needs to be removed explicitly.
 export interface SetEvent extends ServerEvent {
-  data: { tag: string } & SceneType;
+  data: { key?: string, tag: string } & SceneType;
 }
 
 export interface AddEvent extends ServerEvent {

@@ -18,4 +18,4 @@ export { AutoScroll } from './html_components/chat/autoscroll';
 export { Button, Div, ImageUpload, Img, Input, Slider, Text } from "./html_components/input_components";
 export { TimelineControls } from "./uxr_components/TimelineControls";
 
-export const Splats = React.lazy(() => import( './third_party/luma_splats' ))
+export const Splats = React.lazy(() => import('./third_party/luma_splats' ))

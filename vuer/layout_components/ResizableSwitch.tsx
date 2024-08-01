@@ -11,6 +11,59 @@ interface ResizeableLayoutProps {
   children: [ReactElement, ReactElement, ReactElement];
 }
 
+const containerStyle = css`
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  justify-content: stretch;
+`;
+
+const primaryStyle = css`
+  flex-grow: 0;
+  overflow: hidden;
+`;
+
+const panelContainerStyle = css`
+  touch-action: none;
+  flex-shrink: 0;
+  z-index: 10;
+
+  user-select: none;
+
+  :before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    display: block;
+    background-color: rgba(35, 170, 255, 0.21);
+    z-index: 10000;
+  }
+
+  :hover:before {
+    background-color: #23aaff;
+  }
+
+  :active:before {
+    background-color: #23aaff !important;
+  }
+`;
+
+const shrunkStyle = css`
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: hidden;
+  user-select: none;
+`;
+
+const panelStyle = css`
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: hidden;
+  user-select: none;
+`;
+
 export function ResizableSwitch({
   _key,
   children: [primary, panel, shrunkPanel],
@@ -32,61 +85,31 @@ export function ResizableSwitch({
   return (
     <div
       ref={containerRef}
-      css={css`
-        display: flex;
-        position: relative;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        justify-content: stretch;
-        flex-direction: ${vertical ? `column` : `row`};
-      `}
+      css={containerStyle}
+      style={{ flexDirection: vertical ? 'column' : 'row' }}
     >
       <div
-        css={css`
-          flex-grow: 0;
-          flex-shrink: ${conf.isHidden ? 0 : 1};
-          overflow: hidden;
-          height: ${vertical ? primaryDimension : `100%`};
-          width: ${!vertical ? primaryDimension : `100%`};
-        `}
+        css={primaryStyle}
+        style={{
+          flexShrink: conf.isHidden ? 0 : 1,
+          height: vertical ? primaryDimension : '100%',
+          width: !vertical ? primaryDimension : '100%',
+        }}
       >
         {primary}
       </div>
       <div
-        css={css`
-          touch-action: none;
-          width: ${!vertical ? `16px` : `auto`};
-          height: ${vertical ? `16px` : `auto`};
-          cursor: ${vertical ? `ns-resize` : `ew-resize`};
-          flex-shrink: 0;
-          padding: ${vertical ? `7px 0` : `0 7px`};
-          margin: ${vertical ? `-7px 0` : `0 -7px`};
-          ${conf.isHidden && vertical && `margin-top: -9px;`}
-          ${conf.isHidden && !vertical && `margin-right: -9px;`}
-            z-index: 10;
-
-          user-select: none;
-
-          :before {
-            content: '';
-            width: 100%;
-            height: 100%;
-            display: block;
-            background-color: ${conf.isHidden
-              ? `rgba(35, 170, 255, 0.21)`
-              : `rgba(35, 170, 255, 0.21)`};
-            z-index: 10000;
-          }
-
-          :hover:before {
-            background-color: #23aaff;
-          }
-
-          :active:before {
-            background-color: #23aaff !important;
-          }
-        `}
+        css={panelContainerStyle}
+        style={{
+          width: !vertical ? '16px' : 'auto',
+          height: vertical ? '16px' : 'auto',
+          cursor: vertical ? 'ns-resize' : 'ew-resize',
+          flexShrink: 0,
+          padding: vertical ? '7px 0' : '0 7px',
+          margin: vertical ? '-7px 0' : '0 -7px',
+          ...(conf.isHidden && vertical && { marginTop: '-9px' }),
+          ...(conf.isHidden && !vertical && { marginRight: '-9px' }),
+        }}
         onPointerDown={(event) => {
           event.currentTarget.setPointerCapture(event.pointerId);
         }}
@@ -108,27 +131,9 @@ export function ResizableSwitch({
         }}
       />
       {conf.isHidden ? (
-        <div
-          css={css`
-            flex-grow: 1;
-            flex-shrink: 1;
-            overflow: hidden;
-            user-select: none;
-          `}
-        >
-          {shrunkPanel}
-        </div>
+        <div css={shrunkStyle}>{shrunkPanel}</div>
       ) : (
-        <div
-          css={css`
-            flex-grow: 1;
-            flex-shrink: 1;
-            overflow: hidden;
-            user-select: none;
-          `}
-        >
-          {panel}
-        </div>
+        <div css={panelStyle}>{panel}</div>
       )}
     </div>
   );

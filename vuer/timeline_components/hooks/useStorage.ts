@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import useStateRef from 'react-usestateref';
 
 export function useStorage<T>(
@@ -14,11 +14,11 @@ export function useStorage<T>(
     if (typeof saved === 'undefined') {
       const serialized = JSON.stringify(initialState);
       localStorage.setItem(key, serialized);
-      console.log('initialized', key, serialized);
+      // console.log('initialized', key, serialized);
       return [initialState, serialized, false];
     } else {
       const parsedState = JSON.parse(saved);
-      console.log('loaded', key, saved);
+      // console.log('loaded', key, saved);
       return [parsedState, saved, true];
     }
   }, [key]);
@@ -36,7 +36,7 @@ export function useStorage<T>(
         localStorage.setItem(key, valueStr);
         setState(value);
         setSerialized(valueStr);
-        console.log('saved', key, serRef.current);
+        // console.log('saved', key, serRef.current);
       }
     },
     [key, setState, serRef],

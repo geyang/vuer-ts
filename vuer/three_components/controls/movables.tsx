@@ -360,9 +360,10 @@ export function Movable({
   ...props
 }: MovableType) {
   // hide movable leads to pass-through
-  const xrState = useXR();
+  //const xrState = useXR();
+  const { isPresenting } = useXR();
   // emulate the isPresenting flag of v5
-  const isPresenting = xrState.mode !== 'inline';
+  // const isPresenting = xrState.mode !== 'inline';
 
   if (hide) return <>{children}</>;
   if (isPresenting) {

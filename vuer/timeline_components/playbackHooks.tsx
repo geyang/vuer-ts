@@ -96,7 +96,7 @@ export const PlaybackStateProvider = ({ children } = { children: [] }) => {
 
   useEffect(() => {
     const remove = playback.signal.on('UPDATE_FRAME_BUFFER', () => {
-      setBuffer(playback.keyFrames.toArray())
+      // setBuffer(playback.keyFrames.toArray());
     });
     return remove;
   }, [playback]);
@@ -125,7 +125,6 @@ export const TimelineStateProvider = ({ children } = { children: [] }) => {
     playback.end = end;
     playback.range.start = rangeStart;
     playback.range.end = rangeEnd;
-
   }, [playback]);
 
   useEffect(() => {
@@ -158,10 +157,12 @@ export const usePlayback = (): Playback => {
   }
   return playback;
 };
-// This function will be transformed
 export const usePlaybackStates = (): PlaybackState => {
-  return useContext<PlaybackState>(PlaybackStateContext);
+  const playbackState = useContext<PlaybackState>(PlaybackStateContext);
+  return playbackState || ({} as PlaybackState);
 };
+
 export const useTimelineStates = (): TimelineState => {
-  return useContext<TimelineState>(TimelineStateContext);
+  const timelineState = useContext<TimelineState>(TimelineStateContext);
+  return timelineState || ({} as TimelineState);
 };

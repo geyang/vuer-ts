@@ -31,7 +31,8 @@ import { SocketContextType, useSocket } from '../vuer/websocket';
 // @ts-ignore: no type definition for three-stdlib
 import { OrbitControls as tOrbitControls } from 'three-stdlib/controls/OrbitControls';
 import { XRButton } from './controls/xrButton';
-import { createXRStore, XR } from "@react-three/xr";
+// import { createXRStore, XR } from '@react-three/xr';
+import { XR } from '@react-three/xr';
 
 // question: what does this do? - Ge
 Mesh.prototype.raycast = acceleratedRaycast;
@@ -106,6 +107,7 @@ export function Scene({
   useEffect(() => {
     if (!up) return;
     Object3D.DEFAULT_UP.copy(new Vector3(...up));
+    console.log('setting the up', up)
   }, [up]);
 
   const onCameraMove = useCallback(
@@ -141,10 +143,10 @@ export function Scene({
 
   const camCtrlRef = useRef<tOrbitControls>();
 
-  let button;
-  const mode = xrMode || queries.xrMode || 'VR';
+  // // let button;
+  // const mode = xrMode || queries.xrMode || 'VR';
 
-  const store = createXRStore();
+  // const store = createXRStore();
 
   // fixme: make the XRButton more intelligent, show relevant info when session don't exist.
   // if (mode === 'AR') {
@@ -162,7 +164,7 @@ export function Scene({
         <Canvas
           ref={ref}
           linear
-          flat
+          // flat
           legacy={false}
           // preserve buffer needed for download and grab image data
           gl={{
@@ -175,7 +177,7 @@ export function Scene({
           // why set it to 1: https://stackoverflow.com/a/32936969/1560241
           tabIndex={1}
         >
-          <XR store={store}>
+          <XR>
             {queries.debug || queries.perf ? (
               <Perf position='top-left' />
             ) : null}
