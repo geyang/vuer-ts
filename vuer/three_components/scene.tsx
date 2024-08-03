@@ -9,10 +9,14 @@ import React, {
   useRef,
 } from 'react';
 import {
+  ACESFilmicToneMapping,
+  CineonToneMapping,
+  CustomToneMapping,
   LinearToneMapping,
   Mesh,
   NoToneMapping,
   Object3D,
+  ReinhardToneMapping,
   Vector3,
 } from 'three';
 import { Canvas } from '@react-three/fiber';
@@ -33,6 +37,7 @@ import { OrbitControls as tOrbitControls } from 'three-stdlib/controls/OrbitCont
 import { XRButton } from './controls/xrButton';
 // import { createXRStore, XR } from '@react-three/xr';
 import { XR } from '@react-three/xr';
+import { useControls } from 'leva';
 
 // question: what does this do? - Ge
 Mesh.prototype.raycast = acceleratedRaycast;
@@ -53,14 +58,15 @@ export interface SceneProps
     style?: object;
     frameloop?: 'always' | 'demand';
     xrMode?: 'AR' | 'VR' | 'hidden';
-    up?: [number, number, number];
+    up?: [ number, number, number ];
     bgChildren?: ReactNode | ReactNode[];
     rawChildren?: ReactNode | ReactNode[];
     htmlChildren?: ReactNode | ReactNode[];
     grid?: boolean;
-    initCamPosition?: [number, number, number];
-    initCamRotation?: [number, number, number];
-  }> {}
+    initCamPosition?: [ number, number, number ];
+    initCamRotation?: [ number, number, number ];
+  }> {
+}
 
 /**
  * This is the root component for the 3D scene.
@@ -107,8 +113,8 @@ export function Scene({
   useEffect(() => {
     if (!up) return;
     Object3D.DEFAULT_UP.copy(new Vector3(...up));
-    console.log('setting the up', up)
-  }, [up]);
+    console.log('setting the up', up);
+  }, [ up ]);
 
   const onCameraMove = useCallback(
     (camera: CameraLike) => {
@@ -124,7 +130,7 @@ export function Scene({
         },
       } as ClientEvent);
     },
-    [sendMsg, uplink],
+    [ sendMsg, uplink ],
   );
 
   const divStyle = useMemo<CSSProperties>(
@@ -138,7 +144,7 @@ export function Scene({
         border: '0px',
       }),
     }),
-    [style],
+    [ style ],
   );
 
   const camCtrlRef = useRef<tOrbitControls>();
@@ -157,19 +163,49 @@ export function Scene({
   //   button = null;
   // }
 
+  const { alpha, legacy, linear, flat } = useControls(
+    'Scene.Graphics',
+    {
+      flat: false,
+      legacy: false,
+      linear: false,
+      alpha: true,
+    },
+    [],
+  );
+
+  const { toneMapping } = useControls(
+    'Scene',
+    {
+      toneMapping: {
+        value: NoToneMapping,
+        options: {
+          none: NoToneMapping,
+          linear: LinearToneMapping,
+          Reinhard: ReinhardToneMapping,
+          Cineon: CineonToneMapping,
+          'ACE Film': ACESFilmicToneMapping,
+          custom: CustomToneMapping,
+        },
+      },
+    },
+    [],
+  );
+
   return (
     <>
       <div style={divStyle} className={className}>
-        <XRButton />
+        <XRButton/>
         <Canvas
           ref={ref}
-          linear
-          // flat
-          legacy={false}
+          linear={linear}
+          flat={flat}
+          legacy={legacy}
           // preserve buffer needed for download and grab image data
           gl={{
+            alpha,
             antialias: true,
-            toneMapping: LinearToneMapping,
+            toneMapping,
             preserveDrawingBuffer: true,
           }}
           frameloop={frameloop}
@@ -179,15 +215,15 @@ export function Scene({
         >
           <XR>
             {queries.debug || queries.perf ? (
-              <Perf position='top-left' />
+              <Perf position='top-left'/>
             ) : null}
             {/* <FileDrop/> */}
             {/* <DreiHands/> */}
             {/* this is now deprecated in @react-three/xr@latest */}
             {/*<Controllers />*/}
-            <Gamepad />
-            <SceneGroup />
-            <BackgroundColor />
+            <Gamepad/>
+            <SceneGroup/>
+            <BackgroundColor/>
             {/** Hoist the SceneGroup control hooks up here. This is not the original
              usage pattern, but it turned out to work really well.*/}
             <OrbitCamera
@@ -206,10 +242,10 @@ export function Scene({
               <GroupSlave>{children}</GroupSlave>
             </Suspense>
             {rawChildren}
-            <Download />
-            <GizmoHelper alignment='bottom-left' margin={[80, 80]}>
+            <Download/>
+            <GizmoHelper alignment='bottom-left' margin={[ 80, 80 ]}>
               <GizmoViewport
-                axisColors={['#9d4b4b', '#2f7f4f', '#3b5b9d']}
+                axisColors={[ '#9d4b4b', '#2f7f4f', '#3b5b9d' ]}
                 labelColor='white'
               />
             </GizmoHelper>
@@ -230,12 +266,12 @@ export function Scene({
             {/*<fog attach='fog' args={[ '#2c3f57', 1, 10 ]}/>*/}
             {/*<fog attach={'fog'} args={['#2c3f57', 1, 10]} />*/}
             {/*<fog color="black" near={1} far={10} />*/}
-            <Sphere
-              args={[100]}
-              position={[0, 0, 0]}
-              material-color={'#2c3f57'}
-              material-side={2}
-            />
+            {/*<Sphere*/}
+            {/*  args={[100]}*/}
+            {/*  position={[0, 0, 0]}*/}
+            {/*  material-color={'#2c3f57'}*/}
+            {/*  material-side={2}*/}
+            {/*/>*/}
           </XR>
         </Canvas>
       </div>

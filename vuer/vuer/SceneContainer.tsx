@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import queryString from 'query-string';
-import { button, folder, useControls } from 'leva';
+import { button, folder, Leva, useControls } from 'leva';
 import useFetch from 'use-http';
 import yaml from 'js-yaml';
 import useStateRef from 'react-usestateref';
@@ -285,6 +285,15 @@ export function SceneContainer({
       >
         {sceneChildren.length ? toProps(sceneChildren) : children || []}
       </Scene>
+      {/*<Leva*/}
+      {/*  theme={{*/}
+      {/*    sizes: {*/}
+      {/*      rootWidth: '280px',*/}
+      {/*      controlWidth: '200px',*/}
+      {/*      numberInputMinWidth: '56px',*/}
+      {/*    },*/}
+      {/*  }}*/}
+      {/*/>*/}
     </>
   );
 }

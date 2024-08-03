@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 import { plugin as mdPlugin } from 'vite-plugin-markdown';
 import dts from 'vite-plugin-dts';
 import * as sass from 'sass';
-import * as path from "node:path";
+import * as path from 'node:path';
 
 export default defineConfig({
   css: {
@@ -60,6 +60,11 @@ export default defineConfig({
         // '@react-three/xr',
         '@react-three/drei',
         'react-helmet-async',
+        'leva',
+        // make these external to share states with the parent app.
+        'zustand',
+        'zustand/middleware',
+        'zustand/shallow',
       ],
       output: {
         globals: {
