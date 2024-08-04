@@ -71,9 +71,9 @@ export function Arrow({
   opacity = 1.0,
   wireframe = false,
 }: ArrowProps) {
-  const ref = useRef<Group>();
-  const coneRef = useRef<InstancedMesh>();
-  const cylinderRef = useRef<InstancedMesh>();
+  const ref = useRef<Group>(null);
+  const coneRef = useRef<InstancedMesh>(null);
+  const cylinderRef = useRef<InstancedMesh>(null);
 
   const color3 = useMemo(() => new Color(color), [color]);
 
@@ -191,9 +191,9 @@ export function CoordsMarker({
   opacity = 1.0,
   wireframe = false,
 }: CoordsMarkerProps) {
-  const ref = useRef<Group>();
-  const coneRef = useRef<InstancedMesh>();
-  const cylinderRef = useRef<InstancedMesh>();
+  const ref = useRef<Group>(null);
+  const coneRef = useRef<InstancedMesh>(null);
+  const cylinderRef = useRef<InstancedMesh>(null);
 
   const color3 = useMemo(() => color && new Color(color), [color]);
 

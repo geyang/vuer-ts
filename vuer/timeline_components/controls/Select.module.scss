@@ -1,0 +1,25 @@
+.style {
+  //flex-basis: 100%;
+  cursor: pointer;
+
+  font-family: var(--font-family-mono);
+
+  background-color: var(--input-background);
+  color: rgba(255, 255, 255, 0.6);
+  border: 0;
+  border-radius: var(--radius);
+  padding: 0 8px;
+  height: 24px;
+  flex-shrink: 1;
+  flex-grow: 1;
+  min-width: 0;
+
+  :hover {
+    background-color: var(--input-background-hover);
+  }
+
+  :disabled {
+    pointer-events: none;
+    opacity: 0.54;
+  }
+}

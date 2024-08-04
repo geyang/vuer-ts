@@ -72,7 +72,7 @@ export default function ImagePlane({
   wireframe = false,
   material = {},
 }: ImagePlaneProps) {
-  const planeRef = useRef<Mesh<PlaneGeometry>>();
+  const planeRef = useRef<Mesh<PlaneGeometry>>(null);
 
   const { camera }: { camera: PerspectiveCamera | OrthographicCamera } =
     useThree();

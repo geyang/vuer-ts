@@ -1,29 +1,35 @@
 module.exports = [
-  { ignores: [ "dist/" ] },
+  { ignores: ['dist/'] },
   {
     files: [
-      "/vuer/**/*.jsx",
-      "/vuer/**/*.tsx",
+      '/vuer/**/*.scss',
+      '/vuer/**/*.jsx',
+      '/vuer/**/*.tsx',
     ],
     languageOptions: {
       globals: { browser: true, es2020: true },
-      parser: require("@typescript-eslint/parser"),
+      parser: require('@typescript-eslint/parser'),
     },
     plugins: {
-      "react-refresh": require("eslint-plugin-react-refresh"),
-      "@emotion": require("@emotion/eslint-plugin"),
-      "@eslint": require("@eslint-recommended/eslint-config"),
-      "@typescript-eslint": require("@typescript-eslint/eslint-plugin"),
-      "react-hooks": require("eslint-plugin-react-hooks"),
-      "prettier": require("prettier"),
+      'css-modules': require('eslint-plugin-css-modules'),
+      'react-refresh': require('eslint-plugin-react-refresh'),
+      '@eslint': require('@eslint-recommended/eslint-config'),
+      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
+      'react-hooks': require('eslint-plugin-react-hooks'),
+      'prettier': require('prettier'),
     },
+    extends: [
+      'plugin:@css-modules/recommended',
+      'plugin:@eslint/recommended',
+      'plugin:@typescript-eslint/recommended',
+      'plugin:react-hooks/recommended',
+      'plugin:prettier/recommended',
+    ],
     rules: {
-      // "@emotion/jsx-import": "error",
-      // "@emotion/pkg-renaming": "error",
-      "react-refresh/only-export-components": "off",
-      "indent": [ "error", 2 ],
-      "object-curly-spacing": [ "error", "always" ],
-      "array-bracket-spacing": [ "error", "always" ],
+      'react-refresh/only-export-components': 'off',
+      'indent': ['error', 2],
+      'object-curly-spacing': ['error', 'always'],
+      'array-bracket-spacing': ['error', 'always'],
     },
-  }
-]
+  },
+];

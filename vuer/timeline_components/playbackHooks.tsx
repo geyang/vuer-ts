@@ -59,7 +59,7 @@ export const PlaybackStateProvider = ({ children } = { children: [] }) => {
 
   const [buffer, setBuffer] = useStorage<Frame[]>('vuer-frame-buffer', []);
 
-  // console.log('load: playback init', state, isLoaded);
+  console.log('load: buffer', [buffer]);
 
   useEffect(() => {
     if (!playback) return;
@@ -75,7 +75,7 @@ export const PlaybackStateProvider = ({ children } = { children: [] }) => {
     playback.changeBufferLength(maxlen);
 
     // allow clearing up the buffer;
-    playback.loadFrameBuffer(buffer);
+    buffer?.length && playback.loadFrameBuffer(buffer);
   }, [playback]);
 
   useEffect(() => {

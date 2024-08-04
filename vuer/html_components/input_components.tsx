@@ -1,6 +1,7 @@
 import React, {
   ChangeEvent,
   ChangeEventHandler,
+  CSSProperties,
   KeyboardEvent,
   KeyboardEventHandler,
   MouseEvent,
@@ -95,13 +96,13 @@ export function Img({ _key: key, children, alt, ...props }: ImgProps) {
 }
 
 type InputProps = VuerProps<{
-  buttonStyle;
   clearOnSubmit: boolean;
   defaultValue: string;
   defaultValues: string[];
   placeholder: string;
-  style;
-  textareaStyle;
+  style: CSSProperties;
+  buttonStyle: CSSProperties;
+  textareaStyle: CSSProperties;
   value: string;
 }>;
 
@@ -191,7 +192,8 @@ export function ImageUpload({ _key: key, label }: ImageUploadProps) {
   const [file, setFile] = useState<Blob | null>(null);
   const onChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setFile(e.target.files[0]);
+      const f = e?.target?.files?.[0];
+      if (f) setFile(f as Blob);
     },
     [],
   );

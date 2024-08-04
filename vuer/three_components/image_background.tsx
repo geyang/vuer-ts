@@ -55,7 +55,7 @@ export function ImageBackground({
   // material = {},
   ...rest
 }: ImageBackgroundProps) {
-  const meshRef = useRef<MeshBasicMaterial>();
+  const meshRef = useRef<MeshBasicMaterial>(null);
   const { camera }: { camera: PerspectiveCamera | OrthographicCamera } =
     useThree();
 

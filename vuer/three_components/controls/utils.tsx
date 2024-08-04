@@ -39,7 +39,7 @@ export const SqueezeRayGrab = forwardRef(
     }: SqueezeRayGrabProps,
     forwardedRef: ForwardedRef<Group>,
   ) => {
-    const ref = useRef<Group>();
+    const ref = useRef<Group>(null);
     const groupRef = (forwardedRef || ref) as MutableRefObject<Group>;
     const grabbingController =
       useRef() as MutableRefObject<XRControllerState | null>;

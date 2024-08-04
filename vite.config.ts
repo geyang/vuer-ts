@@ -1,46 +1,32 @@
-/** @type {import('vite').UserConfig} */
-import { defineConfig, UserConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { resolve } from 'node:path';
-import { plugin as mdPlugin } from 'vite-plugin-markdown';
-import dts from 'vite-plugin-dts';
-import * as sass from 'sass';
+import { build, UserConfig } from 'vite';
+import mdx from '@mdx-js/rollup';
+import react from '@vitejs/plugin-react-swc';
+import { cjsInterop } from 'vite-plugin-cjs-interop';
 import * as path from 'node:path';
+import * as sass from 'sass';
 
-export default defineConfig({
-  css: {
-    preprocessorOptions: {
-      scss: {
-        implementation: sass,
-      },
-    },
-  },
+export default {
   plugins: [
+    mdx(),
     react({
-      jsxImportSource: '@emotion/react',
-      babel: {
-        plugins: [
-          '@emotion/babel-plugin',
-          ['@babel/plugin-proposal-decorators', { legacy: true }],
-        ],
-      },
+      devTarget: 'es2022',
+      tsDecorators: true,
     }),
-    dts({
-      insertTypesEntry: true,
-      copyDtsFiles: true,
+    cjsInterop({
+      // List of CJS dependencies that require interop
+      dependencies: ['react-helmet-async'],
     }),
-    mdPlugin(),
   ],
   root: 'vuer',
   build: {
-    outDir: resolve(__dirname, './dist'),
+    outDir: path.resolve(__dirname, './dist'),
     emptyOutDir: true,
     cssCodeSplit: true,
     minify: false, // <-- this is the important part
     lib: {
       name: 'vuer',
       entry: {
-        index: resolve(__dirname, './vuer/index.tsx'),
+        index: path.resolve(__dirname, './vuer/index.tsx'),
       },
       formats: ['es', 'cjs'],
       fileName: (format, name) => {
@@ -48,39 +34,34 @@ export default defineConfig({
         else return `${name}.${format}`;
       },
     },
+    optimizeDeps: {
+      include: ['react-helmet-async'],
+    },
     rollupOptions: {
       // These are the libraries that we do not want to include in our bundle.
       // plus anything that requires a provider for globals.
       external: [
         'react',
         'react-dom',
-        'styled-components',
-        'three',
-        '@react-three/fiber',
-        // '@react-three/xr',
-        '@react-three/drei',
         'react-helmet-async',
-        'leva',
-        // make these external to share states with the parent app.
-        'zustand',
-        'zustand/middleware',
-        'zustand/shallow',
+
+        // 'three',
+        // '@react-three/fiber',
+        // '@react-three/xr',
+        // '@react-three/drei',
+
+        // 'leva',
+        // 'zustand',
+        // 'zustand/middleware',
+        // 'zustand/shallow',
       ],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
+          // 'three': 'THREE',
         },
       },
     },
   },
-  resolve: {
-    preserveSymlinks: true,
-    alias: {
-      '@vuer-ai/mujoco-ts/*': path.resolve(
-        __dirname,
-        './node_modules/@vuer-ai/mujoco-ts/src/*',
-      ),
-    },
-  },
-} satisfies UserConfig);
+} as UserConfig;

@@ -56,7 +56,7 @@ export default function ImageSphere({
   wireframe = false,
   material = {},
 }: ImageSphereProps) {
-  const sphereRef = useRef<Mesh<SphereGeometry>>();
+  const sphereRef = useRef<Mesh<SphereGeometry>>(null);
 
   // make new component for just the projection.
   const { camera }: { camera: PerspectiveCamera } = useThree();

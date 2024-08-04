@@ -1,16 +1,28 @@
 {
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "@emotion/react",
-    "declaration": true,
-    "composite": true,
-    "skipLibCheck": true,
-    "module": "ES2020",
+    //    "strict": true,
+    "module": "ES2022",
     "moduleResolution": "bundler",
+    "target": "ES2020",
     "rootDir": "./",
     "outDir": "./dist",
-    "target": "ES2020",
-    "useDefineForClassFields": true,
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "types": [
+      "vite/client",
+      "node"
+    ],
+    "typeRoots": [
+      "./",
+      "./node_modules/@types/",
+      "./types",
+      "./node_modules"
+    ],
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
     "esModuleInterop": true,
     /* Enables experimental support for ES7 decorators. */
     "experimentalDecorators": true,
@@ -22,17 +34,6 @@
     "resolveJsonModule": true,
     "isolatedModules": false,
     "sourceMap": true,
-    /* Linting */
-    "strict": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": false,
-    "lib": [
-      "ES2020",
-      "DOM",
-      "DOM.Iterable",
-      "webworker"
-    ],
     "plugins": [
       {
         "name": "typescript-plugin-css-modules"

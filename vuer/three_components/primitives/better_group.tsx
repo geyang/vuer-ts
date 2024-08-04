@@ -7,7 +7,7 @@ export type VuerGroupProps = VuerProps<{
   matrix?: Matrix16T;
 }>;
 export const VuerGroup = ({ _ref, _key, matrix, ...rest }: VuerGroupProps) => {
-  const __ref = useRef<ThreeGroup>();
+  const __ref = useRef<ThreeGroup>(null);
   const ref = _ref || __ref;
 
   useLayoutEffect(() => {

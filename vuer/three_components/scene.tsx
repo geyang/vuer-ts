@@ -102,7 +102,7 @@ export function Scene({
   initCamPosition,
   initCamRotation,
 }: SceneProps) {
-  const ref = useRef<HTMLCanvasElement>();
+  const ref = useRef<HTMLCanvasElement>(null);
   const canvasRef = _canvasRef || ref;
   const { sendMsg, uplink } = useSocket() as SocketContextType;
   const queries = useMemo<ParsedQuery>(
@@ -147,7 +147,7 @@ export function Scene({
     [ style ],
   );
 
-  const camCtrlRef = useRef<tOrbitControls>();
+  const camCtrlRef = useRef<tOrbitControls>(null);
 
   // // let button;
   // const mode = xrMode || queries.xrMode || 'VR';

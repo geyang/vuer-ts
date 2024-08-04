@@ -1,31 +1,6 @@
 import { useCallback } from 'react';
-import { css } from '@emotion/react';
+import { style } from "./Select.module.scss";
 
-const style = css`
-  //flex-basis: 100%;
-  cursor: pointer;
-
-  font-family: var(--font-family-mono);
-
-  background-color: var(--input-background);
-  color: rgba(255, 255, 255, 0.6);
-  border: 0;
-  border-radius: var(--radius);
-  padding: 0 8px;
-  height: 24px;
-  flex-shrink: 1;
-  flex-grow: 1;
-  min-width: 0;
-
-  :hover {
-    background-color: var(--input-background-hover);
-  }
-
-  :disabled {
-    pointer-events: none;
-    opacity: 0.54;
-  }
-`;
 
 export interface SelectProps<T> {
   title?: string;
@@ -59,7 +34,7 @@ export function Select<T>({
     <select
       title={title}
       disabled={disabled}
-      css={style}
+      className={style}
       style={{ width: typeof width === 'number' ? `${width}px` : width }}
       value={options.findIndex((option) => option.value === value)}
       onChange={_onChange}

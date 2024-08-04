@@ -11,14 +11,15 @@ export function useStorage<T>(
   const [savedState, savedString, wasLoaded] = useMemo(() => {
     const saved = localStorage.getItem(key);
 
-    if (typeof saved === 'undefined') {
+    // null means the key doesn't exist.
+    if (saved === null) {
       const serialized = JSON.stringify(initialState);
       localStorage.setItem(key, serialized);
-      // console.log('initialized', key, serialized);
+      console.log('initialized', key, serialized);
       return [initialState, serialized, false];
     } else {
       const parsedState = JSON.parse(saved);
-      // console.log('loaded', key, saved);
+      console.log('loaded', key, saved);
       return [parsedState, saved, true];
     }
   }, [key]);
@@ -36,7 +37,7 @@ export function useStorage<T>(
         localStorage.setItem(key, valueStr);
         setState(value);
         setSerialized(valueStr);
-        // console.log('saved', key, serRef.current);
+        console.log('saved', key, [serRef.current]);
       }
     },
     [key, setState, serRef],

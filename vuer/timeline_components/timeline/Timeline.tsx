@@ -1,5 +1,4 @@
 import { PointerEvent, useEffect, useRef, WheelEvent } from 'react';
-import { css } from '@emotion/react';
 import { Timestamps } from './Timestamps';
 import { RangeSelector } from './RangeSelector';
 import { Playhead } from './Playhead';
@@ -7,71 +6,28 @@ import { useSize, useStorage } from '../hooks';
 import { MouseButton, MouseMask } from './mouse_interfaces';
 import { clamp } from '../../layout_components/utils';
 import { usePlayback, useTimelineStates } from '../playbackHooks';
+import {
+  timeline,
+  timelineContainer,
+  visibleContainer,
+  scrollContainer,
+  playheadCursor,
+  trackContainer,
+} from './Timeline.module.scss';
+import react from '@vitejs/plugin-react-swc';
+import { scale } from '@lumaai/luma-web/dist/@types/library/util/m4';
 
 const ZOOM_SPEED = 0.000025;
 const ZOOM_MIN = 0.05;
 const MAX_SCALE = 0.5;
 const MIN_SCALE = 50;
 
-const TimelineContainerStyle = css`
-  background-color: var(--surface-color);
-  width: 100%;
-  height: 100%;
-  transition: opacity var(--duration-normal);
-  display: flex;
-  align-items: stretch;
-  position: relative;
-`;
-
-const TimelineStyle = css`
-  overflow-x: scroll;
-  // note: this is to prevent Chrome from going back to the previous page.
-  overscroll-behavior-x: none;
-  overflow-y: hidden;
-  flex-grow: 1;
-  position: relative;
-  background-color: var(--background-color);
-  --scrollbar-background: var(--background-color);
-  height: 100%;
-  width: 100%;
-`;
-
-const VisibleContainer = css`
-  position: relative;
-  overflow: hidden;
-  height: 100%;
-`;
-
-const ScrollContainer = css`
-  position: relative;
-  overflow: visible;
-  height: calc(100% - 19px);
-`;
-
-const PlayheadCursorStyle = css`
-  position: absolute;
-  width: 2px;
-  top: 32px;
-  bottom: 0;
-  background-color: white;
-  pointer-events: none;
-  box-sizing: border-box;
-  border: 1px solid #444;
-  margin-left: -1.5px;
-`;
-
-const TrackContainerStyle = css`
-  width: 100%;
-  height: 100%;
-  background-color: var(--surface-color);
-`;
-
 export interface TimelineProps {}
 
 export function Timeline({}: TimelineProps) {
-  const containerRef = useRef<HTMLDivElement>();
-  const playheadRef = useRef<HTMLDivElement>();
-  const rangeRef = useRef<HTMLDivElement>();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const playheadRef = useRef<HTMLDivElement>(null);
+  const rangeRef = useRef<HTMLDivElement>(null);
   const rect = useSize(containerRef);
 
   const [{ scale, offset }, setOffsetScale] = useStorage(
@@ -81,6 +37,7 @@ export function Timeline({}: TimelineProps) {
       offset: 0.5 * rect.width,
     },
   );
+
   const playback = usePlayback();
   const { start, end, rangeStart, rangeEnd, curr } = useTimelineStates();
 
@@ -94,10 +51,10 @@ export function Timeline({}: TimelineProps) {
 
   const currOffset = containerRef.current?.scrollLeft;
   return (
-    <div css={TimelineContainerStyle} style={{ opacity: isReady ? 1 : 0 }}>
+    <div className={timelineContainer} style={{ opacity: isReady ? 1 : 0 }}>
       <div
         ref={containerRef}
-        css={TimelineStyle}
+        className={timeline}
         onWheel={(event: WheelEvent<HTMLElement>) => {
           event.stopPropagation();
           const currOffset = containerRef.current?.scrollLeft;
@@ -184,11 +141,11 @@ export function Timeline({}: TimelineProps) {
         }}
       >
         <div
-          css={VisibleContainer}
+          className={visibleContainer}
           style={{ width: `calc(100% + ${viewWidth}px)` }}
         >
           <div
-            css={ScrollContainer}
+            className={scrollContainer}
             style={{
               width: `${viewWidth}px`,
               left: `calc((100% - ${viewWidth}px) * 0.5)`,
@@ -211,7 +168,7 @@ export function Timeline({}: TimelineProps) {
                 (40 * Math.max(end - start, 1)) / viewWidth,
               )}
             />
-            <div ref={playheadRef} css={PlayheadCursorStyle} />
+            <div ref={playheadRef} className={playheadCursor} />
             <Playhead
               seeking={curr}
               leftPos={((curr - start) / Math.max(end - start, 1)) * viewWidth}
@@ -222,7 +179,7 @@ export function Timeline({}: TimelineProps) {
               rangeEnd={rangeEnd}
               viewWidth={viewWidth}
             />
-            <div css={TrackContainerStyle}>
+            <div className={trackContainer}>
               {/*<SceneTrack/>*/}
               {/*<LabelTrack/>*/}
               {/*<AudioTrack/>*/}

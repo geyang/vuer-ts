@@ -1,49 +1,15 @@
-import { css } from '@emotion/react';
+import { playhead } from './Playhead.module.scss';
 
 interface PlayheadProps {
   seeking: number;
   leftPos: number;
 }
 
-const PlayheadStyle = css`
-  position: absolute;
-  width: 0;
-  border-left: 1px solid var(--theme);
-  margin-left: -50%;
-  border-box: content-box;
-  top: 6px;
-  bottom: 0;
-  background-color: var(--theme);
-  pointer-events: none;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  margin-left: -50%;
-
-  //transition-duration: 1s;
-
-  :before {
-    display: block;
-    padding: 0 4px;
-    border-radius: var(--radius);
-    background-color: var(--theme);
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-small);
-    line-height: 20px;
-    font-weight: bold;
-    color: #000000;
-  }
-
-  :before {
-    content: attr(data-seeking);
-  }
-`;
-
 export function Playhead({ seeking, leftPos }: PlayheadProps) {
   return (
     <div
       data-seeking={seeking}
-      css={PlayheadStyle}
+      className={playhead}
       style={{
         left: `calc(50% + ${leftPos}px)`,
       }}

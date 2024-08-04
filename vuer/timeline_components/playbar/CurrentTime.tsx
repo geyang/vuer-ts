@@ -1,19 +1,8 @@
-import { css } from '@emotion/react';
-
-const codeStyle = css`
-  height: 24px;
-  padding: 0;
-  background: transparent;
-`;
-
-const frameStyle = css`
-  color: rgba(255, 255, 255, 0.54);
-`;
-
-const frameTimeStyle = css`
-  margin: 0 8px;
-  color: rgba(255, 255, 255, 0.32);
-`;
+import {
+  codeStyle,
+  frameStyle,
+  frameTimeStyle,
+} from './CurrentTime.module.scss';
 
 interface CurrentTimeProps {
   title: string;
@@ -42,15 +31,19 @@ export function Timestamp({
   return (
     <code
       title={`${title} ${frame} ${time}`}
-      css={codeStyle}
+      className={codeStyle}
       style={{ textAlign: right ? 'right' : 'left' }}
       {...rest}
     >
-      {!right && <span css={frameStyle}>[{frame?.toFixed(precision)}]</span>}
-      <span title={`${title} [HH:MM:SS:FF]`} css={frameTimeStyle}>
+      {!right && (
+        <span className={frameStyle}>[{frame?.toFixed(precision)}]</span>
+      )}
+      <span title={`${title} [HH:MM:SS:FF]`} className={frameTimeStyle}>
         {frameTime?.toFixed(precision)}
       </span>
-      {right && <span css={frameStyle}>[{frame?.toFixed(precision)}]</span>}
+      {right && (
+        <span className={frameStyle}>[{frame?.toFixed(precision)}]</span>
+      )}
     </code>
   );
 }

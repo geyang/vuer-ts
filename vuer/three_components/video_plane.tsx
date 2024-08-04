@@ -42,7 +42,7 @@ export function HUDPlane({
   layers = null,
   children,
 }: HUDPlaneProps) {
-  const planeRef = useRef<Mesh<PlaneGeometry>>();
+  const planeRef = useRef<Mesh<PlaneGeometry>>(null);
 
   const { camera }: { camera: PerspectiveCamera | OrthographicCamera } =
     useThree();

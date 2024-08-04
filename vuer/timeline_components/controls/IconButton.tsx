@@ -1,27 +1,5 @@
-import { css } from '@emotion/react';
 import { HTMLAttributes } from 'react';
-
-const buttonStyle = css`
-  display: block;
-  cursor: pointer;
-  margin: 0;
-  color: rgba(255, 255, 255, 0.54);
-
-  &:hover {
-    color: #fff !important;
-    accent-color: #fff !important;
-  }
-
-  &:active {
-    color: #23aaff !important;
-    accent-color: #23aaff !important;
-  }
-`;
-const disabledStyle = css`
-  cursor: default;
-  pointer-events: none;
-  color: rgba(255, 255, 255, 0.16);
-`;
+import { buttonStyle, disabledStyle } from './IconButton.module.scss';
 
 interface IconButtonProps
   extends Omit<
@@ -43,7 +21,7 @@ export function IconButton({
     <button
       disabled={disabled as unknown as boolean}
       title={title as unknown as string}
-      css={[buttonStyle, disabled && disabledStyle]}
+      className={`${buttonStyle} ${disabled && disabledStyle}`}
       type='button'
       onClick={disabled ? null : onClick}
     >

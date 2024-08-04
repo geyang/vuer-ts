@@ -1,9 +1,17 @@
 import { css } from '@emotion/react';
 import { clamp } from './utils';
 import { ReactElement, useRef, useState } from 'react';
+import {
+  containerStyle,
+  primaryStyle,
+  panelContainerStyle,
+  panelStyle,
+  shrunkStyle,
+} from './resizableSwitch.module.scss';
 
 interface ResizeableLayoutProps {
   _key?: string;
+  style?: Record<string, string>;
   vertical?: boolean;
   hidden?: boolean;
   offset?: number;
@@ -11,61 +19,9 @@ interface ResizeableLayoutProps {
   children: [ReactElement, ReactElement, ReactElement];
 }
 
-const containerStyle = css`
-  display: flex;
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  justify-content: stretch;
-`;
-
-const primaryStyle = css`
-  flex-grow: 0;
-  overflow: hidden;
-`;
-
-const panelContainerStyle = css`
-  touch-action: none;
-  flex-shrink: 0;
-  z-index: 10;
-
-  user-select: none;
-
-  :before {
-    content: '';
-    width: 100%;
-    height: 100%;
-    display: block;
-    background-color: rgba(35, 170, 255, 0.21);
-    z-index: 10000;
-  }
-
-  :hover:before {
-    background-color: #23aaff;
-  }
-
-  :active:before {
-    background-color: #23aaff !important;
-  }
-`;
-
-const shrunkStyle = css`
-  flex-grow: 1;
-  flex-shrink: 1;
-  overflow: hidden;
-  user-select: none;
-`;
-
-const panelStyle = css`
-  flex-grow: 1;
-  flex-shrink: 1;
-  overflow: hidden;
-  user-select: none;
-`;
-
 export function ResizableSwitch({
   _key,
+  style = {},
   children: [primary, panel, shrunkPanel],
   vertical = false,
   offset = 0,
@@ -73,7 +29,7 @@ export function ResizableSwitch({
   hidden = false,
 }: ResizeableLayoutProps) {
   const inverse = offset < 0;
-  const containerRef = useRef<HTMLDivElement>();
+  const containerRef = useRef<HTMLDivElement>(null);
   const [conf, setConf] = useState({ size: inverse ? 1 : 0, isHidden: hidden });
   const dimension = vertical ? 'height' : 'width';
   const axis = vertical ? 'y' : 'x';
@@ -85,11 +41,11 @@ export function ResizableSwitch({
   return (
     <div
       ref={containerRef}
-      css={containerStyle}
-      style={{ flexDirection: vertical ? 'column' : 'row' }}
+      className={containerStyle}
+      style={{ flexDirection: vertical ? 'column' : 'row', ...style }}
     >
       <div
-        css={primaryStyle}
+        className={primaryStyle}
         style={{
           flexShrink: conf.isHidden ? 0 : 1,
           height: vertical ? primaryDimension : '100%',
@@ -99,7 +55,7 @@ export function ResizableSwitch({
         {primary}
       </div>
       <div
-        css={panelContainerStyle}
+        className={panelContainerStyle}
         style={{
           width: !vertical ? '16px' : 'auto',
           height: vertical ? '16px' : 'auto',
@@ -131,9 +87,9 @@ export function ResizableSwitch({
         }}
       />
       {conf.isHidden ? (
-        <div css={shrunkStyle}>{shrunkPanel}</div>
+        <div className={shrunkStyle}>{shrunkPanel}</div>
       ) : (
-        <div css={panelStyle}>{panel}</div>
+        <div className={panelStyle}>{panel}</div>
       )}
     </div>
   );

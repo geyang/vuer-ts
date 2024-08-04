@@ -1,0 +1,20 @@
+.buttonStyle {
+  display: block;
+  cursor: pointer;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.54);
+
+  :hover {
+    color: #fff;
+  }
+
+  :active {
+    color: var(--theme);
+  }
+}
+
+.disabledStyle {
+  cursor: default;
+  pointer-events: none;
+  color: rgba(255, 255, 255, 0.16);
+}

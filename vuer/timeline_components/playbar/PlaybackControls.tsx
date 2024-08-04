@@ -1,5 +1,3 @@
-import { css } from '@emotion/react';
-
 import { IconButton, IconCheckbox, Input, Select } from '../controls';
 import {
   FastForward,
@@ -15,12 +13,7 @@ import {
 import { Trash } from '../icons/Trash';
 import { useMemo } from 'react';
 import { usePlayback, usePlaybackStates } from '../playbackHooks';
-
-const style = css`
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-`;
+import { style } from './PlaybackControls.module.scss';
 
 export function PlaybackControls() {
   const playback = usePlayback();
@@ -39,7 +32,7 @@ export function PlaybackControls() {
   }, []);
 
   return (
-    <div css={style}>
+    <div className={style}>
       <Select<number>
         title='Playback speed'
         width={60}

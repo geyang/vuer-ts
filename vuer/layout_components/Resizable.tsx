@@ -1,6 +1,12 @@
-import { css } from '@emotion/react';
 import { clamp } from './utils';
 import { ReactElement, useRef, useState } from 'react';
+import { css } from '@emotion/react';
+import {
+  container,
+  primary,
+  resizable,
+  resizableInner,
+} from './resizable.module.scss';
 
 interface ResizeableLayoutProps {
   _key?: string;
@@ -18,8 +24,11 @@ export function Resizable({
   hidden = false,
 }: ResizeableLayoutProps) {
   const inverse = offset < 0;
-  const containerRef = useRef<HTMLDivElement>();
-  const [conf, setConf] = useState({ size: inverse ? 1 : 0, isHidden: hidden });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [conf, setConf] = useState({
+    size: inverse ? 1 : 0,
+    isHidden: hidden,
+  });
   const dimension = vertical ? 'height' : 'width';
   const axis = vertical ? 'y' : 'x';
 
@@ -30,61 +39,32 @@ export function Resizable({
   return (
     <div
       ref={containerRef}
-      css={css`
-        display: flex;
-        position: relative;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        justify-content: stretch;
-        flex-direction: ${vertical ? `column` : `row`};
-      `}
+      className={container}
+      style={{
+        flexDirection: vertical ? `column` : `row`,
+      }}
     >
       <div
-        css={css`
-          flex-grow: 0;
-          flex-shrink: ${conf.isHidden ? 0 : 1};
-          overflow: hidden;
-          height: ${vertical ? primaryDimension : `100%`};
-          width: ${!vertical ? primaryDimension : `100%`};
-        `}
+        className={primary}
+        style={{
+          flexShrink: conf.isHidden ? 0 : 1,
+          height: vertical ? primaryDimension : `100%`,
+          width: !vertical ? primaryDimension : `100%`,
+        }}
       >
         {primary}
       </div>
       <div
-        css={css`
-          touch-action: none;
-          width: ${!vertical ? `16px` : `auto`};
-          height: ${vertical ? `16px` : `auto`};
-          cursor: ${vertical ? `ns-resize` : `ew-resize`};
-          flex-shrink: 0;
-          padding: ${vertical ? `7px 0` : `0 7px`};
-          margin: ${vertical ? `-7px 0` : `0 -7px`};
-          ${conf.isHidden && vertical && `margin-top: -9px;`}
-          ${conf.isHidden && !vertical && `margin-right: -9px;`}
-            z-index: 10;
-
-          user-select: none;
-
-          :before {
-            content: '';
-            width: 100%;
-            height: 100%;
-            display: block;
-            background-color: ${conf.isHidden
-              ? `rgba(35, 170, 255, 0.21)`
-              : `rgba(35, 170, 255, 0.21)`};
-            z-index: 10000;
-          }
-
-          :hover:before {
-            background-color: #23aaff;
-          }
-
-          :active:before {
-            background-color: #23aaff !important;
-          }
-        `}
+        className={resizable}
+        style={{
+          width: !vertical ? `16px` : `auto`,
+          height: vertical ? `16px` : `auto`,
+          cursor: vertical ? `ns-resize` : `ew-resize`,
+          padding: vertical ? `7px 0` : `0 7px`,
+          margin: vertical ? `-7px 0` : `0 -7px`,
+          ...(conf.isHidden && vertical && { marginTop: '-9px' }),
+          ...(conf.isHidden && !vertical && { marginRight: '-9px' }),
+        }}
         onPointerDown={(event) => {
           event.currentTarget.setPointerCapture(event.pointerId);
         }}
@@ -107,11 +87,7 @@ export function Resizable({
       />
       {conf.isHidden ? null : (
         <div
-          css={css`
-            flex-grow: 1;
-            flex-shrink: 1;
-            overflow: hidden;
-          `}
+          className={resizableInner}
         >
           {panel}
         </div>

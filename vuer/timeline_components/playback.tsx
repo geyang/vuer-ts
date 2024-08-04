@@ -213,9 +213,11 @@ export class Playback {
 
   get progress(): number {
     // the progress is computed from the current selection.
+    const len = this.range.end - this.range.start;
+    console.log("number of frames is", len, this.curr, this.range.start);
     return (
       (100 * (this.curr - this.range.start)) /
-      (this.range.end - this.range.start)
+      Math.max(len, 1)
     );
   }
 

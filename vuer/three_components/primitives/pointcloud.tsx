@@ -36,7 +36,7 @@ export function PointCloud({
   color,
   ...rest
 }: PointCloudProps) {
-  const __ref = useRef<Points>();
+  const __ref = useRef<Points>(null);
   const ref = (_ref || __ref) as MutableRefObject<Points>;
 
   const geometry = useMemo(
