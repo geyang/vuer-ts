@@ -1,39 +1,58 @@
 {
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "composite": true,
-    "skipLibCheck": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "rootDir": "./",
-    "outDir": "./dist",
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "esModuleInterop": true,
     "lib": [
-      "ES2020",
+      "ES6",
       "DOM",
       "DOM.Iterable",
-      "webworker"
+      "ESNext"
     ],
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": false,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "allowJs": true,
+//    "isolatedModules": false,
+    "sourceMap": true,
+    "rootDir": "./src",
+    "outDir": "dist",
+    "declaration": true,
+    "declarationDir": "types",
+    "types": [
+      "src/**/*.d.ts",
+      "vite/client",
+      "node"
+    ],
+    "typeRoots": [
+      "./node_modules/@types/",
+      "./types",
+      "./node_modules"
+    ],
+    "noEmit": false,
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules"
+      }
+    ]
   },
-  /* Bundler mode */
-  "noEmit": true,
-  "allowSyntheticDefaultImports": true,
-  "allowImportingTsExtensions": false,
-  "resolveJsonModule": true,
-  "isolatedModules": true,
-  /* Linting */
-  "strict": true,
-  "noUnusedLocals": true,
-  "noUnusedParameters": true,
-  "noFallthroughCasesInSwitch": true,
   "include": [
-    "vuer"
+    "src/**/*"
   ],
   "exclude": [
-    "./node_modules",
-    "tsconfig.ts",
-    "tsconfig.node.ts"
-  ]
+    "node_modules",
+    "dist",
+    "vite.config.mts"
+  ],
+//  "ts-node": {
+//    "transpileOnly": true,
+//    "esm": true
+//  }
 }

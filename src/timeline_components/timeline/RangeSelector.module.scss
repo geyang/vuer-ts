@@ -1,0 +1,52 @@
+.container {
+  height: 32px;
+  cursor: pointer;
+  width: 100%;
+}
+
+
+.rangeStyle {
+  border-radius: var(--radius);
+  cursor: move;
+  position: absolute;
+  height: 32px;
+  background-color: rgba(36, 36, 36, 0);
+  border: 2px solid rgba(255, 255, 255, 0.24);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  max-width: 100%;
+
+  opacity: 0.4;
+
+  :hover {
+    opacity: 0.8;
+  }
+}
+
+.style {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+.dragIndStyle {
+  margin-top: 2px;
+  color: white;
+
+  opacity: 0.5;
+  z-index: auto;
+  min-width: 0;
+
+  cursor: ew-resize;
+
+  :hover {
+    opacity: 0.9;
+    z-index: 1;
+    min-width: 24px;
+  }
+
+  :active {
+    opacity: 1;
+  }
+}
