@@ -1,39 +1,42 @@
 {
   "compilerOptions": {
-    //    "strict": true,
-    "module": "ES2022",
-    "moduleResolution": "bundler",
-    "target": "ES2020",
-    "rootDir": "./",
-    "outDir": "./dist",
     "lib": [
+      "ES6",
       "DOM",
       "DOM.Iterable",
       "ESNext"
     ],
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": false,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "allowJs": true,
+//    "isolatedModules": false,
+    "sourceMap": true,
+    "rootDir": "./src",
+    "outDir": "dist",
+    "declaration": true,
+    "declarationDir": "types",
     "types": [
+      "src/**/*.d.ts",
       "vite/client",
       "node"
     ],
     "typeRoots": [
-      "./",
       "./node_modules/@types/",
       "./types",
       "./node_modules"
     ],
-    "jsx": "react-jsx",
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    /* Enables experimental support for ES7 decorators. */
-    "experimentalDecorators": true,
-    /* Bundler mode */
-    "noEmit": true,
-    "allowSyntheticDefaultImports": true,
-    "allowImportingTsExtensions": true,
-    "allowJs": true,
-    "resolveJsonModule": true,
-    "isolatedModules": false,
-    "sourceMap": true,
+    "noEmit": false,
     "plugins": [
       {
         "name": "typescript-plugin-css-modules"
@@ -41,11 +44,15 @@
     ]
   },
   "include": [
-    "./vuer/**/*"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
-    "tsconfig.ts",
-    "tsconfig.node.ts"
-  ]
+    "dist",
+    "vite.config.mts"
+  ],
+//  "ts-node": {
+//    "transpileOnly": true,
+//    "esm": true
+//  }
 }

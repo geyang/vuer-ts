@@ -2,12 +2,14 @@ module.exports = [
   { ignores: ['dist/'] },
   {
     files: [
-      '/vuer/**/*.scss',
-      '/vuer/**/*.jsx',
-      '/vuer/**/*.tsx',
+      '/pages/**/*.jsx',
+      '/pages/**/*.tsx',
     ],
     languageOptions: {
-      globals: { browser: true, es2020: true },
+      globals: {
+        browser: true,
+        es2020: true,
+      },
       parser: require('@typescript-eslint/parser'),
     },
     plugins: {
@@ -30,6 +32,7 @@ module.exports = [
       'indent': ['error', 2],
       'object-curly-spacing': ['error', 'always'],
       'array-bracket-spacing': ['error', 'always'],
+      'resolve-json-module': 'on',
     },
   },
 ];

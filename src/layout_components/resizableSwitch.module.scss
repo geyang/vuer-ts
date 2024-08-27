@@ -1,0 +1,53 @@
+.containerStyle {
+  display: flex;
+  position: relative;
+  //width: 100%;
+  width: 10px;
+  height: 100%;
+  overflow: hidden;
+  justify-content: stretch;
+}
+
+.primaryStyle {
+  flex-grow: 0;
+  overflow: hidden;
+}
+
+.panelContainerStyle {
+  touch-action: none;
+  flex-shrink: 0;
+  z-index: 10;
+
+  user-select: none;
+
+  &:before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    display: block;
+    background-color: rgba(37, 37, 37, 0.21);
+    z-index: 10000;
+  }
+
+  &:hover:before {
+    background-color: #23aaff;
+  }
+
+  &:active:before {
+    background-color: #23aaff !important;
+  }
+}
+
+.shrunkStyle {
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: hidden;
+  user-select: none;
+}
+
+.panelStyle {
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: hidden;
+  user-select: none;
+}

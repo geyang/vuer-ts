@@ -1,10 +1,7 @@
-.idea
 .DS_Store
+.idea
+.swc
+/node_modules/
+/dist/
 
-dist
-node_modules
-build
-.secret*
 
-yarn-error.log
-tsconfig.tsbuildinfo
